@@ -1,0 +1,347 @@
+{
+  "types": {
+    "built": 274,
+    "reference": 65,
+    "reference_matched": 59,
+    "reference_unmatched": [
+      "Mi11",
+      "Mi12",
+      "Mi3",
+      "Tm28",
+      "TmY14",
+      "TmY9"
+    ]
+  },
+  "connections": {
+    "reference_comparable": 545,
+    "recovered": 413,
+    "recovered_fraction": 0.7578,
+    "missing_here": [
+      [
+        "Am",
+        "C2"
+      ],
+      [
+        "Am",
+        "C3"
+      ],
+      [
+        "Am",
+        "L1"
+      ],
+      [
+        "Am",
+        "L2"
+      ],
+      [
+        "Am",
+        "L3"
+      ],
+      [
+        "Am",
+        "L4"
+      ],
+      [
+        "Am",
+        "R1"
+      ],
+      [
+        "Am",
+        "R2"
+      ],
+      [
+        "Am",
+        "R4"
+      ],
+      [
+        "Am",
+        "R5"
+      ],
+      [
+        "Am",
+        "T1"
+      ],
+      [
+        "C2",
+        "Lawf2"
+      ],
+      [
+        "C2",
+        "T4a"
+      ],
+      [
+        "C3",
+        "CT1(M10)"
+      ],
+      [
+        "C3",
+        "Lawf2"
+      ],
+      [
+        "C3",
+        "Mi4"
+      ],
+      [
+        "C3",
+        "R3"
+      ],
+      [
+        "CT1(Lo1)",
+        "T5a"
+      ],
+      [
+        "CT1(Lo1)",
+        "T5b"
+      ],
+      [
+        "CT1(Lo1)",
+        "T5c"
+      ],
+      [
+        "CT1(Lo1)",
+        "T5d"
+      ],
+      [
+        "CT1(Lo1)",
+        "Tm1"
+      ],
+      [
+        "CT1(Lo1)",
+        "Tm9"
+      ],
+      [
+        "CT1(M10)",
+        "C3"
+      ],
+      [
+        "CT1(M10)",
+        "Mi1"
+      ],
+      [
+        "CT1(M10)",
+        "T4a"
+      ],
+      [
+        "CT1(M10)",
+        "T4b"
+      ],
+      [
+        "CT1(M10)",
+        "T4c"
+      ],
+      [
+        "CT1(M10)",
+        "T4d"
+      ],
+      [
+        "L1",
+        "Lawf2"
+      ],
+      [
+        "L2",
+        "Lawf2"
+      ],
+      [
+        "L3",
+        "Mi15"
+      ],
+      [
+        "L3",
+        "Tm3"
+      ],
+      [
+        "L4",
+        "Am"
+      ],
+      [
+        "L4",
+        "L5"
+      ],
+      [
+        "L4",
+        "TmY13"
+      ],
+      [
+        "L5",
+        "TmY13"
+      ],
+      [
+        "Lawf1",
+        "Lawf1"
+      ],
+      [
+        "Lawf2",
+        "Am"
+      ],
+      [
+        "Lawf2",
+        "L3"
+      ],
+      [
+        "Lawf2",
+        "Lawf2"
+      ],
+      [
+        "Mi1",
+        "CT1(M10)"
+      ],
+      [
+        "Mi1",
+        "Mi10"
+      ],
+      [
+        "Mi1",
+        "Mi13"
+      ],
+      [
+        "Mi1",
+        "Mi14"
+      ],
+      [
+        "Mi1",
+        "TmY13"
+      ],
+      [
+        "Mi10",
+        "T4a"
+      ],
+      [
+        "Mi10",
+        "T4b"
+      ],
+      [
+        "Mi10",
+        "T4c"
+      ],
+      [
+        "Mi10",
+        "T4d"
+      ]
+    ],
+    "missing_here_total": 132,
+    "strong_connections_absent_from_reference": [
+      [
+        "T4b",
+        "Am1"
+      ],
+      [
+        "T5b",
+        "Am1"
+      ],
+      [
+        "TmY5a",
+        "Am1"
+      ]
+    ],
+    "strong_connections_absent_from_reference_total": 3
+  },
+  "signs": {
+    "compared": 413,
+    "agreeing": 401,
+    "agreement_fraction": 0.9709,
+    "disagreeing": [
+      {
+        "connection": [
+          "C2",
+          "L1"
+        ],
+        "reference": 1,
+        "built": -1
+      },
+      {
+        "connection": [
+          "C2",
+          "L2"
+        ],
+        "reference": 1,
+        "built": -1
+      },
+      {
+        "connection": [
+          "C3",
+          "L1"
+        ],
+        "reference": 1,
+        "built": -1
+      },
+      {
+        "connection": [
+          "C3",
+          "L2"
+        ],
+        "reference": 1,
+        "built": -1
+      },
+      {
+        "connection": [
+          "Mi10",
+          "Lawf1"
+        ],
+        "reference": -1,
+        "built": 1
+      },
+      {
+        "connection": [
+          "Mi10",
+          "Mi14"
+        ],
+        "reference": -1,
+        "built": 1
+      },
+      {
+        "connection": [
+          "Mi10",
+          "Mi9"
+        ],
+        "reference": -1,
+        "built": 1
+      },
+      {
+        "connection": [
+          "Mi10",
+          "Tm5b"
+        ],
+        "reference": -1,
+        "built": 1
+      },
+      {
+        "connection": [
+          "R8",
+          "Mi1"
+        ],
+        "reference": 1,
+        "built": -1
+      },
+      {
+        "connection": [
+          "R8",
+          "Mi15"
+        ],
+        "reference": 1,
+        "built": -1
+      },
+      {
+        "connection": [
+          "R8",
+          "Mi4"
+        ],
+        "reference": 1,
+        "built": -1
+      },
+      {
+        "connection": [
+          "R8",
+          "Mi9"
+        ],
+        "reference": 1,
+        "built": -1
+      }
+    ]
+  },
+  "central_synapse_counts": {
+    "spearman": 0.7928,
+    "n": 413
+  },
+  "built": "malecns-optic-lobe-r.json",
+  "reference": "fib25-fib19_v2.2.json"
+}
