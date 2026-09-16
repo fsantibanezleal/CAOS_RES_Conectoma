@@ -15,8 +15,8 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-      - name: Install dev lane
-        run: pip install -r requirements-dev.txt
+      - name: Install the offline lane and the dev lane
+        run: pip install -r requirements-precompute.txt -r requirements-dev.txt
       - name: Lint
         run: ruff check .
       - name: Tests
