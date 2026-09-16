@@ -1,3 +1,8 @@
 # OFFLINE lane, the engines this product actually runs. Every entry is documented in docs/frameworks/ and
 # used by a stage under data-pipeline/. Pins are added by the unit that first runs the engine, so this file
 # never advertises a dependency the code does not use.
+
+# U1, connectome construction: the release ships Apache Arrow Feather tables, and the column assignment and
+# filter accumulation are array work.
+pyarrow==25.0.1
+numpy==2.5.3
