@@ -1,0 +1,2 @@
+# Canonical OFFLINE lane. One pinned entry per engine, added by the unit that first runs it.
+-r data-pipeline/requirements.txt

@@ -1,0 +1,3 @@
+# Optional GPU lane for the offline training runs on a CUDA machine. Pins are added by the unit that first
+# needs them, with the driver and runtime matrix recorded in the guide for that unit.
+-r requirements-precompute.txt

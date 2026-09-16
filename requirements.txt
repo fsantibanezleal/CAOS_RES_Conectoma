@@ -1,0 +1,2 @@
+# CORE lane: runtime dependencies of the browser-independent tooling. The browser lane itself is
+# TypeScript and is declared in the frontend manifest, not here.

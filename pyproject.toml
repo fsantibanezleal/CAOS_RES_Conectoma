@@ -1,0 +1,15 @@
+# Repo-local tool configuration ONLY. This product declares NO package of its own.
+# The connectome engine it consumes is flyvis (PyPI, MIT); the product-specific stages are plain scripts
+# under data-pipeline/, invoked by path. See docs/architecture/01_overview.md.
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+exclude = [".venv", ".venv-pipeline", "node_modules", "frontend"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

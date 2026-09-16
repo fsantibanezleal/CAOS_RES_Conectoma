@@ -1,0 +1,105 @@
+# Conectoma
+
+[![CI](https://img.shields.io/github/actions/workflow/status/fsantibanezleal/CAOS_RES_Conectoma/ci.yml?branch=main&label=CI)](https://github.com/fsantibanezleal/CAOS_RES_Conectoma/actions)
+[![License](https://img.shields.io/github/license/fsantibanezleal/CAOS_RES_Conectoma)](LICENSE)
+[![Version](https://img.shields.io/github/v/tag/fsantibanezleal/CAOS_RES_Conectoma?label=version&sort=semver)](https://github.com/fsantibanezleal/CAOS_RES_Conectoma/tags)
+
+**The connectome of a fly, used as the architecture of a computer-vision network.** Conectoma takes the
+wiring diagram of the *Drosophila melanogaster* male central nervous system, freezes it, and asks what a
+network built from measured biology can compute: depth from a moving camera, and figure-ground
+segmentation. Everything the connectome measures stays fixed. Only what it cannot measure is learned.
+
+> Status: **building**. This repository is at version 0.00.000; the units listed in *Build order* below land
+> one at a time, each with its code, tests and documentation in the same commit. Nothing here is a
+> placeholder for work that is not done: what is absent is absent.
+
+## Motivation and problem
+
+Connectomics can now measure every neuron and synapse of a small brain, but a wiring diagram is not a
+function: the diagram says who talks to whom, not what the circuit computes. Lappalainen et al. (Nature,
+2024) showed that for the fly optic lobe, connectivity plus a task is enough to predict single-neuron
+activity, freezing synapse counts and signs and learning only per-cell-type dynamics. That work targeted
+optic flow, which is what fly vision evolved for.
+
+Conectoma asks the next question, and asks it with controls: can the same frozen wiring serve as the
+backbone of a **dense prediction** network for tasks the fly did not evolve to solve in this form, and is
+any measured advantage attributable to **biology** rather than to sparsity or recurrence? The honest answer
+may be no. The product is the rigorous comparison, not a win.
+
+## KPIs, impact and value
+
+- A reusable, evidence-first answer to "is a measured connectome a useful prior for machine vision", with
+  effect sizes against rewired and random-graph controls rather than a single headline number.
+- An interpretability surface no conventional backbone offers: per-cell-type probes that name which
+  biological cell types carry depth and figure-ground information.
+- A public, reproducible bridge between a CC-BY connectome release and standard computer-vision benchmarks.
+
+## Solution overview
+
+The offline repository is the product. It ingests the Janelia MaleCNS v1.0 connectome tables, assigns
+retinotopic coordinates, builds type-level consensus filters, compiles them into a differentiable network,
+trains only the permitted parameters, runs a complete method ladder over a leakage-safe case matrix, and
+exports compact audited artifacts. A companion web workbench replays those artifacts and runs the
+validated lightweight lane in the browser.
+
+## How the problem is modelled
+
+Each neuron is a point neuron with threshold-linear dynamics. For a postsynaptic neuron `i` of cell type
+`t_i`, with voltage `V_i`, membrane time constant `tau`, resting potential `V_rest` and external input
+`e_i` (nonzero only for photoreceptors):
+
+```
+tau_{t_i} dV_i/dt = -V_i + sum_j s_ij + V_rest_{t_i} + e_i
+s_ij = alpha_{t_i t_j} * sigma_{t_i t_j} * N_{t_i t_j}(du, dv) * ReLU(V_j)
+```
+
+`N` is the measured synapse count at hexagonal offset `(du, dv)` between two cell types, and `sigma` is the
+measured sign (excitatory or inhibitory). Both come from the connectome and are **frozen**. Depending on
+the regime, the learned set is a readout head alone, or the per-type `alpha`, `tau` and `V_rest`, or a
+per-edge gain. The equations, their symbols and their sources are documented in `docs/`.
+
+## Data and engines
+
+- Connectome: Janelia **MaleCNS v1.0** (`male-cns:v1.0`), CC-BY. 166,691 neurons, 11,691 cell types.
+- Simulation and training of connectome-constrained networks: **flyvis** (MIT).
+- Vision data with depth, optical flow and segmentation from moving cameras: **TartanAir** (CC BY 4.0),
+  with Spring, Sintel and Hypersim as transfer and control domains.
+- Reference engines across the method ladder, each carrying its own license, recorded per checkpoint in the
+  model registry and shown in the app.
+
+## Build order
+
+`U0` repository base · `U1` MaleCNS to consensus connectome · `U2` frozen regimes and null controls ·
+`U3` frontend base · `U4` data ingestion and leakage-safe splits · `U5` to `U13` the method ladder ·
+`U14` exports and parity gates · `U15` the web workbench · `U16` canonical bake, benchmark and deploy.
+
+## Repository map
+
+| Path | What |
+|---|---|
+| `data-pipeline/` | the offline engine: staged, seeded, typed pipeline (arrives with U1) |
+| `data/` | `raw/` git-ignored source cache, `derived/` committed compact artifacts |
+| `models/` | small exported models; heavy checkpoints stay outside git |
+| `manifests/` | per-case artifact manifests (contract 2) |
+| `app/` | dormant FastAPI module (this product is static replay) |
+| `deploy/` | deployment notes for the chosen target |
+| `docs/` | the wiki: architecture, frameworks, cases, guides |
+| `scripts/` | setup and the CI guards |
+
+## Quick start
+
+```bash
+./scripts/setup.sh          # or scripts/setup.ps1 on Windows PowerShell
+python -m pytest            # repository invariants
+ruff check .                # lint
+```
+
+The data pipeline, its environments and its commands arrive with U1 and are documented in `docs/guides/`
+as they land.
+
+## License and attribution
+
+MIT, see [LICENSE](LICENSE). The MaleCNS connectome is CC-BY and must be cited when this work is reused;
+each dataset and model carries its own terms, listed in the documentation of the unit that uses it.
+
+Developed by Felipe Santibanez-Leal.

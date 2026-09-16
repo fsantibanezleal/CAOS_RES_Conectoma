@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dev lane
+        run: pip install -r requirements-dev.txt
+      - name: Lint
+        run: ruff check .
+      - name: Tests
+        run: pytest
+
+  guards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Base-integrity guards (the regressions this archetype forbids)
+        run: |
+          fail=0
+          if git ls-files | grep -qE '(^|/)\.env(\..+)?$' && ! git ls-files | grep -qx '.env.example'; then
+            echo "::error::a real .env is tracked (only .env.example may be)"; fail=1; fi
+          if git ls-files | grep -qiE '(^|/)\.?venv|\.(dll|so|dylib|pt|pth)$'; then
+            echo "::error::a venv or native/heavy binary is tracked (recreate from requirements; keep models small/LFS)"; fail=1; fi
+          if git ls-files | grep -qiE '\.(parquet|h5|hdf5|nc|mat|npy|feather)$'; then
+            echo "::error::raw/heavy data tracked, commit only compact derived artifacts (data/derived/)"; fail=1; fi
+          if git grep -nF 'D:\_Repos' -- . ':!.github' >/dev/null 2>&1; then
+            echo "::error::leaked local machine path in a tracked file"; fail=1; fi
+          if [ "$fail" -eq 0 ]; then echo "guards: OK"; fi
+          exit $fail
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: No template residue (the example pipeline must not survive instantiation)
+        run: python scripts/check_template_residue.py
+      - name: No em-dash or emoji in product content (content standards)
+        run: python scripts/check_content_standards.py
