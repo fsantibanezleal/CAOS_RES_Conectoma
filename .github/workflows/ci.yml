@@ -15,6 +15,10 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+      - name: Install the CPU build of the pinned torch
+        # the offline lane pins torch without a build tag; the runner has no GPU, so the CPU wheel
+        # satisfies the pin and the network tests run on the CPU
+        run: pip install torch==2.14.0 torchvision==0.29.0 --index-url https://download.pytorch.org/whl/cpu
       - name: Install the offline lane and the dev lane
         run: pip install -r requirements-precompute.txt -r requirements-dev.txt
       - name: Lint

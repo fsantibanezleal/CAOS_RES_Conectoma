@@ -1,3 +1,7 @@
-# Optional GPU lane for the offline training runs on a CUDA machine. Pins are added by the unit that first
-# needs them, with the driver and runtime matrix recorded in the guide for that unit.
+# GPU lane for the offline runs on a CUDA machine: the CUDA 12.6 build of the pinned torch, then the whole
+# offline lane. Verified 2026-09-17 on an RTX 4070 Laptop GPU (8 GB), driver 560.94, Python 3.12.
+# The pins in data-pipeline/requirements.txt carry no build tag, so these CUDA wheels satisfy them.
+--extra-index-url https://download.pytorch.org/whl/cu126
+torch==2.14.0+cu126
+torchvision==0.29.0+cu126
 -r requirements-precompute.txt
