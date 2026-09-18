@@ -55,7 +55,9 @@ runs, in order and stopping at the first failure:
    a deep link answers 200 with the application instead of a 404 page that happens to render it.
 
 The page repeats the contract check at run time: `loadExplorer` validates the manifest and the artifact,
-compares the counts, and computes the SHA-256 of the bytes it received. An artifact that does not match
+compares the counts, and computes the SHA-256 of the bytes it received, with WebCrypto where the page is a
+secure context and with a plain implementation (`src/lib/sha256.ts`, tested against Node's) where it is
+not, such as a page served over plain HTTP before its certificate exists. An artifact that does not match
 is refused with the field that drifted; a digest mismatch is shown in the rail as "NOT verified".
 
 ## 4. The fit gate
@@ -79,6 +81,8 @@ themes and both languages:
 - on each documentation route: the document answers 200, the page mounted with its own heading, it takes
   the full width with one row of tabs, and on Experiments and Benchmark the tables are filled from the
   reports rather than left loading;
+- with WebCrypto removed before the page loads (what a plain-HTTP page gets; localhost is a secure
+  context, so the gate would never see it otherwise), the explorer must still verify its artifact;
 - in the architecture modal: each diagram is the one its tab names (it waits for that diagram, not for any
   diagram), shows only the reader's language, and is drawn in the theme's colours.
 
