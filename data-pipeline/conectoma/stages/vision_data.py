@@ -112,3 +112,24 @@ def fetch_hypersim(root: Path, workers: int = 12) -> dict:
     write_json(base / "fetch-summary.json", {**summary, "report": report})
     return summary
 
+
+
+def fetch_panorama(root: Path, workers: int = 4) -> dict:
+    """The panoramas of case C13's clips (one frame each, image and range), for the pure-rotation renders."""
+    from conectoma.vision import cases, panorama
+
+    config, digest = load_config()
+    registry, _ = cases.load_cases()
+    keys = cases.select("C13", registry["cases"]["C13"], registry, root)
+    base = root / "vision" / "panorama"
+    log = FetchLog(base / "fetch-log.jsonl")
+    started = time.time()
+    try:
+        report = panorama.fetch(config["tartanair"], keys, base, log, workers)
+    finally:
+        log.close()
+    summary = {"config_sha256": digest, "clips": len(keys), "written": report["written"],
+               "skipped": report["skipped"], "bytes": report["bytes"], "failed": len(report["failed"]),
+               "missing": len(report["missing"]), "elapsed_seconds": round(time.time() - started, 1)}
+    write_json(base / "fetch-summary.json", {**summary, "keys": keys, "report": report})
+    return summary

@@ -332,6 +332,14 @@ def cmd_fetch_vision(args: argparse.Namespace) -> int:
               f"{summary['written']} written, {summary['bytes'] / 1e9:.1f} GB; "
               f"failed {summary['failed']}, missing {summary['missing']}")
         return 1 if summary["failed"] else 0
+    if args.source == "panorama":
+        from conectoma.stages.vision_data import fetch_panorama
+
+        summary = fetch_panorama(root, min(args.workers, 4))
+        print(f"panorama: {summary['clips']} panoramas for C13, {summary['written']} written, "
+              f"{summary['skipped']} already present; failed {summary['failed']}, "
+              f"missing {summary['missing']}")
+        return 1 if summary["failed"] or summary["missing"] else 0
     summary = fetch_tartanair(root, args.environments, args.workers)
     print(f"tartanair: {summary['clips']} clips from {summary['pairs']} environment-difficulty pairs, "
           f"{summary['bytes'] / 1e9:.1f} GB; failed {summary['failed']}, missing {summary['missing']}")
@@ -359,6 +367,21 @@ def cmd_build_splits(args: argparse.Namespace) -> int:
     problems = summary["leakage"]["problems"]
     print("leakage: none" if not problems else "LEAKAGE: " + "; ".join(problems))
     return 1 if problems else 0
+
+
+def cmd_build_cases(args: argparse.Namespace) -> int:
+    """Render every case at its six levels (contract 1), and write the committed case summary."""
+    from conectoma.network.engine import engine_root
+    from conectoma.stages.vision_cases import build_cases
+
+    engine = engine_root()
+    summary = build_cases(data_root(args.data_root), engine.parent if engine else None, args.workers,
+                          args.cases or None)
+    print(f"cases: {summary['cases']} cases, {summary['clips']} clips, {summary['renderings']} renderings, "
+          f"{summary['rejected']} rejected, {summary['failed']} failed, "
+          f"{summary['elapsed_seconds'] / 60:.1f} min"
+          + ("" if summary["complete"] else " (partial: no summary)"))
+    return 1 if summary["rejected"] or summary["failed"] else 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -409,7 +432,8 @@ def main(argv: list[str] | None = None) -> int:
     web.set_defaults(func=cmd_export_web)
 
     fetch = sub.add_parser("fetch-vision", help="fetch a vision source's selected members into the data root")
-    fetch.add_argument("--source", default="tartanair", choices=["tartanair", "sintel", "spring", "hypersim"])
+    fetch.add_argument("--source", default="tartanair",
+                       choices=["tartanair", "sintel", "spring", "hypersim", "panorama"])
     fetch.add_argument("--data-root", default=None, help="directory of the local data cache")
     fetch.add_argument("--environments", nargs="*", default=None, help="restrict to these environments")
     fetch.add_argument("--workers", type=int, default=12, help="parallel member requests")
@@ -424,6 +448,12 @@ def main(argv: list[str] | None = None) -> int:
     split = sub.add_parser("build-splits", help="assign clips to splits by geometry family; leakage test")
     split.add_argument("--data-root", default=None, help="directory of the local data cache")
     split.set_defaults(func=cmd_build_splits)
+
+    case = sub.add_parser("build-cases", help="render every case at its six levels; the committed summary")
+    case.add_argument("--data-root", default=None, help="directory of the local data cache")
+    case.add_argument("--cases", nargs="*", default=None, help="only these cases (C01 ... C16)")
+    case.add_argument("--workers", type=int, default=4, help="parallel rendering processes")
+    case.set_defaults(func=cmd_build_cases)
 
     visual = sub.add_parser("build-visual-cns", help="the whole visual system as a neuron-level graph")
     visual.add_argument("--data-root", default=None, help="directory holding the MaleCNS tables")

@@ -63,6 +63,26 @@ def planar_factor(camera: dict) -> np.ndarray:
     return (np.abs(rays[2]) / np.linalg.norm(rays, axis=0)).astype(np.float32)
 
 
+def vertical_fov_deg(camera: dict, fraction: float = 1.0) -> float:
+    """The angle between the rays through the top and bottom of the image's central `fraction`, on its
+    vertical centre line (the cameras are tilt-shifted, so this is read from the rays, not from a focal)."""
+    M = camera["M_cam_from_uv"]
+    top, bottom = M @ np.array([0.0, fraction, 1.0]), M @ np.array([0.0, -fraction, 1.0])
+    cosine = top @ bottom / (np.linalg.norm(top) * np.linalg.norm(bottom))
+    return float(np.degrees(np.arccos(np.clip(cosine, -1.0, 1.0))))
+
+
+def crop_for_vertical_fov(camera: dict, target_deg: float) -> float:
+    """The central crop fraction whose vertical field of view is `target_deg` (bisection on the rays)."""
+    if target_deg >= vertical_fov_deg(camera):
+        raise ValueError(f"{target_deg} degrees is not narrower than the camera's field of view")
+    low, high = 0.0, 1.0
+    for _ in range(60):
+        mid = (low + high) / 2
+        low, high = (mid, high) if vertical_fov_deg(camera, mid) < target_deg else (low, mid)
+    return (low + high) / 2
+
+
 def members(scene: str, camera: str, frames: list[int]) -> dict[str, list[str]]:
     image = f"{scene}/images/scene_{camera}"
     names = []

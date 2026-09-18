@@ -102,14 +102,16 @@ def pink_texture(size: int, seed: int) -> np.ndarray:
 
 
 def textured_planes(K: np.ndarray, width: int, height: int, depths: list[float], speed_m_s: float,
-                    frames: int, interval_s: float, contrast: float, seed: int,
-                    texture_period_m: float = 1.0) -> dict:
+                    frames: int, interval_s: float, contrast: float, seed: int) -> dict:
     """Fronto-parallel planes, the camera translating sideways at `speed_m_s`.
 
-    Plane 0 (the farthest) fills the view; each nearer plane is a vertical band, nearer bands narrower and
-    drawn over farther ones. Texture is fixed to each plane in metres (period `texture_period_m`), mean
-    luminance 0.5, RMS contrast `contrast`. Returns exact luminance, depth, flow and the figure mask (any
-    plane but the farthest).
+    Plane 0 (the farthest) fills the view; each nearer plane is a set of vertical bands drawn over the
+    farther ones, repeating with the view's width at its depth (so bands stay in view however fast they
+    pass), the first near plane's bands 0.35 of that width wide and each nearer plane's narrower in turn.
+    Each plane's texture repeats once per metre of depth (its period is `z` metres at depth `z`), so every
+    plane shows the same angular texture scale and texture size is no cue to depth; mean luminance 0.5, RMS
+    contrast `contrast`. Returns exact luminance, depth, flow and the figure mask (any plane but the
+    farthest).
     """
     f, cx, cy = K[0, 0], K[0, 2], K[1, 2]
     order = np.argsort(depths)[::-1]              # far to near
@@ -128,14 +130,13 @@ def textured_planes(K: np.ndarray, width: int, height: int, depths: list[float],
             if rank == 0:
                 inside = np.ones_like(u, dtype=bool)
             else:
-                # a band fixed in the world ahead of the start: 0.7 of the view's width at its depth for the
-                # first near plane, halved again for each nearer one
-                half = 0.35 * z / f * width / (rank + 1)
-                inside = np.abs(x_world - 0.0) < half
+                period = z / f * width            # the view's width at this depth, in metres
+                band = 0.35 * period / rank
+                inside = np.mod(x_world + band / 2, period) < band
             tex = textures[index]
             n = tex.shape[0]
-            ti = (np.floor(y_world / texture_period_m * n) % n).astype(np.int64)
-            tj = (np.floor(x_world / texture_period_m * n) % n).astype(np.int64)
+            ti = (np.floor(y_world / z * n) % n).astype(np.int64)
+            tj = (np.floor(x_world / z * n) % n).astype(np.int64)
             value = np.clip(0.5 + contrast * 0.5 * tex[ti, tj], 0.0, 1.0)
             frame_lum = np.where(inside, value, frame_lum)
             frame_z = np.where(inside, z, frame_z)
