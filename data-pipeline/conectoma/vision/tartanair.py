@@ -13,20 +13,13 @@ where it stopped.
 from __future__ import annotations
 
 import csv
-import json
-import os
-import queue
 import re
-import threading
-import zipfile
-from collections import defaultdict, deque
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from collections import defaultdict
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+from conectoma.vision.clipstore import ClipSpec, FetchLog, fetch_clips
 from conectoma.vision.remote_zip import RemoteZip
-
-CLIPS_IN_FLIGHT = 4  # about 50 MB per clip in memory while its members arrive
 
 FRAME = re.compile(r"^(?P<env>[^/]+)/Data_(?P<difficulty>easy|hard)/(?P<trajectory>P\d+)/image_lcam_front/"
                    r"(?P<index>\d{6})_lcam_front\.png$")
@@ -108,129 +101,20 @@ def clip_members(clip: Clip, camera: str) -> dict[str, list[str]]:
     }
 
 
-class FetchLog:
-    """Append-only record of the clips written; a rerun reads it and skips them.
-
-    One line per clip, carrying the CRC32 each of its members was verified against. The file stays open and
-    is flushed per clip, from one thread (the writer) under a lock.
-    """
-
-    def __init__(self, path: Path):
-        self.path = path
-        self.done: set[str] = set()
-        if path.exists():
-            with open(path, encoding="utf-8") as handle:
-                for line in handle:
-                    line = line.strip()
-                    if not line:
-                        continue
-                    try:
-                        self.done.add(json.loads(line)["clip"])
-                    except (json.JSONDecodeError, KeyError):
-                        continue  # a line cut by a crash: that clip is simply fetched again
-        path.parent.mkdir(parents=True, exist_ok=True)
-        self._handle = open(path, "a", encoding="utf-8")
-        self._lock = threading.Lock()
-
-    def record(self, clip: str, members: dict[str, int], size: int) -> None:
-        line = json.dumps({"clip": clip, "bytes": size, "crc32": {k: f"{v:08x}" for k, v in members.items()}})
-        with self._lock:
-            self._handle.write(line + "\n")
-            self._handle.flush()
-            self.done.add(clip)
-
-    def close(self) -> None:
-        with self._lock:
-            self._handle.close()
-
-
 def clip_path(root: Path, clip: Clip) -> Path:
     return root / clip.environment / clip.difficulty / clip.trajectory / f"clip_{clip.start:06d}.zip"
 
 
-def write_clip(path: Path, members: dict[str, bytes]) -> int:
-    """One stored (uncompressed) ZIP per clip, members byte for byte as fetched, written atomically.
-
-    E: sustains about 18 MB/s written as one file and about 5 MB/s as many small ones (measured: 200 files
-    of 700 kB took 29.5 s, the same bytes as one archive 7.8 s), so a clip is one file, not 128.
-    """
-    path.parent.mkdir(parents=True, exist_ok=True)
-    partial = path.with_name(path.name + ".partial")
-    with zipfile.ZipFile(partial, "w", zipfile.ZIP_STORED) as archive:
-        for name in sorted(members):
-            archive.writestr(name, members[name])
-    os.replace(partial, path)
-    return sum(len(v) for v in members.values())
-
-
 def fetch_environment(config: dict, environment: str, difficulty: str, root: Path, log: FetchLog,
                       workers: int = 12) -> dict:
-    """Plan and fetch the clips of one environment and difficulty. Returns what was planned and fetched.
-
-    Members are read in parallel into memory and checked against their CRC32; a clip is handed to a writer
-    thread only when every member arrived, so the next clip downloads while this one is written. A clip
-    with a failed or missing member is not written and not logged, so a rerun tries it again.
-    """
+    """Plan and fetch the clips of one environment and difficulty. Returns what was planned and fetched."""
     endpoint, camera = config["endpoint"], config["camera"]
     archives = {m: RemoteZip(archive_url(endpoint, environment, difficulty, m, camera))
                 for m in config["modalities"]}
     clips = plan_clips(archives["image"].names(), config["clip_length"], config["clip_centres"])
-    report = {"environment": environment, "difficulty": difficulty, "clips": [asdict(c) for c in clips],
-              "missing": [], "failed": {}, "bytes": 0, "skipped": 0}
-    pending: queue.Queue = queue.Queue(maxsize=3)
-    written: list[int] = []
-
-    def writer() -> None:
-        while (item := pending.get()) is not None:
-            clip, data, crcs = item
-            size = write_clip(clip_path(root, clip), data)
-            log.record(clip.key, crcs, size)
-            written.append(size)
-
-    def submit(pool: ThreadPoolExecutor, clip: Clip) -> tuple[Clip, dict, list[str]]:
-        jobs, missing = {}, []
-        for modality, names in clip_members(clip, camera).items():
-            archive = archives[modality]
-            for name in names:
-                if name in archive.members:
-                    jobs[pool.submit(archive.read, name)] = (name, archive.members[name].crc)
-                else:
-                    missing.append(name)
-        return clip, jobs, missing
-
-    def finish(clip: Clip, jobs: dict, missing: list[str]) -> None:
-        data, crcs, failed = {}, {}, {}
-        for future in as_completed(jobs):
-            name, crc = jobs[future]
-            try:
-                data[name] = future.result()
-                crcs[name] = crc
-            except Exception as error:  # recorded; the clip is retried on the next run
-                failed[name] = str(error)
-        report["missing"].extend(missing)
-        report["failed"].update(failed)
-        if not missing and not failed:
-            pending.put((clip, data, crcs))
-
-    thread = threading.Thread(target=writer, daemon=True)
-    thread.start()
-    try:
-        with ThreadPoolExecutor(max_workers=workers) as pool:
-            # several clips in flight, so the pool never drains while one clip waits for its slowest member
-            window: deque = deque()
-            for clip in clips:
-                if clip.key in log.done:
-                    report["skipped"] += 1
-                    continue
-                window.append(submit(pool, clip))
-                if len(window) >= CLIPS_IN_FLIGHT:
-                    finish(*window.popleft())
-            while window:
-                finish(*window.popleft())
-    finally:
-        pending.put(None)
-        thread.join()
-    report["bytes"] = sum(written)
+    specs = [ClipSpec(clip.key, clip_path(root, clip), clip_members(clip, camera)) for clip in clips]
+    report = fetch_clips(archives, specs, log, workers)
+    report.update({"environment": environment, "difficulty": difficulty, "clips": [asdict(c) for c in clips]})
     return report
 
 

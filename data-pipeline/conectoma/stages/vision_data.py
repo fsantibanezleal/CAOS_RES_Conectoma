@@ -14,7 +14,8 @@ from pathlib import Path
 import yaml
 
 from conectoma.core.jsonio import write_json
-from conectoma.vision import tartanair
+from conectoma.vision import hypersim, spring, tartanair
+from conectoma.vision.clipstore import FetchLog
 
 CONFIG_DIR = Path(__file__).resolve().parents[2] / "config"
 VISION_CONFIG = CONFIG_DIR / "vision.yaml"
@@ -34,7 +35,7 @@ def fetch_tartanair(root: Path, environments: list[str] | None = None, workers: 
     if environments:
         pairs = [p for p in pairs if p[0] in set(environments)]
     base = root / "vision" / "tartanair"
-    log = tartanair.FetchLog(base / "fetch-log.jsonl")
+    log = FetchLog(base / "fetch-log.jsonl")
     started = time.time()
     summary = {"config_sha256": digest, "environments": len({e for e, _ in pairs}), "pairs": len(pairs),
                "clips": 0, "bytes": 0, "failed": 0, "missing": 0, "reports": []}
@@ -74,5 +75,40 @@ def fetch_sintel() -> dict:
                "rendered_sequences": len(sequences), "engine": flyvis.__version__,
                "elapsed_seconds": round(time.time() - started, 1)}
     write_json(Path(flyvis.renderings_dir) / "conectoma-sintel-summary.json", summary)
+    return summary
+
+
+def fetch_spring(root: Path, workers: int = 12) -> dict:
+    """Spring's selected clips (test-only transfer domain) into the data root."""
+    config, digest = load_config()
+    base = root / "vision" / "spring"
+    log = FetchLog(base / "fetch-log.jsonl")
+    started = time.time()
+    try:
+        report = spring.fetch(config["spring"], base / "data", log, workers)
+    finally:
+        log.close()
+    summary = {"config_sha256": digest, "clips": len(report["clips"]), "written": report["written"],
+               "skipped": report["skipped"], "bytes": report["bytes"], "failed": len(report["failed"]),
+               "missing": len(report["missing"]), "elapsed_seconds": round(time.time() - started, 1)}
+    write_json(base / "fetch-summary.json", {**summary, "report": report})
+    return summary
+
+
+def fetch_hypersim(root: Path, workers: int = 12) -> dict:
+    """Hypersim's official test images (test-only indoor domain) into the data root."""
+    config, digest = load_config()
+    base = root / "vision" / "hypersim"
+    log = FetchLog(base / "fetch-log.jsonl")
+    started = time.time()
+    try:
+        report = hypersim.fetch(config["hypersim"], base / "data", log, workers)
+    finally:
+        log.close()
+    summary = {"config_sha256": digest, "scenes": len(report["clips"]),
+               "images": sum(len(c["frames"]) for c in report["clips"]), "written": report["written"],
+               "skipped": report["skipped"], "bytes": report["bytes"], "failed": len(report["failed"]),
+               "missing": len(report["missing"]), "elapsed_seconds": round(time.time() - started, 1)}
+    write_json(base / "fetch-summary.json", {**summary, "report": report})
     return summary
 

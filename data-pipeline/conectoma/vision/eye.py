@@ -14,6 +14,13 @@ engine's own rendered Sintel):
 
 Flow is in the engine's convention: pixels divided by the source image height, with y pointing up.
 
+One geometry for every planar source, the engine's own on Sintel: a frame is resized to 436 rows (its aspect
+kept) and the lattice sees its central 391 x 391 pixels, so the lattice always covers about nine tenths of the
+frame's height, as it did in the published model's training data. What that means in visual angle depends on
+each camera and is recorded per source. Luminance and flow are resized bilinearly (with antialiasing; flow is
+already per image height, so resizing does not change its values); depth and segment labels are resized by
+nearest neighbour, so no depth or label is invented at an edge.
+
 Written with numpy on the boxes at the column centres rather than a convolution over the whole frame: the
 result is the same, it runs without a GPU, and targets the engine never rendered (segment boundaries, the
 share of a box that is figure, the share whose flow is valid) come from the same boxes.
@@ -28,6 +35,7 @@ import numpy as np
 EXTENT = 15
 KERNEL = 13
 CROP_FRACTION = 0.7
+ROWS = 436  # the engine's Sintel frames: the lattice window covers the central 391 of these rows
 
 
 @lru_cache(maxsize=8)
@@ -115,3 +123,27 @@ def box_share(mask: np.ndarray, extent: int = EXTENT, kernel: int = KERNEL) -> n
 def engine_flow(flow_px: np.ndarray, image_height: int) -> np.ndarray:
     """Pixel flow (..., 2, H, W) with y down, in the engine's units: per image height, y up."""
     return flow_px / image_height * np.array([1.0, -1.0], dtype=np.float32)[:, None, None]
+
+
+def resize_rows(frames: np.ndarray, rows: int = ROWS, nearest: bool = False) -> np.ndarray:
+    """Frames (..., H, W) resized to `rows` rows with their aspect kept.
+
+    Area interpolation (pixel-area averaging, the antialiased way to shrink) for continuous values, exact
+    nearest neighbour for depth and labels. OpenCV, frame by frame: the engine's own torchvision resize runs
+    only where BoxEye itself would resize, and for these sources it was four times slower on the CPU.
+    """
+    import cv2
+
+    h, w = frames.shape[-2:]
+    if h == rows:
+        return frames
+    cols = int(round(w * rows / h))
+    lead = frames.shape[:-2]
+    flat = np.ascontiguousarray(frames).reshape(-1, h, w)
+    interpolation = cv2.INTER_NEAREST_EXACT if nearest else (cv2.INTER_AREA if rows < h else cv2.INTER_LINEAR)
+    if nearest or flat.dtype == np.float32:
+        source = flat
+    else:
+        source = flat.astype(np.float32)
+    out = np.stack([cv2.resize(frame, (cols, rows), interpolation=interpolation) for frame in source])
+    return out.reshape(*lead, rows, cols)

@@ -24,3 +24,8 @@ datamate @ git+https://github.com/flyvis/datamate@3b9792c3c90fb29d741f8185c7aca9
 requests==2.34.2
 PyYAML==6.0.3
 opencv-python-headless==5.0.0.93
+# Spring's disparity and Hypersim's geometry are HDF5 files.
+h5py==3.16.0
+# The fly's own compound eye (cases C10 to C12): NeuroMechFly in MuJoCo, Apache-2.0. Its ommatidia are placed
+# on the engine's lattice by a measured symmetry (data/derived/vision/flygym-eye.json).
+flygym==2.1.0

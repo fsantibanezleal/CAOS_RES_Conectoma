@@ -102,10 +102,14 @@ class RemoteZip:
     """The members of a remote ZIP archive, listed from its central directory."""
 
     def __init__(self, url: str):
-        self.url = url
-        head = session().head(url, timeout=TIMEOUT, allow_redirects=True)
-        head.raise_for_status()
-        self.size = int(head.headers["Content-Length"])
+        # The size comes from a one-byte ranged GET, not a HEAD: some hosts (DaRUS) redirect to a presigned
+        # URL whose signature covers GET only, and answer HEAD with 403. The URL after redirects is kept, so
+        # every member read goes straight to the storage and skips the redirect.
+        probe = session().get(url, headers={"Range": "bytes=0-0"}, timeout=TIMEOUT, allow_redirects=True)
+        if probe.status_code != 206 or "Content-Range" not in probe.headers:
+            raise OSError(f"{url}: does not answer range requests (status {probe.status_code})")
+        self.url = probe.url
+        self.size = int(probe.headers["Content-Range"].rsplit("/", 1)[1])
         # a large read buffer turns the central directory into a handful of range requests
         with zipfile.ZipFile(io.BufferedReader(_HttpFile(url, self.size), buffer_size=1 << 20)) as archive:
             self.members = {

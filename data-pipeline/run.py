@@ -317,6 +317,21 @@ def cmd_fetch_vision(args: argparse.Namespace) -> int:
         print(f"sintel: {summary['rendered_sequences']} rendered sequences at {summary['rendered_dir']}")
         return 0
     root = data_root(args.data_root)
+    if args.source == "spring":
+        from conectoma.stages.vision_data import fetch_spring
+
+        summary = fetch_spring(root, args.workers)
+        print(f"spring: {summary['clips']} clips planned, {summary['written']} written, "
+              f"{summary['bytes'] / 1e9:.1f} GB; failed {summary['failed']}, missing {summary['missing']}")
+        return 1 if summary["failed"] else 0
+    if args.source == "hypersim":
+        from conectoma.stages.vision_data import fetch_hypersim
+
+        summary = fetch_hypersim(root, args.workers)
+        print(f"hypersim: {summary['images']} images in {summary['scenes']} scenes, "
+              f"{summary['written']} written, {summary['bytes'] / 1e9:.1f} GB; "
+              f"failed {summary['failed']}, missing {summary['missing']}")
+        return 1 if summary["failed"] else 0
     summary = fetch_tartanair(root, args.environments, args.workers)
     print(f"tartanair: {summary['clips']} clips from {summary['pairs']} environment-difficulty pairs, "
           f"{summary['bytes'] / 1e9:.1f} GB; failed {summary['failed']}, missing {summary['missing']}")
@@ -394,7 +409,7 @@ def main(argv: list[str] | None = None) -> int:
     web.set_defaults(func=cmd_export_web)
 
     fetch = sub.add_parser("fetch-vision", help="fetch a vision source's selected members into the data root")
-    fetch.add_argument("--source", default="tartanair", choices=["tartanair", "sintel"])
+    fetch.add_argument("--source", default="tartanair", choices=["tartanair", "sintel", "spring", "hypersim"])
     fetch.add_argument("--data-root", default=None, help="directory of the local data cache")
     fetch.add_argument("--environments", nargs="*", default=None, help="restrict to these environments")
     fetch.add_argument("--workers", type=int, default=12, help="parallel member requests")
