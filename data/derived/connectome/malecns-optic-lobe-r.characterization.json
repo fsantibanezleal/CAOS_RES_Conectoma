@@ -1,0 +1,1472 @@
+{
+ "connectome": "malecns-optic-lobe-r.json",
+ "digest": "f39676603faa4885e17e5833ef1a1474e5cf539f9e3db950baf666ef96143448",
+ "device": "NVIDIA GeForce RTX 4070 Laptop GPU",
+ "torch": "2.14.0+cu126",
+ "engine": "1.2.0",
+ "stimulus": {
+  "kind": "moving edges",
+  "dt": 0.005,
+  "speeds": [
+   2.4,
+   4.8,
+   9.7,
+   13.0,
+   19.0,
+   25.0
+  ],
+  "angles": [
+   0,
+   30,
+   60,
+   90,
+   120,
+   150,
+   180,
+   210,
+   240,
+   270,
+   300,
+   330
+  ],
+  "intensities": [
+   0,
+   1
+  ],
+  "t_pre": 1.0,
+  "t_post": 1.0
+ },
+ "frozen": {
+  "default": {
+   "parameters": {
+    "parameters": {
+     "nodes_bias": {
+      "count": 253,
+      "trainable": false
+     },
+     "nodes_time_const": {
+      "count": 253,
+      "trainable": false
+     },
+     "edges_sign": {
+      "count": 7903,
+      "trainable": false
+     },
+     "edges_syn_count": {
+      "count": 2922900,
+      "trainable": false
+     },
+     "edges_syn_strength": {
+      "count": 7903,
+      "trainable": false
+     }
+    },
+    "trainable": 0,
+    "frozen": 2939212
+   },
+   "transfer": null,
+   "compile": {
+    "rules": {
+     "target_centric": true,
+     "population_broadcast": true
+    },
+    "nodes": 40051,
+    "edges": 2922900,
+    "connections_in_spec": 7907,
+    "connections_unrealised": [
+     [
+      "Li25",
+      "Li31"
+     ],
+     [
+      "MeLo2",
+      "MeVPLp2"
+     ],
+     [
+      "MeLo2",
+      "Pm13"
+     ],
+     [
+      "Mi16",
+      "Pm13"
+     ]
+    ]
+   },
+   "stability": {
+    "finite": true,
+    "min": -1.6799,
+    "max": 3.6389,
+    "mean_abs": 0.4895,
+    "drift_last_half_second": 1e-06
+   },
+   "simulation": {
+    "batch_size": 4,
+    "dt": 0.005,
+    "simulated_seconds": 2.0,
+    "wall_seconds": 0.918,
+    "simulated_seconds_per_wall_second_per_sample": 8.72
+   },
+   "tuning": {
+    "T4a": {
+     "dsi": [
+      0.0001
+     ],
+     "preferred_direction_degrees": [
+      181.2
+     ],
+     "distance_to_known_degrees": [
+      1.2
+     ]
+    },
+    "T4b": {
+     "dsi": [
+      0.0001
+     ],
+     "preferred_direction_degrees": [
+      355.4
+     ],
+     "distance_to_known_degrees": [
+      4.6
+     ]
+    },
+    "T4c": {
+     "dsi": [
+      0.0001
+     ],
+     "preferred_direction_degrees": [
+      116.3
+     ],
+     "distance_to_known_degrees": [
+      26.3
+     ]
+    },
+    "T4d": {
+     "dsi": [
+      0.0002
+     ],
+     "preferred_direction_degrees": [
+      310.1
+     ],
+     "distance_to_known_degrees": [
+      40.1
+     ]
+    },
+    "T5a": {
+     "dsi": [
+      0.0
+     ],
+     "preferred_direction_degrees": [
+      143.5
+     ],
+     "distance_to_known_degrees": [
+      36.5
+     ]
+    },
+    "T5b": {
+     "dsi": [
+      0.0
+     ],
+     "preferred_direction_degrees": [
+      148.6
+     ],
+     "distance_to_known_degrees": [
+      148.6
+     ]
+    },
+    "T5c": {
+     "dsi": [
+      0.0
+     ],
+     "preferred_direction_degrees": [
+      145.9
+     ],
+     "distance_to_known_degrees": [
+      55.9
+     ]
+    },
+    "T5d": {
+     "dsi": [
+      0.0
+     ],
+     "preferred_direction_degrees": [
+      162.3
+     ],
+     "distance_to_known_degrees": [
+      107.7
+     ]
+    }
+   },
+   "tuning_summary": {
+    "T4a": {
+     "networks": 1,
+     "median_dsi": 0.0001,
+     "median_distance_to_known_degrees": 1.2,
+     "share_within_45_degrees": 1.0
+    },
+    "T4b": {
+     "networks": 1,
+     "median_dsi": 0.0001,
+     "median_distance_to_known_degrees": 4.6,
+     "share_within_45_degrees": 1.0
+    },
+    "T4c": {
+     "networks": 1,
+     "median_dsi": 0.0001,
+     "median_distance_to_known_degrees": 26.3,
+     "share_within_45_degrees": 1.0
+    },
+    "T4d": {
+     "networks": 1,
+     "median_dsi": 0.0002,
+     "median_distance_to_known_degrees": 40.1,
+     "share_within_45_degrees": 1.0
+    },
+    "T5a": {
+     "networks": 1,
+     "median_dsi": 0.0,
+     "median_distance_to_known_degrees": 36.5,
+     "share_within_45_degrees": 1.0
+    },
+    "T5b": {
+     "networks": 1,
+     "median_dsi": 0.0,
+     "median_distance_to_known_degrees": 148.6,
+     "share_within_45_degrees": 0.0
+    },
+    "T5c": {
+     "networks": 1,
+     "median_dsi": 0.0,
+     "median_distance_to_known_degrees": 55.9,
+     "share_within_45_degrees": 0.0
+    },
+    "T5d": {
+     "networks": 1,
+     "median_dsi": 0.0,
+     "median_distance_to_known_degrees": 107.7,
+     "share_within_45_degrees": 0.0
+    }
+   },
+   "motion_activity": {
+    "T4a": {
+     "resting_voltage": 0.4287,
+     "peak_voltage": 0.4296,
+     "largest_change_from_rest": 0.0008,
+     "share_of_stimuli_driving_above_zero": 1.0
+    },
+    "T4b": {
+     "resting_voltage": 0.3659,
+     "peak_voltage": 0.367,
+     "largest_change_from_rest": 0.001,
+     "share_of_stimuli_driving_above_zero": 1.0
+    },
+    "T4c": {
+     "resting_voltage": 0.4398,
+     "peak_voltage": 0.4406,
+     "largest_change_from_rest": 0.0008,
+     "share_of_stimuli_driving_above_zero": 1.0
+    },
+    "T4d": {
+     "resting_voltage": 0.4309,
+     "peak_voltage": 0.4316,
+     "largest_change_from_rest": 0.0007,
+     "share_of_stimuli_driving_above_zero": 1.0
+    },
+    "T5a": {
+     "resting_voltage": 0.4684,
+     "peak_voltage": 0.4685,
+     "largest_change_from_rest": 0.0001,
+     "share_of_stimuli_driving_above_zero": 1.0
+    },
+    "T5b": {
+     "resting_voltage": 0.5163,
+     "peak_voltage": 0.5163,
+     "largest_change_from_rest": 0.0001,
+     "share_of_stimuli_driving_above_zero": 1.0
+    },
+    "T5c": {
+     "resting_voltage": 0.5858,
+     "peak_voltage": 0.5859,
+     "largest_change_from_rest": 0.0,
+     "share_of_stimuli_driving_above_zero": 1.0
+    },
+    "T5d": {
+     "resting_voltage": 0.6119,
+     "peak_voltage": 0.6119,
+     "largest_change_from_rest": 0.0,
+     "share_of_stimuli_driving_above_zero": 1.0
+    }
+   }
+  },
+  "transfer": {
+   "parameters": {
+    "parameters": {
+     "nodes_bias": {
+      "count": 253,
+      "trainable": false
+     },
+     "nodes_time_const": {
+      "count": 253,
+      "trainable": false
+     },
+     "edges_sign": {
+      "count": 7903,
+      "trainable": false
+     },
+     "edges_syn_count": {
+      "count": 2922900,
+      "trainable": false
+     },
+     "edges_syn_strength": {
+      "count": 7903,
+      "trainable": false
+     }
+    },
+    "trainable": 0,
+    "frozen": 2939212
+   },
+   "transfer": {
+    "model": "flow/0000/000",
+    "bias": {
+     "transferred": 53,
+     "of": 253
+    },
+    "time_const": {
+     "transferred": 53,
+     "of": 253
+    },
+    "syn_strength": {
+     "transferred": 388,
+     "of": 7903
+    }
+   },
+   "compile": {
+    "rules": {
+     "target_centric": true,
+     "population_broadcast": true
+    },
+    "nodes": 40051,
+    "edges": 2922900,
+    "connections_in_spec": 7907,
+    "connections_unrealised": [
+     [
+      "Li25",
+      "Li31"
+     ],
+     [
+      "MeLo2",
+      "MeVPLp2"
+     ],
+     [
+      "MeLo2",
+      "Pm13"
+     ],
+     [
+      "Mi16",
+      "Pm13"
+     ]
+    ]
+   },
+   "stability": {
+    "finite": true,
+    "min": -9.2454,
+    "max": 17.665,
+    "mean_abs": 0.9357,
+    "drift_last_half_second": 0.000556
+   },
+   "simulation": {
+    "batch_size": 4,
+    "dt": 0.005,
+    "simulated_seconds": 2.0,
+    "wall_seconds": 0.922,
+    "simulated_seconds_per_wall_second_per_sample": 8.68
+   },
+   "tuning": {
+    "T4a": {
+     "dsi": [
+      0.0
+     ],
+     "preferred_direction_degrees": [
+      0.0
+     ],
+     "distance_to_known_degrees": [
+      180.0
+     ]
+    },
+    "T4b": {
+     "dsi": [
+      0.0
+     ],
+     "preferred_direction_degrees": [
+      0.0
+     ],
+     "distance_to_known_degrees": [
+      0.0
+     ]
+    },
+    "T4c": {
+     "dsi": [
+      0.0
+     ],
+     "preferred_direction_degrees": [
+      0.0
+     ],
+     "distance_to_known_degrees": [
+      90.0
+     ]
+    },
+    "T4d": {
+     "dsi": [
+      0.0
+     ],
+     "preferred_direction_degrees": [
+      0.0
+     ],
+     "distance_to_known_degrees": [
+      90.0
+     ]
+    },
+    "T5a": {
+     "dsi": [
+      0.0054
+     ],
+     "preferred_direction_degrees": [
+      155.7
+     ],
+     "distance_to_known_degrees": [
+      24.3
+     ]
+    },
+    "T5b": {
+     "dsi": [
+      0.0022
+     ],
+     "preferred_direction_degrees": [
+      84.8
+     ],
+     "distance_to_known_degrees": [
+      84.8
+     ]
+    },
+    "T5c": {
+     "dsi": [
+      0.0121
+     ],
+     "preferred_direction_degrees": [
+      130.2
+     ],
+     "distance_to_known_degrees": [
+      40.2
+     ]
+    },
+    "T5d": {
+     "dsi": [
+      0.0081
+     ],
+     "preferred_direction_degrees": [
+      298.3
+     ],
+     "distance_to_known_degrees": [
+      28.3
+     ]
+    }
+   },
+   "tuning_summary": {
+    "T4a": {
+     "networks": 1,
+     "median_dsi": 0.0,
+     "median_distance_to_known_degrees": 180.0,
+     "share_within_45_degrees": 0.0
+    },
+    "T4b": {
+     "networks": 1,
+     "median_dsi": 0.0,
+     "median_distance_to_known_degrees": 0.0,
+     "share_within_45_degrees": 1.0
+    },
+    "T4c": {
+     "networks": 1,
+     "median_dsi": 0.0,
+     "median_distance_to_known_degrees": 90.0,
+     "share_within_45_degrees": 0.0
+    },
+    "T4d": {
+     "networks": 1,
+     "median_dsi": 0.0,
+     "median_distance_to_known_degrees": 90.0,
+     "share_within_45_degrees": 0.0
+    },
+    "T5a": {
+     "networks": 1,
+     "median_dsi": 0.0054,
+     "median_distance_to_known_degrees": 24.3,
+     "share_within_45_degrees": 1.0
+    },
+    "T5b": {
+     "networks": 1,
+     "median_dsi": 0.0022,
+     "median_distance_to_known_degrees": 84.8,
+     "share_within_45_degrees": 0.0
+    },
+    "T5c": {
+     "networks": 1,
+     "median_dsi": 0.0121,
+     "median_distance_to_known_degrees": 40.2,
+     "share_within_45_degrees": 1.0
+    },
+    "T5d": {
+     "networks": 1,
+     "median_dsi": 0.0081,
+     "median_distance_to_known_degrees": 28.3,
+     "share_within_45_degrees": 1.0
+    }
+   },
+   "motion_activity": {
+    "T4a": {
+     "resting_voltage": -0.7658,
+     "peak_voltage": -0.5944,
+     "largest_change_from_rest": 0.1715,
+     "share_of_stimuli_driving_above_zero": 0.0
+    },
+    "T4b": {
+     "resting_voltage": -0.3577,
+     "peak_voltage": -0.2643,
+     "largest_change_from_rest": 0.0934,
+     "share_of_stimuli_driving_above_zero": 0.0
+    },
+    "T4c": {
+     "resting_voltage": -0.2834,
+     "peak_voltage": -0.1138,
+     "largest_change_from_rest": 0.1696,
+     "share_of_stimuli_driving_above_zero": 0.0
+    },
+    "T4d": {
+     "resting_voltage": -0.5287,
+     "peak_voltage": -0.3902,
+     "largest_change_from_rest": 0.1403,
+     "share_of_stimuli_driving_above_zero": 0.0
+    },
+    "T5a": {
+     "resting_voltage": 2.8132,
+     "peak_voltage": 2.9983,
+     "largest_change_from_rest": 0.185,
+     "share_of_stimuli_driving_above_zero": 1.0
+    },
+    "T5b": {
+     "resting_voltage": 2.5296,
+     "peak_voltage": 2.699,
+     "largest_change_from_rest": 0.1695,
+     "share_of_stimuli_driving_above_zero": 1.0
+    },
+    "T5c": {
+     "resting_voltage": 2.8865,
+     "peak_voltage": 3.0599,
+     "largest_change_from_rest": 0.1734,
+     "share_of_stimuli_driving_above_zero": 1.0
+    },
+    "T5d": {
+     "resting_voltage": 9.0899,
+     "peak_voltage": 9.5549,
+     "largest_change_from_rest": 0.465,
+     "share_of_stimuli_driving_above_zero": 1.0
+    }
+   }
+  }
+ },
+ "training_step": {
+  "R1": {
+   "frames": 19,
+   "batch_size": 4,
+   "dt": 0.02,
+   "seconds_per_step": 0.204,
+   "peak_memory_gb": 2.59,
+   "trainable": 8409
+  },
+  "R2": {
+   "frames": 19,
+   "batch_size": 4,
+   "dt": 0.02,
+   "seconds_per_step": 0.21,
+   "peak_memory_gb": 2.6,
+   "trainable": 3003002
+  },
+  "published_R1": {
+   "frames": 19,
+   "batch_size": 4,
+   "dt": 0.02,
+   "seconds_per_step": 0.097,
+   "peak_memory_gb": 1.84,
+   "trainable": 734
+  }
+ },
+ "controls": {
+  "N1": {
+   "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "stability": [
+    {
+     "finite": true,
+     "min": -9.3767,
+     "max": 14.6478,
+     "mean_abs": 1.0776,
+     "drift_last_half_second": 0.002254
+    },
+    {
+     "finite": true,
+     "min": -3.0888,
+     "max": 7.5387,
+     "mean_abs": 0.6597,
+     "drift_last_half_second": 0.005347
+    },
+    {
+     "finite": true,
+     "min": -3.5186,
+     "max": 10.1444,
+     "mean_abs": 0.7362,
+     "drift_last_half_second": 0.001376
+    },
+    {
+     "finite": true,
+     "min": -4.3443,
+     "max": 10.1398,
+     "mean_abs": 0.6698,
+     "drift_last_half_second": 0.001383
+    },
+    {
+     "finite": true,
+     "min": -1.7766,
+     "max": 5.8393,
+     "mean_abs": 0.5578,
+     "drift_last_half_second": 0.003101
+    }
+   ],
+   "tuning": {
+    "T4a": {
+     "dsi": [
+      0.0,
+      0.0013,
+      0.0004,
+      0.0,
+      0.0002
+     ],
+     "preferred_direction_degrees": [
+      0.0,
+      119.3,
+      327.3,
+      0.0,
+      135.1
+     ],
+     "distance_to_known_degrees": [
+      180.0,
+      60.7,
+      147.3,
+      180.0,
+      44.9
+     ]
+    },
+    "T4b": {
+     "dsi": [
+      0.0,
+      0.0,
+      0.0002,
+      0.0003,
+      0.0008
+     ],
+     "preferred_direction_degrees": [
+      4.5,
+      163.5,
+      297.3,
+      116.0,
+      271.5
+     ],
+     "distance_to_known_degrees": [
+      4.5,
+      163.5,
+      62.7,
+      116.0,
+      88.5
+     ]
+    },
+    "T4c": {
+     "dsi": [
+      0.0001,
+      0.0001,
+      0.0001,
+      0.0001,
+      0.0
+     ],
+     "preferred_direction_degrees": [
+      4.4,
+      170.8,
+      330.9,
+      132.0,
+      146.7
+     ],
+     "distance_to_known_degrees": [
+      85.6,
+      80.8,
+      119.1,
+      42.0,
+      56.7
+     ]
+    },
+    "T4d": {
+     "dsi": [
+      0.0,
+      0.0002,
+      0.0003,
+      0.0,
+      0.0001
+     ],
+     "preferred_direction_degrees": [
+      0.0,
+      294.0,
+      315.1,
+      264.2,
+      33.9
+     ],
+     "distance_to_known_degrees": [
+      90.0,
+      24.0,
+      45.1,
+      5.8,
+      123.9
+     ]
+    },
+    "T5a": {
+     "dsi": [
+      0.0,
+      0.0,
+      0.0001,
+      0.0004,
+      0.0001
+     ],
+     "preferred_direction_degrees": [
+      263.8,
+      40.3,
+      274.7,
+      311.6,
+      153.3
+     ],
+     "distance_to_known_degrees": [
+      83.8,
+      139.7,
+      94.7,
+      131.6,
+      26.7
+     ]
+    },
+    "T5b": {
+     "dsi": [
+      0.0,
+      0.0001,
+      0.0,
+      0.0,
+      0.0005
+     ],
+     "preferred_direction_degrees": [
+      0.0,
+      22.1,
+      173.3,
+      123.8,
+      126.1
+     ],
+     "distance_to_known_degrees": [
+      0.0,
+      22.1,
+      173.3,
+      123.8,
+      126.1
+     ]
+    },
+    "T5c": {
+     "dsi": [
+      0.0004,
+      0.0,
+      0.0002,
+      0.0007,
+      0.0002
+     ],
+     "preferred_direction_degrees": [
+      138.0,
+      44.0,
+      286.3,
+      117.8,
+      313.1
+     ],
+     "distance_to_known_degrees": [
+      48.0,
+      46.0,
+      163.7,
+      27.8,
+      136.9
+     ]
+    },
+    "T5d": {
+     "dsi": [
+      0.0004,
+      0.0001,
+      0.0001,
+      0.0019,
+      0.0001
+     ],
+     "preferred_direction_degrees": [
+      135.2,
+      143.4,
+      245.7,
+      127.2,
+      307.7
+     ],
+     "distance_to_known_degrees": [
+      134.8,
+      126.6,
+      24.3,
+      142.8,
+      37.7
+     ]
+    }
+   },
+   "tuning_summary": {
+    "T4a": {
+     "networks": 5,
+     "median_dsi": 0.0002,
+     "median_distance_to_known_degrees": 147.3,
+     "share_within_45_degrees": 0.2
+    },
+    "T4b": {
+     "networks": 5,
+     "median_dsi": 0.0002,
+     "median_distance_to_known_degrees": 88.5,
+     "share_within_45_degrees": 0.2
+    },
+    "T4c": {
+     "networks": 5,
+     "median_dsi": 0.0001,
+     "median_distance_to_known_degrees": 80.8,
+     "share_within_45_degrees": 0.2
+    },
+    "T4d": {
+     "networks": 5,
+     "median_dsi": 0.0001,
+     "median_distance_to_known_degrees": 45.1,
+     "share_within_45_degrees": 0.4
+    },
+    "T5a": {
+     "networks": 5,
+     "median_dsi": 0.0001,
+     "median_distance_to_known_degrees": 94.7,
+     "share_within_45_degrees": 0.2
+    },
+    "T5b": {
+     "networks": 5,
+     "median_dsi": 0.0,
+     "median_distance_to_known_degrees": 123.8,
+     "share_within_45_degrees": 0.4
+    },
+    "T5c": {
+     "networks": 5,
+     "median_dsi": 0.0002,
+     "median_distance_to_known_degrees": 48.0,
+     "share_within_45_degrees": 0.2
+    },
+    "T5d": {
+     "networks": 5,
+     "median_dsi": 0.0001,
+     "median_distance_to_known_degrees": 126.6,
+     "share_within_45_degrees": 0.4
+    }
+   }
+  },
+  "N2": {
+   "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "stability": [
+    {
+     "finite": true,
+     "min": -3.5352,
+     "max": 18.5814,
+     "mean_abs": 0.9215,
+     "drift_last_half_second": 0.038851
+    },
+    {
+     "finite": true,
+     "min": -8.3507,
+     "max": 5.0827,
+     "mean_abs": 0.7213,
+     "drift_last_half_second": 0.001778
+    },
+    {
+     "finite": true,
+     "min": -2.8172,
+     "max": 6.0997,
+     "mean_abs": 0.6544,
+     "drift_last_half_second": 0.01037
+    },
+    {
+     "finite": true,
+     "min": -4.5456,
+     "max": 6.9174,
+     "mean_abs": 0.7182,
+     "drift_last_half_second": 0.002411
+    },
+    {
+     "finite": true,
+     "min": -3.2876,
+     "max": 13.526,
+     "mean_abs": 0.8511,
+     "drift_last_half_second": 0.001961
+    }
+   ],
+   "tuning": {
+    "T4a": {
+     "dsi": [
+      0.0003,
+      0.0002,
+      0.0001,
+      0.0001,
+      0.0005
+     ],
+     "preferred_direction_degrees": [
+      304.1,
+      74.0,
+      66.1,
+      16.8,
+      357.7
+     ],
+     "distance_to_known_degrees": [
+      124.1,
+      106.0,
+      113.9,
+      163.2,
+      177.7
+     ]
+    },
+    "T4b": {
+     "dsi": [
+      0.0003,
+      0.0017,
+      0.0008,
+      0.0006,
+      0.0002
+     ],
+     "preferred_direction_degrees": [
+      285.6,
+      244.4,
+      124.1,
+      252.8,
+      185.8
+     ],
+     "distance_to_known_degrees": [
+      74.4,
+      115.6,
+      124.1,
+      107.2,
+      174.2
+     ]
+    },
+    "T4c": {
+     "dsi": [
+      0.0002,
+      0.0,
+      0.0007,
+      0.0001,
+      0.0012
+     ],
+     "preferred_direction_degrees": [
+      277.9,
+      29.1,
+      304.8,
+      197.0,
+      173.6
+     ],
+     "distance_to_known_degrees": [
+      172.1,
+      60.9,
+      145.2,
+      107.0,
+      83.6
+     ]
+    },
+    "T4d": {
+     "dsi": [
+      0.0001,
+      0.0001,
+      0.0008,
+      0.0001,
+      0.0002
+     ],
+     "preferred_direction_degrees": [
+      266.9,
+      63.6,
+      134.4,
+      291.7,
+      309.2
+     ],
+     "distance_to_known_degrees": [
+      3.1,
+      153.6,
+      135.6,
+      21.7,
+      39.2
+     ]
+    },
+    "T5a": {
+     "dsi": [
+      0.0001,
+      0.0,
+      0.0,
+      0.0002,
+      0.0001
+     ],
+     "preferred_direction_degrees": [
+      51.1,
+      209.9,
+      210.0,
+      0.4,
+      167.8
+     ],
+     "distance_to_known_degrees": [
+      128.9,
+      29.9,
+      30.0,
+      179.6,
+      12.2
+     ]
+    },
+    "T5b": {
+     "dsi": [
+      0.0006,
+      0.0006,
+      0.0001,
+      0.0005,
+      0.0
+     ],
+     "preferred_direction_degrees": [
+      341.5,
+      139.8,
+      94.0,
+      330.6,
+      285.0
+     ],
+     "distance_to_known_degrees": [
+      18.5,
+      139.8,
+      94.0,
+      29.4,
+      75.0
+     ]
+    },
+    "T5c": {
+     "dsi": [
+      0.0008,
+      0.0002,
+      0.0001,
+      0.0003,
+      0.0002
+     ],
+     "preferred_direction_degrees": [
+      97.9,
+      90.8,
+      301.5,
+      147.7,
+      172.5
+     ],
+     "distance_to_known_degrees": [
+      7.9,
+      0.8,
+      148.5,
+      57.7,
+      82.5
+     ]
+    },
+    "T5d": {
+     "dsi": [
+      0.0021,
+      0.0001,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "preferred_direction_degrees": [
+      111.2,
+      130.6,
+      285.0,
+      42.3,
+      259.3
+     ],
+     "distance_to_known_degrees": [
+      158.8,
+      139.4,
+      15.0,
+      132.3,
+      10.7
+     ]
+    }
+   },
+   "tuning_summary": {
+    "T4a": {
+     "networks": 5,
+     "median_dsi": 0.0002,
+     "median_distance_to_known_degrees": 124.1,
+     "share_within_45_degrees": 0.0
+    },
+    "T4b": {
+     "networks": 5,
+     "median_dsi": 0.0006,
+     "median_distance_to_known_degrees": 115.6,
+     "share_within_45_degrees": 0.0
+    },
+    "T4c": {
+     "networks": 5,
+     "median_dsi": 0.0002,
+     "median_distance_to_known_degrees": 107.0,
+     "share_within_45_degrees": 0.0
+    },
+    "T4d": {
+     "networks": 5,
+     "median_dsi": 0.0001,
+     "median_distance_to_known_degrees": 39.2,
+     "share_within_45_degrees": 0.6
+    },
+    "T5a": {
+     "networks": 5,
+     "median_dsi": 0.0001,
+     "median_distance_to_known_degrees": 30.0,
+     "share_within_45_degrees": 0.6
+    },
+    "T5b": {
+     "networks": 5,
+     "median_dsi": 0.0005,
+     "median_distance_to_known_degrees": 75.0,
+     "share_within_45_degrees": 0.4
+    },
+    "T5c": {
+     "networks": 5,
+     "median_dsi": 0.0002,
+     "median_distance_to_known_degrees": 57.7,
+     "share_within_45_degrees": 0.4
+    },
+    "T5d": {
+     "networks": 5,
+     "median_dsi": 0.0,
+     "median_distance_to_known_degrees": 132.3,
+     "share_within_45_degrees": 0.4
+    }
+   }
+  },
+  "N3": {
+   "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "stability": [
+    {
+     "finite": true,
+     "min": -15.0865,
+     "max": 14.325,
+     "mean_abs": 0.7751,
+     "drift_last_half_second": 0.001816
+    },
+    {
+     "finite": true,
+     "min": -20.2614,
+     "max": 26.6796,
+     "mean_abs": 1.6053,
+     "drift_last_half_second": 0.004339
+    },
+    {
+     "finite": true,
+     "min": -27.1159,
+     "max": 18.0962,
+     "mean_abs": 1.6169,
+     "drift_last_half_second": 0.00013
+    },
+    {
+     "finite": true,
+     "min": -13.6309,
+     "max": 6.8206,
+     "mean_abs": 0.6949,
+     "drift_last_half_second": 0.000728
+    },
+    {
+     "finite": true,
+     "min": -13.1343,
+     "max": 5.012,
+     "mean_abs": 0.8379,
+     "drift_last_half_second": 0.001719
+    }
+   ],
+   "tuning": {
+    "T4a": {
+     "dsi": [
+      0.0003,
+      0.0,
+      0.0052,
+      0.0129,
+      0.0
+     ],
+     "preferred_direction_degrees": [
+      154.4,
+      0.0,
+      151.7,
+      23.4,
+      0.0
+     ],
+     "distance_to_known_degrees": [
+      25.6,
+      180.0,
+      28.3,
+      156.6,
+      180.0
+     ]
+    },
+    "T4b": {
+     "dsi": [
+      0.0004,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "preferred_direction_degrees": [
+      70.2,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "distance_to_known_degrees": [
+      70.2,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "T4c": {
+     "dsi": [
+      0.2378,
+      0.0,
+      0.0,
+      0.0009,
+      0.0063
+     ],
+     "preferred_direction_degrees": [
+      121.0,
+      0.0,
+      0.0,
+      307.5,
+      295.6
+     ],
+     "distance_to_known_degrees": [
+      31.0,
+      90.0,
+      90.0,
+      142.5,
+      154.4
+     ]
+    },
+    "T4d": {
+     "dsi": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "preferred_direction_degrees": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      289.3
+     ],
+     "distance_to_known_degrees": [
+      90.0,
+      90.0,
+      90.0,
+      90.0,
+      19.3
+     ]
+    },
+    "T5a": {
+     "dsi": [
+      0.0,
+      0.0105,
+      0.0,
+      0.0008,
+      0.0057
+     ],
+     "preferred_direction_degrees": [
+      0.0,
+      260.2,
+      0.0,
+      287.2,
+      100.4
+     ],
+     "distance_to_known_degrees": [
+      180.0,
+      80.2,
+      180.0,
+      107.2,
+      79.6
+     ]
+    },
+    "T5b": {
+     "dsi": [
+      0.0009,
+      0.0,
+      0.0006,
+      0.0017,
+      0.0
+     ],
+     "preferred_direction_degrees": [
+      22.2,
+      0.0,
+      177.9,
+      307.3,
+      0.0
+     ],
+     "distance_to_known_degrees": [
+      22.2,
+      0.0,
+      177.9,
+      52.7,
+      0.0
+     ]
+    },
+    "T5c": {
+     "dsi": [
+      0.0005,
+      0.0085,
+      0.0,
+      0.0038,
+      0.0
+     ],
+     "preferred_direction_degrees": [
+      301.8,
+      254.1,
+      0.0,
+      121.5,
+      0.0
+     ],
+     "distance_to_known_degrees": [
+      148.2,
+      164.1,
+      90.0,
+      31.5,
+      90.0
+     ]
+    },
+    "T5d": {
+     "dsi": [
+      0.0,
+      0.0035,
+      0.0027,
+      0.0064,
+      0.0015
+     ],
+     "preferred_direction_degrees": [
+      0.0,
+      128.1,
+      155.4,
+      129.6,
+      269.3
+     ],
+     "distance_to_known_degrees": [
+      90.0,
+      141.9,
+      114.6,
+      140.4,
+      0.7
+     ]
+    }
+   },
+   "tuning_summary": {
+    "T4a": {
+     "networks": 5,
+     "median_dsi": 0.0003,
+     "median_distance_to_known_degrees": 156.6,
+     "share_within_45_degrees": 0.4
+    },
+    "T4b": {
+     "networks": 5,
+     "median_dsi": 0.0,
+     "median_distance_to_known_degrees": 0.0,
+     "share_within_45_degrees": 0.8
+    },
+    "T4c": {
+     "networks": 5,
+     "median_dsi": 0.0009,
+     "median_distance_to_known_degrees": 90.0,
+     "share_within_45_degrees": 0.2
+    },
+    "T4d": {
+     "networks": 5,
+     "median_dsi": 0.0,
+     "median_distance_to_known_degrees": 90.0,
+     "share_within_45_degrees": 0.2
+    },
+    "T5a": {
+     "networks": 5,
+     "median_dsi": 0.0008,
+     "median_distance_to_known_degrees": 107.2,
+     "share_within_45_degrees": 0.0
+    },
+    "T5b": {
+     "networks": 5,
+     "median_dsi": 0.0006,
+     "median_distance_to_known_degrees": 22.2,
+     "share_within_45_degrees": 0.6
+    },
+    "T5c": {
+     "networks": 5,
+     "median_dsi": 0.0005,
+     "median_distance_to_known_degrees": 90.0,
+     "share_within_45_degrees": 0.2
+    },
+    "T5d": {
+     "networks": 5,
+     "median_dsi": 0.0027,
+     "median_distance_to_known_degrees": 114.6,
+     "share_within_45_degrees": 0.2
+    }
+   }
+  }
+ },
+ "reused_steps": [
+  "frozen/default",
+  "frozen/transfer",
+  "training_step/R1",
+  "training_step/R2",
+  "training_step/published_R1",
+  "controls/v2/N1/seed0",
+  "controls/v2/N1/seed1",
+  "controls/v2/N1/seed2",
+  "controls/v2/N1/seed3",
+  "controls/v2/N1/seed4",
+  "controls/v2/N2/seed0",
+  "controls/v2/N2/seed1",
+  "controls/v2/N2/seed2",
+  "controls/v2/N2/seed3",
+  "controls/v2/N2/seed4",
+  "controls/v2/N3/seed0",
+  "controls/v2/N3/seed1",
+  "controls/v2/N3/seed2",
+  "controls/v2/N3/seed3",
+  "controls/v2/N3/seed4"
+ ],
+ "elapsed_seconds": 239.1
+}

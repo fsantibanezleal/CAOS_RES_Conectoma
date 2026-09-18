@@ -1,0 +1,1 @@
+"""Ingestion contract and readers."""

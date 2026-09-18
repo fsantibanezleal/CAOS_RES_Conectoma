@@ -1,0 +1,5153 @@
+{
+ "elapsed_seconds": 38.6,
+ "reused_steps": 53,
+ "voltage_parity": [
+  {
+   "model": "flow/0000/000",
+   "stimuli": [
+    0,
+    17,
+    71,
+    143
+   ],
+   "cells": 45669,
+   "frames": [
+    1078,
+    1078,
+    1078,
+    1078
+   ],
+   "values_compared": 113279604,
+   "padding_values": 83645124,
+   "same_padding": true,
+   "max_abs_difference": 1.430511474609375e-06,
+   "largest_voltage": 6.5115,
+   "tolerance": 1e-05,
+   "passed": true
+  },
+  {
+   "model": "flow/0000/001",
+   "stimuli": [
+    0,
+    17,
+    71,
+    143
+   ],
+   "cells": 45669,
+   "frames": [
+    1078,
+    1078,
+    1078,
+    1078
+   ],
+   "values_compared": 113279604,
+   "padding_values": 83645124,
+   "same_padding": true,
+   "max_abs_difference": 2.384185791015625e-06,
+   "largest_voltage": 8.8706,
+   "tolerance": 1e-05,
+   "passed": true
+  },
+  {
+   "model": "flow/0000/002",
+   "stimuli": [
+    0,
+    17,
+    71,
+    143
+   ],
+   "cells": 45669,
+   "frames": [
+    1078,
+    1078,
+    1078,
+    1078
+   ],
+   "values_compared": 113279604,
+   "padding_values": 83645124,
+   "same_padding": true,
+   "max_abs_difference": 3.814697265625e-06,
+   "largest_voltage": 16.0531,
+   "tolerance": 1e-05,
+   "passed": true
+  }
+ ],
+ "tuning": {
+  "ensemble": "flow/0000",
+  "models": [
+   "000",
+   "001",
+   "002",
+   "003",
+   "004",
+   "005",
+   "006",
+   "007",
+   "008",
+   "009",
+   "010",
+   "011",
+   "012",
+   "013",
+   "014",
+   "015",
+   "016",
+   "017",
+   "018",
+   "019",
+   "020",
+   "021",
+   "022",
+   "023",
+   "024",
+   "025",
+   "026",
+   "027",
+   "028",
+   "029",
+   "030",
+   "031",
+   "032",
+   "033",
+   "034",
+   "035",
+   "036",
+   "037",
+   "038",
+   "039",
+   "040",
+   "041",
+   "042",
+   "043",
+   "044",
+   "045",
+   "046",
+   "047",
+   "048",
+   "049"
+  ],
+  "summary": {
+   "T4a": {
+    "networks": 50,
+    "median_dsi": 0.3999,
+    "median_distance_to_known_degrees": 22.2,
+    "share_within_45_degrees": 0.56
+   },
+   "T4b": {
+    "networks": 50,
+    "median_dsi": 0.1701,
+    "median_distance_to_known_degrees": 65.5,
+    "share_within_45_degrees": 0.46
+   },
+   "T4c": {
+    "networks": 50,
+    "median_dsi": 0.5825,
+    "median_distance_to_known_degrees": 22.5,
+    "share_within_45_degrees": 0.68
+   },
+   "T4d": {
+    "networks": 50,
+    "median_dsi": 0.4688,
+    "median_distance_to_known_degrees": 26.1,
+    "share_within_45_degrees": 0.6
+   },
+   "T5a": {
+    "networks": 50,
+    "median_dsi": 0.0406,
+    "median_distance_to_known_degrees": 29.4,
+    "share_within_45_degrees": 0.58
+   },
+   "T5b": {
+    "networks": 50,
+    "median_dsi": 0.092,
+    "median_distance_to_known_degrees": 162.1,
+    "share_within_45_degrees": 0.22
+   },
+   "T5c": {
+    "networks": 50,
+    "median_dsi": 0.0434,
+    "median_distance_to_known_degrees": 90.0,
+    "share_within_45_degrees": 0.26
+   },
+   "T5d": {
+    "networks": 50,
+    "median_dsi": 0.0846,
+    "median_distance_to_known_degrees": 56.0,
+    "share_within_45_degrees": 0.44
+   }
+  },
+  "quality": {
+   "criteria": {
+    "min_dsi": 0.2,
+    "within_degrees": 45.0,
+    "reversed_beyond": 135.0
+   },
+   "by_subtype": {
+    "T4a": {
+     "as_known": 22,
+     "reversed": 4,
+     "weak": 22,
+     "other": 2
+    },
+    "T4b": {
+     "as_known": 9,
+     "reversed": 13,
+     "weak": 27,
+     "other": 1
+    },
+    "T4c": {
+     "as_known": 31,
+     "reversed": 6,
+     "weak": 12,
+     "other": 1
+    },
+    "T4d": {
+     "as_known": 22,
+     "reversed": 7,
+     "weak": 16,
+     "other": 5
+    },
+    "T5a": {
+     "as_known": 8,
+     "reversed": 2,
+     "weak": 38,
+     "other": 2
+    },
+    "T5b": {
+     "as_known": 3,
+     "reversed": 11,
+     "weak": 34,
+     "other": 2
+    },
+    "T5c": {
+     "as_known": 5,
+     "reversed": 0,
+     "weak": 38,
+     "other": 7
+    },
+    "T5d": {
+     "as_known": 13,
+     "reversed": 4,
+     "weak": 32,
+     "other": 1
+    }
+   },
+   "by_rank": [
+    {
+     "models": "000-009",
+     "as_known": 34,
+     "of": 80
+    },
+    {
+     "models": "010-019",
+     "as_known": 24,
+     "of": 80
+    },
+    {
+     "models": "020-029",
+     "as_known": 25,
+     "of": 80
+    },
+    {
+     "models": "030-039",
+     "as_known": 16,
+     "of": 80
+    },
+    {
+     "models": "040-049",
+     "as_known": 14,
+     "of": 80
+    }
+   ],
+   "subtypes_as_known_per_model": [
+    7,
+    4,
+    3,
+    6,
+    1,
+    0,
+    4,
+    3,
+    3,
+    3,
+    2,
+    3,
+    3,
+    2,
+    2,
+    1,
+    3,
+    2,
+    3,
+    3,
+    2,
+    4,
+    3,
+    3,
+    3,
+    1,
+    0,
+    5,
+    0,
+    4,
+    2,
+    1,
+    0,
+    0,
+    3,
+    1,
+    5,
+    2,
+    1,
+    1,
+    1,
+    1,
+    5,
+    2,
+    2,
+    0,
+    0,
+    1,
+    2,
+    0
+   ],
+   "rank_correlation": -0.4479
+  },
+  "per_model": [
+   {
+    "model": "000",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.5087
+      ],
+      "preferred_direction_degrees": [
+       175.7
+      ],
+      "distance_to_known_degrees": [
+       4.3
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.5207
+      ],
+      "preferred_direction_degrees": [
+       351.4
+      ],
+      "distance_to_known_degrees": [
+       8.6
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.5904
+      ],
+      "preferred_direction_degrees": [
+       58.8
+      ],
+      "distance_to_known_degrees": [
+       31.2
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.1375
+      ],
+      "preferred_direction_degrees": [
+       270.4
+      ],
+      "distance_to_known_degrees": [
+       0.4
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.78
+      ],
+      "preferred_direction_degrees": [
+       185.8
+      ],
+      "distance_to_known_degrees": [
+       5.8
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.7796
+      ],
+      "preferred_direction_degrees": [
+       351.1
+      ],
+      "distance_to_known_degrees": [
+       8.9
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.5622
+      ],
+      "preferred_direction_degrees": [
+       103.2
+      ],
+      "distance_to_known_degrees": [
+       13.2
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.5737
+      ],
+      "preferred_direction_degrees": [
+       251.8
+      ],
+      "distance_to_known_degrees": [
+       18.2
+      ]
+     }
+    }
+   },
+   {
+    "model": "001",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.7557
+      ],
+      "preferred_direction_degrees": [
+       176.1
+      ],
+      "distance_to_known_degrees": [
+       3.9
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.544
+      ],
+      "preferred_direction_degrees": [
+       352.9
+      ],
+      "distance_to_known_degrees": [
+       7.1
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.595
+      ],
+      "preferred_direction_degrees": [
+       82.1
+      ],
+      "distance_to_known_degrees": [
+       7.9
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.5649
+      ],
+      "preferred_direction_degrees": [
+       250.7
+      ],
+      "distance_to_known_degrees": [
+       19.3
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.1487
+      ],
+      "preferred_direction_degrees": [
+       121.5
+      ],
+      "distance_to_known_degrees": [
+       58.5
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.105
+      ],
+      "preferred_direction_degrees": [
+       20.3
+      ],
+      "distance_to_known_degrees": [
+       20.3
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0436
+      ],
+      "preferred_direction_degrees": [
+       92.6
+      ],
+      "distance_to_known_degrees": [
+       2.6
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0087
+      ],
+      "preferred_direction_degrees": [
+       260.0
+      ],
+      "distance_to_known_degrees": [
+       10.0
+      ]
+     }
+    }
+   },
+   {
+    "model": "002",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.6665
+      ],
+      "preferred_direction_degrees": [
+       175.9
+      ],
+      "distance_to_known_degrees": [
+       4.1
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.0707
+      ],
+      "preferred_direction_degrees": [
+       212.8
+      ],
+      "distance_to_known_degrees": [
+       147.2
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.6699
+      ],
+      "preferred_direction_degrees": [
+       75.1
+      ],
+      "distance_to_known_degrees": [
+       14.9
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.6767
+      ],
+      "preferred_direction_degrees": [
+       256.9
+      ],
+      "distance_to_known_degrees": [
+       13.1
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0182
+      ],
+      "preferred_direction_degrees": [
+       3.6
+      ],
+      "distance_to_known_degrees": [
+       176.4
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.1213
+      ],
+      "preferred_direction_degrees": [
+       168.5
+      ],
+      "distance_to_known_degrees": [
+       168.5
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0194
+      ],
+      "preferred_direction_degrees": [
+       66.5
+      ],
+      "distance_to_known_degrees": [
+       23.5
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.024
+      ],
+      "preferred_direction_degrees": [
+       270.3
+      ],
+      "distance_to_known_degrees": [
+       0.3
+      ]
+     }
+    }
+   },
+   {
+    "model": "003",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.6506
+      ],
+      "preferred_direction_degrees": [
+       177.2
+      ],
+      "distance_to_known_degrees": [
+       2.8
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.5288
+      ],
+      "preferred_direction_degrees": [
+       342.1
+      ],
+      "distance_to_known_degrees": [
+       17.9
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.386
+      ],
+      "preferred_direction_degrees": [
+       87.5
+      ],
+      "distance_to_known_degrees": [
+       2.5
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.4994
+      ],
+      "preferred_direction_degrees": [
+       256.3
+      ],
+      "distance_to_known_degrees": [
+       13.7
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0239
+      ],
+      "preferred_direction_degrees": [
+       178.2
+      ],
+      "distance_to_known_degrees": [
+       1.8
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0213
+      ],
+      "preferred_direction_degrees": [
+       7.8
+      ],
+      "distance_to_known_degrees": [
+       7.8
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.6435
+      ],
+      "preferred_direction_degrees": [
+       93.3
+      ],
+      "distance_to_known_degrees": [
+       3.3
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.4893
+      ],
+      "preferred_direction_degrees": [
+       244.8
+      ],
+      "distance_to_known_degrees": [
+       25.2
+      ]
+     }
+    }
+   },
+   {
+    "model": "004",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.0248
+      ],
+      "preferred_direction_degrees": [
+       357.5
+      ],
+      "distance_to_known_degrees": [
+       177.5
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.5898
+      ],
+      "preferred_direction_degrees": [
+       178.3
+      ],
+      "distance_to_known_degrees": [
+       178.3
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.551
+      ],
+      "preferred_direction_degrees": [
+       272.7
+      ],
+      "distance_to_known_degrees": [
+       177.3
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.5033
+      ],
+      "preferred_direction_degrees": [
+       95.4
+      ],
+      "distance_to_known_degrees": [
+       174.6
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0033
+      ],
+      "preferred_direction_degrees": [
+       4.9
+      ],
+      "distance_to_known_degrees": [
+       175.1
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.4281
+      ],
+      "preferred_direction_degrees": [
+       319.4
+      ],
+      "distance_to_known_degrees": [
+       40.6
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0134
+      ],
+      "preferred_direction_degrees": [
+       226.9
+      ],
+      "distance_to_known_degrees": [
+       136.9
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.081
+      ],
+      "preferred_direction_degrees": [
+       67.1
+      ],
+      "distance_to_known_degrees": [
+       157.1
+      ]
+     }
+    }
+   },
+   {
+    "model": "005",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.6048
+      ],
+      "preferred_direction_degrees": [
+       359.8
+      ],
+      "distance_to_known_degrees": [
+       179.8
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.6305
+      ],
+      "preferred_direction_degrees": [
+       178.3
+      ],
+      "distance_to_known_degrees": [
+       178.3
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.4591
+      ],
+      "preferred_direction_degrees": [
+       259.2
+      ],
+      "distance_to_known_degrees": [
+       169.2
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.5563
+      ],
+      "preferred_direction_degrees": [
+       96.4
+      ],
+      "distance_to_known_degrees": [
+       173.6
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0353
+      ],
+      "preferred_direction_degrees": [
+       357.7
+      ],
+      "distance_to_known_degrees": [
+       177.7
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.1602
+      ],
+      "preferred_direction_degrees": [
+       187.6
+      ],
+      "distance_to_known_degrees": [
+       172.4
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.1136
+      ],
+      "preferred_direction_degrees": [
+       257.1
+      ],
+      "distance_to_known_degrees": [
+       167.1
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.6237
+      ],
+      "preferred_direction_degrees": [
+       116.8
+      ],
+      "distance_to_known_degrees": [
+       153.2
+      ]
+     }
+    }
+   },
+   {
+    "model": "006",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.7563
+      ],
+      "preferred_direction_degrees": [
+       175.2
+      ],
+      "distance_to_known_degrees": [
+       4.8
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.0364
+      ],
+      "preferred_direction_degrees": [
+       333.5
+      ],
+      "distance_to_known_degrees": [
+       26.5
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.708
+      ],
+      "preferred_direction_degrees": [
+       75.9
+      ],
+      "distance_to_known_degrees": [
+       14.1
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.67
+      ],
+      "preferred_direction_degrees": [
+       254.5
+      ],
+      "distance_to_known_degrees": [
+       15.5
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0337
+      ],
+      "preferred_direction_degrees": [
+       212.3
+      ],
+      "distance_to_known_degrees": [
+       32.3
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.1944
+      ],
+      "preferred_direction_degrees": [
+       182.3
+      ],
+      "distance_to_known_degrees": [
+       177.7
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0304
+      ],
+      "preferred_direction_degrees": [
+       66.0
+      ],
+      "distance_to_known_degrees": [
+       24.0
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.4859
+      ],
+      "preferred_direction_degrees": [
+       281.7
+      ],
+      "distance_to_known_degrees": [
+       11.7
+      ]
+     }
+    }
+   },
+   {
+    "model": "007",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.5869
+      ],
+      "preferred_direction_degrees": [
+       194.2
+      ],
+      "distance_to_known_degrees": [
+       14.2
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.007
+      ],
+      "preferred_direction_degrees": [
+       314.4
+      ],
+      "distance_to_known_degrees": [
+       45.6
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.5039
+      ],
+      "preferred_direction_degrees": [
+       80.2
+      ],
+      "distance_to_known_degrees": [
+       9.8
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.4524
+      ],
+      "preferred_direction_degrees": [
+       249.1
+      ],
+      "distance_to_known_degrees": [
+       20.9
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.036
+      ],
+      "preferred_direction_degrees": [
+       182.6
+      ],
+      "distance_to_known_degrees": [
+       2.6
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0808
+      ],
+      "preferred_direction_degrees": [
+       183.5
+      ],
+      "distance_to_known_degrees": [
+       176.5
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0122
+      ],
+      "preferred_direction_degrees": [
+       146.6
+      ],
+      "distance_to_known_degrees": [
+       56.6
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0
+      ],
+      "preferred_direction_degrees": [
+       0.0
+      ],
+      "distance_to_known_degrees": [
+       90.0
+      ]
+     }
+    }
+   },
+   {
+    "model": "008",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.3132
+      ],
+      "preferred_direction_degrees": [
+       173.9
+      ],
+      "distance_to_known_degrees": [
+       6.1
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.3169
+      ],
+      "preferred_direction_degrees": [
+       352.6
+      ],
+      "distance_to_known_degrees": [
+       7.4
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.0214
+      ],
+      "preferred_direction_degrees": [
+       131.5
+      ],
+      "distance_to_known_degrees": [
+       41.5
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.6041
+      ],
+      "preferred_direction_degrees": [
+       253.8
+      ],
+      "distance_to_known_degrees": [
+       16.2
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0317
+      ],
+      "preferred_direction_degrees": [
+       274.1
+      ],
+      "distance_to_known_degrees": [
+       94.1
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.2299
+      ],
+      "preferred_direction_degrees": [
+       194.7
+      ],
+      "distance_to_known_degrees": [
+       165.3
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0011
+      ],
+      "preferred_direction_degrees": [
+       180.7
+      ],
+      "distance_to_known_degrees": [
+       90.7
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0
+      ],
+      "preferred_direction_degrees": [
+       0.0
+      ],
+      "distance_to_known_degrees": [
+       90.0
+      ]
+     }
+    }
+   },
+   {
+    "model": "009",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.6337
+      ],
+      "preferred_direction_degrees": [
+       179.9
+      ],
+      "distance_to_known_degrees": [
+       0.1
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.0156
+      ],
+      "preferred_direction_degrees": [
+       356.8
+      ],
+      "distance_to_known_degrees": [
+       3.2
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.6514
+      ],
+      "preferred_direction_degrees": [
+       74.9
+      ],
+      "distance_to_known_degrees": [
+       15.1
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.589
+      ],
+      "preferred_direction_degrees": [
+       257.6
+      ],
+      "distance_to_known_degrees": [
+       12.4
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0398
+      ],
+      "preferred_direction_degrees": [
+       184.6
+      ],
+      "distance_to_known_degrees": [
+       4.6
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.5554
+      ],
+      "preferred_direction_degrees": [
+       190.5
+      ],
+      "distance_to_known_degrees": [
+       169.5
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0298
+      ],
+      "preferred_direction_degrees": [
+       100.3
+      ],
+      "distance_to_known_degrees": [
+       10.3
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0263
+      ],
+      "preferred_direction_degrees": [
+       264.3
+      ],
+      "distance_to_known_degrees": [
+       5.7
+      ]
+     }
+    }
+   },
+   {
+    "model": "010",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.4455
+      ],
+      "preferred_direction_degrees": [
+       174.1
+      ],
+      "distance_to_known_degrees": [
+       5.9
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.2407
+      ],
+      "preferred_direction_degrees": [
+       346.8
+      ],
+      "distance_to_known_degrees": [
+       13.2
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.0489
+      ],
+      "preferred_direction_degrees": [
+       170.6
+      ],
+      "distance_to_known_degrees": [
+       80.6
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.0142
+      ],
+      "preferred_direction_degrees": [
+       244.2
+      ],
+      "distance_to_known_degrees": [
+       25.8
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.5204
+      ],
+      "preferred_direction_degrees": [
+       270.2
+      ],
+      "distance_to_known_degrees": [
+       90.2
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0647
+      ],
+      "preferred_direction_degrees": [
+       185.1
+      ],
+      "distance_to_known_degrees": [
+       174.9
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.419
+      ],
+      "preferred_direction_degrees": [
+       220.1
+      ],
+      "distance_to_known_degrees": [
+       130.1
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0189
+      ],
+      "preferred_direction_degrees": [
+       215.0
+      ],
+      "distance_to_known_degrees": [
+       55.0
+      ]
+     }
+    }
+   },
+   {
+    "model": "011",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.7992
+      ],
+      "preferred_direction_degrees": [
+       176.9
+      ],
+      "distance_to_known_degrees": [
+       3.1
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.6765
+      ],
+      "preferred_direction_degrees": [
+       347.9
+      ],
+      "distance_to_known_degrees": [
+       12.1
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.722
+      ],
+      "preferred_direction_degrees": [
+       63.0
+      ],
+      "distance_to_known_degrees": [
+       27.0
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.0223
+      ],
+      "preferred_direction_degrees": [
+       291.2
+      ],
+      "distance_to_known_degrees": [
+       21.2
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0
+      ],
+      "preferred_direction_degrees": [
+       0.0
+      ],
+      "distance_to_known_degrees": [
+       180.0
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0458
+      ],
+      "preferred_direction_degrees": [
+       302.0
+      ],
+      "distance_to_known_degrees": [
+       58.0
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0
+      ],
+      "preferred_direction_degrees": [
+       0.0
+      ],
+      "distance_to_known_degrees": [
+       90.0
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0
+      ],
+      "preferred_direction_degrees": [
+       0.0
+      ],
+      "distance_to_known_degrees": [
+       90.0
+      ]
+     }
+    }
+   },
+   {
+    "model": "012",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.6788
+      ],
+      "preferred_direction_degrees": [
+       175.1
+      ],
+      "distance_to_known_degrees": [
+       4.9
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.0404
+      ],
+      "preferred_direction_degrees": [
+       268.9
+      ],
+      "distance_to_known_degrees": [
+       91.1
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.5811
+      ],
+      "preferred_direction_degrees": [
+       69.7
+      ],
+      "distance_to_known_degrees": [
+       20.3
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.5146
+      ],
+      "preferred_direction_degrees": [
+       254.8
+      ],
+      "distance_to_known_degrees": [
+       15.2
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0337
+      ],
+      "preferred_direction_degrees": [
+       207.0
+      ],
+      "distance_to_known_degrees": [
+       27.0
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0024
+      ],
+      "preferred_direction_degrees": [
+       176.1
+      ],
+      "distance_to_known_degrees": [
+       176.1
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.3452
+      ],
+      "preferred_direction_degrees": [
+       194.1
+      ],
+      "distance_to_known_degrees": [
+       104.1
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0882
+      ],
+      "preferred_direction_degrees": [
+       207.1
+      ],
+      "distance_to_known_degrees": [
+       62.9
+      ]
+     }
+    }
+   },
+   {
+    "model": "013",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.0133
+      ],
+      "preferred_direction_degrees": [
+       112.7
+      ],
+      "distance_to_known_degrees": [
+       67.3
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.0242
+      ],
+      "preferred_direction_degrees": [
+       351.6
+      ],
+      "distance_to_known_degrees": [
+       8.4
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.6145
+      ],
+      "preferred_direction_degrees": [
+       83.8
+      ],
+      "distance_to_known_degrees": [
+       6.2
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.564
+      ],
+      "preferred_direction_degrees": [
+       258.1
+      ],
+      "distance_to_known_degrees": [
+       11.9
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0466
+      ],
+      "preferred_direction_degrees": [
+       206.9
+      ],
+      "distance_to_known_degrees": [
+       26.9
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.5779
+      ],
+      "preferred_direction_degrees": [
+       187.3
+      ],
+      "distance_to_known_degrees": [
+       172.7
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.2236
+      ],
+      "preferred_direction_degrees": [
+       193.4
+      ],
+      "distance_to_known_degrees": [
+       103.4
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.01
+      ],
+      "preferred_direction_degrees": [
+       224.5
+      ],
+      "distance_to_known_degrees": [
+       45.5
+      ]
+     }
+    }
+   },
+   {
+    "model": "014",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.5384
+      ],
+      "preferred_direction_degrees": [
+       167.9
+      ],
+      "distance_to_known_degrees": [
+       12.1
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.1558
+      ],
+      "preferred_direction_degrees": [
+       274.9
+      ],
+      "distance_to_known_degrees": [
+       85.1
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.3307
+      ],
+      "preferred_direction_degrees": [
+       72.5
+      ],
+      "distance_to_known_degrees": [
+       17.5
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.2195
+      ],
+      "preferred_direction_degrees": [
+       200.2
+      ],
+      "distance_to_known_degrees": [
+       69.8
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.11
+      ],
+      "preferred_direction_degrees": [
+       201.7
+      ],
+      "distance_to_known_degrees": [
+       21.7
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0
+      ],
+      "preferred_direction_degrees": [
+       0.0
+      ],
+      "distance_to_known_degrees": [
+       0.0
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0474
+      ],
+      "preferred_direction_degrees": [
+       160.0
+      ],
+      "distance_to_known_degrees": [
+       70.0
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0397
+      ],
+      "preferred_direction_degrees": [
+       277.0
+      ],
+      "distance_to_known_degrees": [
+       7.0
+      ]
+     }
+    }
+   },
+   {
+    "model": "015",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.6425
+      ],
+      "preferred_direction_degrees": [
+       352.2
+      ],
+      "distance_to_known_degrees": [
+       172.2
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.4311
+      ],
+      "preferred_direction_degrees": [
+       186.5
+      ],
+      "distance_to_known_degrees": [
+       173.5
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.0124
+      ],
+      "preferred_direction_degrees": [
+       165.1
+      ],
+      "distance_to_known_degrees": [
+       75.1
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.454
+      ],
+      "preferred_direction_degrees": [
+       104.3
+      ],
+      "distance_to_known_degrees": [
+       165.7
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0261
+      ],
+      "preferred_direction_degrees": [
+       341.1
+      ],
+      "distance_to_known_degrees": [
+       161.1
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0428
+      ],
+      "preferred_direction_degrees": [
+       186.2
+      ],
+      "distance_to_known_degrees": [
+       173.8
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.4597
+      ],
+      "preferred_direction_degrees": [
+       179.9
+      ],
+      "distance_to_known_degrees": [
+       89.9
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       1.0
+      ],
+      "preferred_direction_degrees": [
+       270.0
+      ],
+      "distance_to_known_degrees": [
+       0.0
+      ]
+     }
+    }
+   },
+   {
+    "model": "016",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.0159
+      ],
+      "preferred_direction_degrees": [
+       289.7
+      ],
+      "distance_to_known_degrees": [
+       109.7
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.197
+      ],
+      "preferred_direction_degrees": [
+       337.1
+      ],
+      "distance_to_known_degrees": [
+       22.9
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.4539
+      ],
+      "preferred_direction_degrees": [
+       79.8
+      ],
+      "distance_to_known_degrees": [
+       10.2
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.4139
+      ],
+      "preferred_direction_degrees": [
+       247.6
+      ],
+      "distance_to_known_degrees": [
+       22.4
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.3017
+      ],
+      "preferred_direction_degrees": [
+       195.7
+      ],
+      "distance_to_known_degrees": [
+       15.7
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.146
+      ],
+      "preferred_direction_degrees": [
+       332.2
+      ],
+      "distance_to_known_degrees": [
+       27.8
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0893
+      ],
+      "preferred_direction_degrees": [
+       85.3
+      ],
+      "distance_to_known_degrees": [
+       4.7
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.1029
+      ],
+      "preferred_direction_degrees": [
+       280.1
+      ],
+      "distance_to_known_degrees": [
+       10.1
+      ]
+     }
+    }
+   },
+   {
+    "model": "017",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.7524
+      ],
+      "preferred_direction_degrees": [
+       179.4
+      ],
+      "distance_to_known_degrees": [
+       0.6
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.5122
+      ],
+      "preferred_direction_degrees": [
+       292.5
+      ],
+      "distance_to_known_degrees": [
+       67.5
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.6856
+      ],
+      "preferred_direction_degrees": [
+       74.9
+      ],
+      "distance_to_known_degrees": [
+       15.1
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.0815
+      ],
+      "preferred_direction_degrees": [
+       234.6
+      ],
+      "distance_to_known_degrees": [
+       35.4
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0193
+      ],
+      "preferred_direction_degrees": [
+       0.9
+      ],
+      "distance_to_known_degrees": [
+       179.1
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0117
+      ],
+      "preferred_direction_degrees": [
+       268.7
+      ],
+      "distance_to_known_degrees": [
+       91.3
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0434
+      ],
+      "preferred_direction_degrees": [
+       61.6
+      ],
+      "distance_to_known_degrees": [
+       28.4
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0
+      ],
+      "preferred_direction_degrees": [
+       0.0
+      ],
+      "distance_to_known_degrees": [
+       90.0
+      ]
+     }
+    }
+   },
+   {
+    "model": "018",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.0152
+      ],
+      "preferred_direction_degrees": [
+       252.5
+      ],
+      "distance_to_known_degrees": [
+       72.5
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.0218
+      ],
+      "preferred_direction_degrees": [
+       232.9
+      ],
+      "distance_to_known_degrees": [
+       127.1
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.646
+      ],
+      "preferred_direction_degrees": [
+       73.0
+      ],
+      "distance_to_known_degrees": [
+       17.0
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.685
+      ],
+      "preferred_direction_degrees": [
+       250.7
+      ],
+      "distance_to_known_degrees": [
+       19.3
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.4118
+      ],
+      "preferred_direction_degrees": [
+       213.4
+      ],
+      "distance_to_known_degrees": [
+       33.4
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.1023
+      ],
+      "preferred_direction_degrees": [
+       191.2
+      ],
+      "distance_to_known_degrees": [
+       168.8
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0103
+      ],
+      "preferred_direction_degrees": [
+       294.0
+      ],
+      "distance_to_known_degrees": [
+       156.0
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0
+      ],
+      "preferred_direction_degrees": [
+       0.0
+      ],
+      "distance_to_known_degrees": [
+       90.0
+      ]
+     }
+    }
+   },
+   {
+    "model": "019",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.075
+      ],
+      "preferred_direction_degrees": [
+       186.8
+      ],
+      "distance_to_known_degrees": [
+       6.8
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.1827
+      ],
+      "preferred_direction_degrees": [
+       350.3
+      ],
+      "distance_to_known_degrees": [
+       9.7
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.7229
+      ],
+      "preferred_direction_degrees": [
+       81.0
+      ],
+      "distance_to_known_degrees": [
+       9.0
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.5533
+      ],
+      "preferred_direction_degrees": [
+       243.5
+      ],
+      "distance_to_known_degrees": [
+       26.5
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.3406
+      ],
+      "preferred_direction_degrees": [
+       196.4
+      ],
+      "distance_to_known_degrees": [
+       16.4
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.155
+      ],
+      "preferred_direction_degrees": [
+       236.5
+      ],
+      "distance_to_known_degrees": [
+       123.5
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0313
+      ],
+      "preferred_direction_degrees": [
+       291.7
+      ],
+      "distance_to_known_degrees": [
+       158.3
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0
+      ],
+      "preferred_direction_degrees": [
+       0.0
+      ],
+      "distance_to_known_degrees": [
+       90.0
+      ]
+     }
+    }
+   },
+   {
+    "model": "020",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.0374
+      ],
+      "preferred_direction_degrees": [
+       259.4
+      ],
+      "distance_to_known_degrees": [
+       79.4
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.034
+      ],
+      "preferred_direction_degrees": [
+       285.5
+      ],
+      "distance_to_known_degrees": [
+       74.5
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.6575
+      ],
+      "preferred_direction_degrees": [
+       75.7
+      ],
+      "distance_to_known_degrees": [
+       14.3
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.5333
+      ],
+      "preferred_direction_degrees": [
+       250.6
+      ],
+      "distance_to_known_degrees": [
+       19.4
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.1559
+      ],
+      "preferred_direction_degrees": [
+       188.2
+      ],
+      "distance_to_known_degrees": [
+       8.2
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.3184
+      ],
+      "preferred_direction_degrees": [
+       184.7
+      ],
+      "distance_to_known_degrees": [
+       175.3
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0621
+      ],
+      "preferred_direction_degrees": [
+       197.4
+      ],
+      "distance_to_known_degrees": [
+       107.4
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0252
+      ],
+      "preferred_direction_degrees": [
+       210.8
+      ],
+      "distance_to_known_degrees": [
+       59.2
+      ]
+     }
+    }
+   },
+   {
+    "model": "021",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.6677
+      ],
+      "preferred_direction_degrees": [
+       173.6
+      ],
+      "distance_to_known_degrees": [
+       6.4
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.6714
+      ],
+      "preferred_direction_degrees": [
+       339.8
+      ],
+      "distance_to_known_degrees": [
+       20.2
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.7494
+      ],
+      "preferred_direction_degrees": [
+       65.2
+      ],
+      "distance_to_known_degrees": [
+       24.8
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.4356
+      ],
+      "preferred_direction_degrees": [
+       238.3
+      ],
+      "distance_to_known_degrees": [
+       31.7
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0088
+      ],
+      "preferred_direction_degrees": [
+       201.4
+      ],
+      "distance_to_known_degrees": [
+       21.4
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0632
+      ],
+      "preferred_direction_degrees": [
+       139.0
+      ],
+      "distance_to_known_degrees": [
+       139.0
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.1474
+      ],
+      "preferred_direction_degrees": [
+       273.0
+      ],
+      "distance_to_known_degrees": [
+       177.0
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.2427
+      ],
+      "preferred_direction_degrees": [
+       79.8
+      ],
+      "distance_to_known_degrees": [
+       169.8
+      ]
+     }
+    }
+   },
+   {
+    "model": "022",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.7557
+      ],
+      "preferred_direction_degrees": [
+       177.9
+      ],
+      "distance_to_known_degrees": [
+       2.1
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.0226
+      ],
+      "preferred_direction_degrees": [
+       328.6
+      ],
+      "distance_to_known_degrees": [
+       31.4
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.5258
+      ],
+      "preferred_direction_degrees": [
+       75.5
+      ],
+      "distance_to_known_degrees": [
+       14.5
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.5481
+      ],
+      "preferred_direction_degrees": [
+       260.0
+      ],
+      "distance_to_known_degrees": [
+       10.0
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0113
+      ],
+      "preferred_direction_degrees": [
+       203.3
+      ],
+      "distance_to_known_degrees": [
+       23.3
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.7879
+      ],
+      "preferred_direction_degrees": [
+       134.6
+      ],
+      "distance_to_known_degrees": [
+       134.6
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.1274
+      ],
+      "preferred_direction_degrees": [
+       121.1
+      ],
+      "distance_to_known_degrees": [
+       31.1
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0148
+      ],
+      "preferred_direction_degrees": [
+       240.2
+      ],
+      "distance_to_known_degrees": [
+       29.8
+      ]
+     }
+    }
+   },
+   {
+    "model": "023",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.6906
+      ],
+      "preferred_direction_degrees": [
+       178.6
+      ],
+      "distance_to_known_degrees": [
+       1.4
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.0647
+      ],
+      "preferred_direction_degrees": [
+       355.3
+      ],
+      "distance_to_known_degrees": [
+       4.7
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.5767
+      ],
+      "preferred_direction_degrees": [
+       69.5
+      ],
+      "distance_to_known_degrees": [
+       20.5
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.6496
+      ],
+      "preferred_direction_degrees": [
+       259.7
+      ],
+      "distance_to_known_degrees": [
+       10.3
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0414
+      ],
+      "preferred_direction_degrees": [
+       178.7
+      ],
+      "distance_to_known_degrees": [
+       1.3
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0213
+      ],
+      "preferred_direction_degrees": [
+       99.8
+      ],
+      "distance_to_known_degrees": [
+       99.8
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.1779
+      ],
+      "preferred_direction_degrees": [
+       196.2
+      ],
+      "distance_to_known_degrees": [
+       106.2
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0
+      ],
+      "preferred_direction_degrees": [
+       0.0
+      ],
+      "distance_to_known_degrees": [
+       90.0
+      ]
+     }
+    }
+   },
+   {
+    "model": "024",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.6828
+      ],
+      "preferred_direction_degrees": [
+       178.4
+      ],
+      "distance_to_known_degrees": [
+       1.6
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.039
+      ],
+      "preferred_direction_degrees": [
+       231.2
+      ],
+      "distance_to_known_degrees": [
+       128.8
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.596
+      ],
+      "preferred_direction_degrees": [
+       79.4
+      ],
+      "distance_to_known_degrees": [
+       10.6
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.6133
+      ],
+      "preferred_direction_degrees": [
+       257.4
+      ],
+      "distance_to_known_degrees": [
+       12.6
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0069
+      ],
+      "preferred_direction_degrees": [
+       261.0
+      ],
+      "distance_to_known_degrees": [
+       81.0
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0118
+      ],
+      "preferred_direction_degrees": [
+       326.2
+      ],
+      "distance_to_known_degrees": [
+       33.8
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0047
+      ],
+      "preferred_direction_degrees": [
+       275.4
+      ],
+      "distance_to_known_degrees": [
+       174.6
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0
+      ],
+      "preferred_direction_degrees": [
+       0.0
+      ],
+      "distance_to_known_degrees": [
+       90.0
+      ]
+     }
+    }
+   },
+   {
+    "model": "025",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.5037
+      ],
+      "preferred_direction_degrees": [
+       357.9
+      ],
+      "distance_to_known_degrees": [
+       177.9
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.5881
+      ],
+      "preferred_direction_degrees": [
+       180.6
+      ],
+      "distance_to_known_degrees": [
+       179.4
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.0096
+      ],
+      "preferred_direction_degrees": [
+       129.0
+      ],
+      "distance_to_known_degrees": [
+       39.0
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.0
+      ],
+      "preferred_direction_degrees": [
+       0.0
+      ],
+      "distance_to_known_degrees": [
+       90.0
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.009
+      ],
+      "preferred_direction_degrees": [
+       25.5
+      ],
+      "distance_to_known_degrees": [
+       154.5
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0177
+      ],
+      "preferred_direction_degrees": [
+       170.9
+      ],
+      "distance_to_known_degrees": [
+       170.9
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.2209
+      ],
+      "preferred_direction_degrees": [
+       207.1
+      ],
+      "distance_to_known_degrees": [
+       117.1
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.2103
+      ],
+      "preferred_direction_degrees": [
+       243.1
+      ],
+      "distance_to_known_degrees": [
+       26.9
+      ]
+     }
+    }
+   },
+   {
+    "model": "026",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.0106
+      ],
+      "preferred_direction_degrees": [
+       18.0
+      ],
+      "distance_to_known_degrees": [
+       162.0
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.4267
+      ],
+      "preferred_direction_degrees": [
+       176.7
+      ],
+      "distance_to_known_degrees": [
+       176.7
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.3404
+      ],
+      "preferred_direction_degrees": [
+       270.4
+      ],
+      "distance_to_known_degrees": [
+       179.6
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.5214
+      ],
+      "preferred_direction_degrees": [
+       93.5
+      ],
+      "distance_to_known_degrees": [
+       176.5
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0372
+      ],
+      "preferred_direction_degrees": [
+       213.6
+      ],
+      "distance_to_known_degrees": [
+       33.6
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0589
+      ],
+      "preferred_direction_degrees": [
+       168.8
+      ],
+      "distance_to_known_degrees": [
+       168.8
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0
+      ],
+      "preferred_direction_degrees": [
+       0.0
+      ],
+      "distance_to_known_degrees": [
+       90.0
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0171
+      ],
+      "preferred_direction_degrees": [
+       170.8
+      ],
+      "distance_to_known_degrees": [
+       99.2
+      ]
+     }
+    }
+   },
+   {
+    "model": "027",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.608
+      ],
+      "preferred_direction_degrees": [
+       174.7
+      ],
+      "distance_to_known_degrees": [
+       5.3
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.0358
+      ],
+      "preferred_direction_degrees": [
+       327.0
+      ],
+      "distance_to_known_degrees": [
+       33.0
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.6299
+      ],
+      "preferred_direction_degrees": [
+       73.7
+      ],
+      "distance_to_known_degrees": [
+       16.3
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.5835
+      ],
+      "preferred_direction_degrees": [
+       244.2
+      ],
+      "distance_to_known_degrees": [
+       25.8
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.2597
+      ],
+      "preferred_direction_degrees": [
+       189.4
+      ],
+      "distance_to_known_degrees": [
+       9.4
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.067
+      ],
+      "preferred_direction_degrees": [
+       196.1
+      ],
+      "distance_to_known_degrees": [
+       163.9
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0093
+      ],
+      "preferred_direction_degrees": [
+       359.8
+      ],
+      "distance_to_known_degrees": [
+       90.2
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.8125
+      ],
+      "preferred_direction_degrees": [
+       243.2
+      ],
+      "distance_to_known_degrees": [
+       26.8
+      ]
+     }
+    }
+   },
+   {
+    "model": "028",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.0078
+      ],
+      "preferred_direction_degrees": [
+       356.4
+      ],
+      "distance_to_known_degrees": [
+       176.4
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.4813
+      ],
+      "preferred_direction_degrees": [
+       200.2
+      ],
+      "distance_to_known_degrees": [
+       159.8
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.0221
+      ],
+      "preferred_direction_degrees": [
+       31.6
+      ],
+      "distance_to_known_degrees": [
+       58.4
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.5055
+      ],
+      "preferred_direction_degrees": [
+       204.2
+      ],
+      "distance_to_known_degrees": [
+       65.8
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.1579
+      ],
+      "preferred_direction_degrees": [
+       318.1
+      ],
+      "distance_to_known_degrees": [
+       138.1
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.348
+      ],
+      "preferred_direction_degrees": [
+       184.0
+      ],
+      "distance_to_known_degrees": [
+       176.0
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0001
+      ],
+      "preferred_direction_degrees": [
+       252.4
+      ],
+      "distance_to_known_degrees": [
+       162.4
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.175
+      ],
+      "preferred_direction_degrees": [
+       78.4
+      ],
+      "distance_to_known_degrees": [
+       168.4
+      ]
+     }
+    }
+   },
+   {
+    "model": "029",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.4303
+      ],
+      "preferred_direction_degrees": [
+       200.7
+      ],
+      "distance_to_known_degrees": [
+       20.7
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.2612
+      ],
+      "preferred_direction_degrees": [
+       333.5
+      ],
+      "distance_to_known_degrees": [
+       26.5
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.5123
+      ],
+      "preferred_direction_degrees": [
+       77.2
+      ],
+      "distance_to_known_degrees": [
+       12.8
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.009
+      ],
+      "preferred_direction_degrees": [
+       345.0
+      ],
+      "distance_to_known_degrees": [
+       75.0
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.366
+      ],
+      "preferred_direction_degrees": [
+       195.9
+      ],
+      "distance_to_known_degrees": [
+       15.9
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.2484
+      ],
+      "preferred_direction_degrees": [
+       186.1
+      ],
+      "distance_to_known_degrees": [
+       173.9
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0065
+      ],
+      "preferred_direction_degrees": [
+       210.8
+      ],
+      "distance_to_known_degrees": [
+       120.8
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.2786
+      ],
+      "preferred_direction_degrees": [
+       137.8
+      ],
+      "distance_to_known_degrees": [
+       132.2
+      ]
+     }
+    }
+   },
+   {
+    "model": "030",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.1425
+      ],
+      "preferred_direction_degrees": [
+       156.2
+      ],
+      "distance_to_known_degrees": [
+       23.8
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.0725
+      ],
+      "preferred_direction_degrees": [
+       335.7
+      ],
+      "distance_to_known_degrees": [
+       24.3
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.6327
+      ],
+      "preferred_direction_degrees": [
+       89.9
+      ],
+      "distance_to_known_degrees": [
+       0.1
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.7239
+      ],
+      "preferred_direction_degrees": [
+       251.3
+      ],
+      "distance_to_known_degrees": [
+       18.7
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0374
+      ],
+      "preferred_direction_degrees": [
+       199.4
+      ],
+      "distance_to_known_degrees": [
+       19.4
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.7843
+      ],
+      "preferred_direction_degrees": [
+       183.0
+      ],
+      "distance_to_known_degrees": [
+       177.0
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0393
+      ],
+      "preferred_direction_degrees": [
+       159.2
+      ],
+      "distance_to_known_degrees": [
+       69.2
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0108
+      ],
+      "preferred_direction_degrees": [
+       172.5
+      ],
+      "distance_to_known_degrees": [
+       97.5
+      ]
+     }
+    }
+   },
+   {
+    "model": "031",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.0917
+      ],
+      "preferred_direction_degrees": [
+       170.6
+      ],
+      "distance_to_known_degrees": [
+       9.4
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.1095
+      ],
+      "preferred_direction_degrees": [
+       332.4
+      ],
+      "distance_to_known_degrees": [
+       27.6
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.7583
+      ],
+      "preferred_direction_degrees": [
+       69.0
+      ],
+      "distance_to_known_degrees": [
+       21.0
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.1975
+      ],
+      "preferred_direction_degrees": [
+       204.8
+      ],
+      "distance_to_known_degrees": [
+       65.2
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0467
+      ],
+      "preferred_direction_degrees": [
+       320.0
+      ],
+      "distance_to_known_degrees": [
+       140.0
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0545
+      ],
+      "preferred_direction_degrees": [
+       138.8
+      ],
+      "distance_to_known_degrees": [
+       138.8
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.004
+      ],
+      "preferred_direction_degrees": [
+       359.8
+      ],
+      "distance_to_known_degrees": [
+       90.2
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0
+      ],
+      "preferred_direction_degrees": [
+       0.0
+      ],
+      "distance_to_known_degrees": [
+       90.0
+      ]
+     }
+    }
+   },
+   {
+    "model": "032",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.6658
+      ],
+      "preferred_direction_degrees": [
+       308.6
+      ],
+      "distance_to_known_degrees": [
+       128.6
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.7427
+      ],
+      "preferred_direction_degrees": [
+       184.2
+      ],
+      "distance_to_known_degrees": [
+       175.8
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.1272
+      ],
+      "preferred_direction_degrees": [
+       0.6
+      ],
+      "distance_to_known_degrees": [
+       89.4
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.7302
+      ],
+      "preferred_direction_degrees": [
+       137.8
+      ],
+      "distance_to_known_degrees": [
+       132.2
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.3809
+      ],
+      "preferred_direction_degrees": [
+       341.3
+      ],
+      "distance_to_known_degrees": [
+       161.3
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0816
+      ],
+      "preferred_direction_degrees": [
+       302.5
+      ],
+      "distance_to_known_degrees": [
+       57.5
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.1555
+      ],
+      "preferred_direction_degrees": [
+       125.0
+      ],
+      "distance_to_known_degrees": [
+       35.0
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0684
+      ],
+      "preferred_direction_degrees": [
+       316.1
+      ],
+      "distance_to_known_degrees": [
+       46.1
+      ]
+     }
+    }
+   },
+   {
+    "model": "033",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.1207
+      ],
+      "preferred_direction_degrees": [
+       28.1
+      ],
+      "distance_to_known_degrees": [
+       151.9
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.033
+      ],
+      "preferred_direction_degrees": [
+       92.5
+      ],
+      "distance_to_known_degrees": [
+       92.5
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.6226
+      ],
+      "preferred_direction_degrees": [
+       291.3
+      ],
+      "distance_to_known_degrees": [
+       158.7
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.0
+      ],
+      "preferred_direction_degrees": [
+       0.0
+      ],
+      "distance_to_known_degrees": [
+       90.0
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0707
+      ],
+      "preferred_direction_degrees": [
+       202.3
+      ],
+      "distance_to_known_degrees": [
+       22.3
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0374
+      ],
+      "preferred_direction_degrees": [
+       184.8
+      ],
+      "distance_to_known_degrees": [
+       175.2
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0434
+      ],
+      "preferred_direction_degrees": [
+       174.3
+      ],
+      "distance_to_known_degrees": [
+       84.3
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.1303
+      ],
+      "preferred_direction_degrees": [
+       210.0
+      ],
+      "distance_to_known_degrees": [
+       60.0
+      ]
+     }
+    }
+   },
+   {
+    "model": "034",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.4736
+      ],
+      "preferred_direction_degrees": [
+       171.8
+      ],
+      "distance_to_known_degrees": [
+       8.2
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.0106
+      ],
+      "preferred_direction_degrees": [
+       296.6
+      ],
+      "distance_to_known_degrees": [
+       63.4
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.0392
+      ],
+      "preferred_direction_degrees": [
+       155.8
+      ],
+      "distance_to_known_degrees": [
+       65.8
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.45
+      ],
+      "preferred_direction_degrees": [
+       253.0
+      ],
+      "distance_to_known_degrees": [
+       17.0
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0397
+      ],
+      "preferred_direction_degrees": [
+       205.1
+      ],
+      "distance_to_known_degrees": [
+       25.1
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.4477
+      ],
+      "preferred_direction_degrees": [
+       190.8
+      ],
+      "distance_to_known_degrees": [
+       169.2
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.6194
+      ],
+      "preferred_direction_degrees": [
+       185.6
+      ],
+      "distance_to_known_degrees": [
+       95.6
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.3333
+      ],
+      "preferred_direction_degrees": [
+       270.0
+      ],
+      "distance_to_known_degrees": [
+       0.0
+      ]
+     }
+    }
+   },
+   {
+    "model": "035",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.0159
+      ],
+      "preferred_direction_degrees": [
+       10.5
+      ],
+      "distance_to_known_degrees": [
+       169.5
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.1574
+      ],
+      "preferred_direction_degrees": [
+       344.5
+      ],
+      "distance_to_known_degrees": [
+       15.5
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.6178
+      ],
+      "preferred_direction_degrees": [
+       66.0
+      ],
+      "distance_to_known_degrees": [
+       24.0
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.025
+      ],
+      "preferred_direction_degrees": [
+       348.6
+      ],
+      "distance_to_known_degrees": [
+       78.6
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.1777
+      ],
+      "preferred_direction_degrees": [
+       182.1
+      ],
+      "distance_to_known_degrees": [
+       2.1
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.1201
+      ],
+      "preferred_direction_degrees": [
+       183.1
+      ],
+      "distance_to_known_degrees": [
+       176.9
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.5652
+      ],
+      "preferred_direction_degrees": [
+       178.8
+      ],
+      "distance_to_known_degrees": [
+       88.8
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.1677
+      ],
+      "preferred_direction_degrees": [
+       113.3
+      ],
+      "distance_to_known_degrees": [
+       156.7
+      ]
+     }
+    }
+   },
+   {
+    "model": "036",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.0621
+      ],
+      "preferred_direction_degrees": [
+       170.0
+      ],
+      "distance_to_known_degrees": [
+       10.0
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.6977
+      ],
+      "preferred_direction_degrees": [
+       351.9
+      ],
+      "distance_to_known_degrees": [
+       8.1
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.6341
+      ],
+      "preferred_direction_degrees": [
+       84.2
+      ],
+      "distance_to_known_degrees": [
+       5.8
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.6678
+      ],
+      "preferred_direction_degrees": [
+       248.8
+      ],
+      "distance_to_known_degrees": [
+       21.2
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0107
+      ],
+      "preferred_direction_degrees": [
+       304.5
+      ],
+      "distance_to_known_degrees": [
+       124.5
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0436
+      ],
+      "preferred_direction_degrees": [
+       359.8
+      ],
+      "distance_to_known_degrees": [
+       0.2
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.6082
+      ],
+      "preferred_direction_degrees": [
+       87.0
+      ],
+      "distance_to_known_degrees": [
+       3.0
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.4648
+      ],
+      "preferred_direction_degrees": [
+       267.2
+      ],
+      "distance_to_known_degrees": [
+       2.8
+      ]
+     }
+    }
+   },
+   {
+    "model": "037",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.0455
+      ],
+      "preferred_direction_degrees": [
+       132.9
+      ],
+      "distance_to_known_degrees": [
+       47.1
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.021
+      ],
+      "preferred_direction_degrees": [
+       175.1
+      ],
+      "distance_to_known_degrees": [
+       175.1
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.4688
+      ],
+      "preferred_direction_degrees": [
+       78.5
+      ],
+      "distance_to_known_degrees": [
+       11.5
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.0537
+      ],
+      "preferred_direction_degrees": [
+       165.6
+      ],
+      "distance_to_known_degrees": [
+       104.4
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0201
+      ],
+      "preferred_direction_degrees": [
+       206.9
+      ],
+      "distance_to_known_degrees": [
+       26.9
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.8305
+      ],
+      "preferred_direction_degrees": [
+       194.2
+      ],
+      "distance_to_known_degrees": [
+       165.8
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0488
+      ],
+      "preferred_direction_degrees": [
+       146.5
+      ],
+      "distance_to_known_degrees": [
+       56.5
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.651
+      ],
+      "preferred_direction_degrees": [
+       245.4
+      ],
+      "distance_to_known_degrees": [
+       24.6
+      ]
+     }
+    }
+   },
+   {
+    "model": "038",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.0834
+      ],
+      "preferred_direction_degrees": [
+       356.2
+      ],
+      "distance_to_known_degrees": [
+       176.2
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.0206
+      ],
+      "preferred_direction_degrees": [
+       230.1
+      ],
+      "distance_to_known_degrees": [
+       129.9
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.6248
+      ],
+      "preferred_direction_degrees": [
+       269.8
+      ],
+      "distance_to_known_degrees": [
+       179.8
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.4837
+      ],
+      "preferred_direction_degrees": [
+       179.6
+      ],
+      "distance_to_known_degrees": [
+       90.4
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0161
+      ],
+      "preferred_direction_degrees": [
+       166.0
+      ],
+      "distance_to_known_degrees": [
+       14.0
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.2692
+      ],
+      "preferred_direction_degrees": [
+       51.2
+      ],
+      "distance_to_known_degrees": [
+       51.2
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.7019
+      ],
+      "preferred_direction_degrees": [
+       83.4
+      ],
+      "distance_to_known_degrees": [
+       6.6
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.1875
+      ],
+      "preferred_direction_degrees": [
+       285.0
+      ],
+      "distance_to_known_degrees": [
+       15.0
+      ]
+     }
+    }
+   },
+   {
+    "model": "039",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.0329
+      ],
+      "preferred_direction_degrees": [
+       35.2
+      ],
+      "distance_to_known_degrees": [
+       144.8
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.0931
+      ],
+      "preferred_direction_degrees": [
+       248.3
+      ],
+      "distance_to_known_degrees": [
+       111.7
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.1123
+      ],
+      "preferred_direction_degrees": [
+       23.6
+      ],
+      "distance_to_known_degrees": [
+       66.4
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.2157
+      ],
+      "preferred_direction_degrees": [
+       97.7
+      ],
+      "distance_to_known_degrees": [
+       172.3
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.5198
+      ],
+      "preferred_direction_degrees": [
+       203.8
+      ],
+      "distance_to_known_degrees": [
+       23.8
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0763
+      ],
+      "preferred_direction_degrees": [
+       196.6
+      ],
+      "distance_to_known_degrees": [
+       163.4
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.1019
+      ],
+      "preferred_direction_degrees": [
+       349.4
+      ],
+      "distance_to_known_degrees": [
+       100.6
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0596
+      ],
+      "preferred_direction_degrees": [
+       314.0
+      ],
+      "distance_to_known_degrees": [
+       44.0
+      ]
+     }
+    }
+   },
+   {
+    "model": "040",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.0719
+      ],
+      "preferred_direction_degrees": [
+       122.8
+      ],
+      "distance_to_known_degrees": [
+       57.2
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.0244
+      ],
+      "preferred_direction_degrees": [
+       355.6
+      ],
+      "distance_to_known_degrees": [
+       4.4
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.6298
+      ],
+      "preferred_direction_degrees": [
+       259.9
+      ],
+      "distance_to_known_degrees": [
+       169.9
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.6327
+      ],
+      "preferred_direction_degrees": [
+       110.4
+      ],
+      "distance_to_known_degrees": [
+       159.6
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0531
+      ],
+      "preferred_direction_degrees": [
+       228.5
+      ],
+      "distance_to_known_degrees": [
+       48.5
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.1126
+      ],
+      "preferred_direction_degrees": [
+       199.3
+      ],
+      "distance_to_known_degrees": [
+       160.7
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0308
+      ],
+      "preferred_direction_degrees": [
+       302.4
+      ],
+      "distance_to_known_degrees": [
+       147.6
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.6933
+      ],
+      "preferred_direction_degrees": [
+       277.2
+      ],
+      "distance_to_known_degrees": [
+       7.2
+      ]
+     }
+    }
+   },
+   {
+    "model": "041",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.5412
+      ],
+      "preferred_direction_degrees": [
+       349.4
+      ],
+      "distance_to_known_degrees": [
+       169.4
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.5681
+      ],
+      "preferred_direction_degrees": [
+       187.5
+      ],
+      "distance_to_known_degrees": [
+       172.5
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.033
+      ],
+      "preferred_direction_degrees": [
+       352.3
+      ],
+      "distance_to_known_degrees": [
+       97.7
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.022
+      ],
+      "preferred_direction_degrees": [
+       357.6
+      ],
+      "distance_to_known_degrees": [
+       87.6
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.2802
+      ],
+      "preferred_direction_degrees": [
+       358.9
+      ],
+      "distance_to_known_degrees": [
+       178.9
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0113
+      ],
+      "preferred_direction_degrees": [
+       105.9
+      ],
+      "distance_to_known_degrees": [
+       105.9
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0177
+      ],
+      "preferred_direction_degrees": [
+       322.9
+      ],
+      "distance_to_known_degrees": [
+       127.1
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.3667
+      ],
+      "preferred_direction_degrees": [
+       250.1
+      ],
+      "distance_to_known_degrees": [
+       19.9
+      ]
+     }
+    }
+   },
+   {
+    "model": "042",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.0696
+      ],
+      "preferred_direction_degrees": [
+       4.7
+      ],
+      "distance_to_known_degrees": [
+       175.3
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.0887
+      ],
+      "preferred_direction_degrees": [
+       356.9
+      ],
+      "distance_to_known_degrees": [
+       3.1
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.584
+      ],
+      "preferred_direction_degrees": [
+       77.8
+      ],
+      "distance_to_known_degrees": [
+       12.2
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.497
+      ],
+      "preferred_direction_degrees": [
+       243.1
+      ],
+      "distance_to_known_degrees": [
+       26.9
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.7851
+      ],
+      "preferred_direction_degrees": [
+       188.4
+      ],
+      "distance_to_known_degrees": [
+       8.4
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.2105
+      ],
+      "preferred_direction_degrees": [
+       183.8
+      ],
+      "distance_to_known_degrees": [
+       176.2
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.5609
+      ],
+      "preferred_direction_degrees": [
+       101.3
+      ],
+      "distance_to_known_degrees": [
+       11.3
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.5284
+      ],
+      "preferred_direction_degrees": [
+       252.3
+      ],
+      "distance_to_known_degrees": [
+       17.7
+      ]
+     }
+    }
+   },
+   {
+    "model": "043",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.0942
+      ],
+      "preferred_direction_degrees": [
+       145.0
+      ],
+      "distance_to_known_degrees": [
+       35.0
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.6212
+      ],
+      "preferred_direction_degrees": [
+       209.4
+      ],
+      "distance_to_known_degrees": [
+       150.6
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.1052
+      ],
+      "preferred_direction_degrees": [
+       277.4
+      ],
+      "distance_to_known_degrees": [
+       172.6
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.4071
+      ],
+      "preferred_direction_degrees": [
+       167.4
+      ],
+      "distance_to_known_degrees": [
+       102.6
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.1217
+      ],
+      "preferred_direction_degrees": [
+       179.8
+      ],
+      "distance_to_known_degrees": [
+       0.2
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.5741
+      ],
+      "preferred_direction_degrees": [
+       320.9
+      ],
+      "distance_to_known_degrees": [
+       39.1
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.1662
+      ],
+      "preferred_direction_degrees": [
+       144.2
+      ],
+      "distance_to_known_degrees": [
+       54.2
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.352
+      ],
+      "preferred_direction_degrees": [
+       274.0
+      ],
+      "distance_to_known_degrees": [
+       4.0
+      ]
+     }
+    }
+   },
+   {
+    "model": "044",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.3694
+      ],
+      "preferred_direction_degrees": [
+       186.3
+      ],
+      "distance_to_known_degrees": [
+       6.3
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.3092
+      ],
+      "preferred_direction_degrees": [
+       224.5
+      ],
+      "distance_to_known_degrees": [
+       135.5
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.7064
+      ],
+      "preferred_direction_degrees": [
+       60.3
+      ],
+      "distance_to_known_degrees": [
+       29.7
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.105
+      ],
+      "preferred_direction_degrees": [
+       298.5
+      ],
+      "distance_to_known_degrees": [
+       28.5
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.1407
+      ],
+      "preferred_direction_degrees": [
+       181.4
+      ],
+      "distance_to_known_degrees": [
+       1.4
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0059
+      ],
+      "preferred_direction_degrees": [
+       356.2
+      ],
+      "distance_to_known_degrees": [
+       3.8
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0072
+      ],
+      "preferred_direction_degrees": [
+       245.3
+      ],
+      "distance_to_known_degrees": [
+       155.3
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.2225
+      ],
+      "preferred_direction_degrees": [
+       95.7
+      ],
+      "distance_to_known_degrees": [
+       174.3
+      ]
+     }
+    }
+   },
+   {
+    "model": "045",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.0246
+      ],
+      "preferred_direction_degrees": [
+       45.7
+      ],
+      "distance_to_known_degrees": [
+       134.3
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.2562
+      ],
+      "preferred_direction_degrees": [
+       204.9
+      ],
+      "distance_to_known_degrees": [
+       155.1
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.0371
+      ],
+      "preferred_direction_degrees": [
+       52.4
+      ],
+      "distance_to_known_degrees": [
+       37.6
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.0153
+      ],
+      "preferred_direction_degrees": [
+       270.7
+      ],
+      "distance_to_known_degrees": [
+       0.7
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.5234
+      ],
+      "preferred_direction_degrees": [
+       264.2
+      ],
+      "distance_to_known_degrees": [
+       84.2
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.065
+      ],
+      "preferred_direction_degrees": [
+       117.2
+      ],
+      "distance_to_known_degrees": [
+       117.2
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0206
+      ],
+      "preferred_direction_degrees": [
+       165.6
+      ],
+      "distance_to_known_degrees": [
+       75.6
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.38
+      ],
+      "preferred_direction_degrees": [
+       67.2
+      ],
+      "distance_to_known_degrees": [
+       157.2
+      ]
+     }
+    }
+   },
+   {
+    "model": "046",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.3488
+      ],
+      "preferred_direction_degrees": [
+       295.6
+      ],
+      "distance_to_known_degrees": [
+       115.6
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.0145
+      ],
+      "preferred_direction_degrees": [
+       335.0
+      ],
+      "distance_to_known_degrees": [
+       25.0
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.0109
+      ],
+      "preferred_direction_degrees": [
+       16.1
+      ],
+      "distance_to_known_degrees": [
+       73.9
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.2814
+      ],
+      "preferred_direction_degrees": [
+       98.0
+      ],
+      "distance_to_known_degrees": [
+       172.0
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0
+      ],
+      "preferred_direction_degrees": [
+       0.0
+      ],
+      "distance_to_known_degrees": [
+       180.0
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.7541
+      ],
+      "preferred_direction_degrees": [
+       199.8
+      ],
+      "distance_to_known_degrees": [
+       160.2
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0019
+      ],
+      "preferred_direction_degrees": [
+       177.3
+      ],
+      "distance_to_known_degrees": [
+       87.3
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0943
+      ],
+      "preferred_direction_degrees": [
+       212.9
+      ],
+      "distance_to_known_degrees": [
+       57.1
+      ]
+     }
+    }
+   },
+   {
+    "model": "047",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.1706
+      ],
+      "preferred_direction_degrees": [
+       138.5
+      ],
+      "distance_to_known_degrees": [
+       41.5
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.3454
+      ],
+      "preferred_direction_degrees": [
+       193.8
+      ],
+      "distance_to_known_degrees": [
+       166.2
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.6047
+      ],
+      "preferred_direction_degrees": [
+       83.5
+      ],
+      "distance_to_known_degrees": [
+       6.5
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.0363
+      ],
+      "preferred_direction_degrees": [
+       283.3
+      ],
+      "distance_to_known_degrees": [
+       13.3
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0587
+      ],
+      "preferred_direction_degrees": [
+       309.3
+      ],
+      "distance_to_known_degrees": [
+       129.3
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0637
+      ],
+      "preferred_direction_degrees": [
+       9.8
+      ],
+      "distance_to_known_degrees": [
+       9.8
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0095
+      ],
+      "preferred_direction_degrees": [
+       241.7
+      ],
+      "distance_to_known_degrees": [
+       151.7
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0299
+      ],
+      "preferred_direction_degrees": [
+       268.8
+      ],
+      "distance_to_known_degrees": [
+       1.2
+      ]
+     }
+    }
+   },
+   {
+    "model": "048",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.6044
+      ],
+      "preferred_direction_degrees": [
+       181.8
+      ],
+      "distance_to_known_degrees": [
+       1.8
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.006
+      ],
+      "preferred_direction_degrees": [
+       95.7
+      ],
+      "distance_to_known_degrees": [
+       95.7
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.6304
+      ],
+      "preferred_direction_degrees": [
+       53.4
+      ],
+      "distance_to_known_degrees": [
+       36.6
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.0074
+      ],
+      "preferred_direction_degrees": [
+       264.2
+      ],
+      "distance_to_known_degrees": [
+       5.8
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0096
+      ],
+      "preferred_direction_degrees": [
+       211.7
+      ],
+      "distance_to_known_degrees": [
+       31.7
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.005
+      ],
+      "preferred_direction_degrees": [
+       185.9
+      ],
+      "distance_to_known_degrees": [
+       174.1
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0171
+      ],
+      "preferred_direction_degrees": [
+       177.4
+      ],
+      "distance_to_known_degrees": [
+       87.4
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0
+      ],
+      "preferred_direction_degrees": [
+       0.0
+      ],
+      "distance_to_known_degrees": [
+       90.0
+      ]
+     }
+    }
+   },
+   {
+    "model": "049",
+    "tuning": {
+     "T4a": {
+      "dsi": [
+       0.137
+      ],
+      "preferred_direction_degrees": [
+       21.0
+      ],
+      "distance_to_known_degrees": [
+       159.0
+      ]
+     },
+     "T4b": {
+      "dsi": [
+       0.3332
+      ],
+      "preferred_direction_degrees": [
+       220.3
+      ],
+      "distance_to_known_degrees": [
+       139.7
+      ]
+     },
+     "T4c": {
+      "dsi": [
+       0.2516
+      ],
+      "preferred_direction_degrees": [
+       19.4
+      ],
+      "distance_to_known_degrees": [
+       70.6
+      ]
+     },
+     "T4d": {
+      "dsi": [
+       0.0
+      ],
+      "preferred_direction_degrees": [
+       0.0
+      ],
+      "distance_to_known_degrees": [
+       90.0
+      ]
+     },
+     "T5a": {
+      "dsi": [
+       0.0
+      ],
+      "preferred_direction_degrees": [
+       263.1
+      ],
+      "distance_to_known_degrees": [
+       83.1
+      ]
+     },
+     "T5b": {
+      "dsi": [
+       0.0153
+      ],
+      "preferred_direction_degrees": [
+       151.5
+      ],
+      "distance_to_known_degrees": [
+       151.5
+      ]
+     },
+     "T5c": {
+      "dsi": [
+       0.0022
+      ],
+      "preferred_direction_degrees": [
+       163.0
+      ],
+      "distance_to_known_degrees": [
+       73.0
+      ]
+     },
+     "T5d": {
+      "dsi": [
+       0.0032
+      ],
+      "preferred_direction_degrees": [
+       169.0
+      ],
+      "distance_to_known_degrees": [
+       101.0
+      ]
+     }
+    }
+   }
+  ],
+  "stimulus": {
+   "kind": "moving edges",
+   "dt": 0.005,
+   "speeds": [
+    2.4,
+    4.8,
+    9.7,
+    13.0,
+    19.0,
+    25.0
+   ],
+   "angles": [
+    0,
+    30,
+    60,
+    90,
+    120,
+    150,
+    180,
+    210,
+    240,
+    270,
+    300,
+    330
+   ],
+   "intensities": [
+    0,
+    1
+   ],
+   "t_pre": 1.0,
+   "t_post": 1.0
+  }
+ },
+ "pipeline_crosscheck": {
+  "models": [
+   "004",
+   "009",
+   "022"
+  ],
+  "largest_dsi_difference": 0.0,
+  "largest_direction_difference_degrees": 0.0,
+  "per_model": [
+   {
+    "model": "004",
+    "largest_dsi_difference": 0.0,
+    "largest_direction_difference_degrees": 0.0,
+    "engine": {
+     "T4a": {
+      "dsi": 0.0248,
+      "preferred_direction_degrees": 357.5,
+      "distance_to_known_degrees": 177.5
+     },
+     "T4b": {
+      "dsi": 0.5898,
+      "preferred_direction_degrees": 178.3,
+      "distance_to_known_degrees": 178.3
+     },
+     "T4c": {
+      "dsi": 0.551,
+      "preferred_direction_degrees": 272.7,
+      "distance_to_known_degrees": 177.3
+     },
+     "T4d": {
+      "dsi": 0.5033,
+      "preferred_direction_degrees": 95.4,
+      "distance_to_known_degrees": 174.6
+     },
+     "T5a": {
+      "dsi": 0.0033,
+      "preferred_direction_degrees": 4.9,
+      "distance_to_known_degrees": 175.1
+     },
+     "T5b": {
+      "dsi": 0.4281,
+      "preferred_direction_degrees": 319.4,
+      "distance_to_known_degrees": 40.6
+     },
+     "T5c": {
+      "dsi": 0.0134,
+      "preferred_direction_degrees": 226.9,
+      "distance_to_known_degrees": 136.9
+     },
+     "T5d": {
+      "dsi": 0.081,
+      "preferred_direction_degrees": 67.1,
+      "distance_to_known_degrees": 157.1
+     }
+    }
+   },
+   {
+    "model": "009",
+    "largest_dsi_difference": 0.0,
+    "largest_direction_difference_degrees": 0.0,
+    "engine": {
+     "T4a": {
+      "dsi": 0.6337,
+      "preferred_direction_degrees": 179.9,
+      "distance_to_known_degrees": 0.1
+     },
+     "T4b": {
+      "dsi": 0.0156,
+      "preferred_direction_degrees": 356.8,
+      "distance_to_known_degrees": 3.2
+     },
+     "T4c": {
+      "dsi": 0.6514,
+      "preferred_direction_degrees": 74.9,
+      "distance_to_known_degrees": 15.1
+     },
+     "T4d": {
+      "dsi": 0.589,
+      "preferred_direction_degrees": 257.6,
+      "distance_to_known_degrees": 12.4
+     },
+     "T5a": {
+      "dsi": 0.0398,
+      "preferred_direction_degrees": 184.6,
+      "distance_to_known_degrees": 4.6
+     },
+     "T5b": {
+      "dsi": 0.5554,
+      "preferred_direction_degrees": 190.5,
+      "distance_to_known_degrees": 169.5
+     },
+     "T5c": {
+      "dsi": 0.0298,
+      "preferred_direction_degrees": 100.3,
+      "distance_to_known_degrees": 10.3
+     },
+     "T5d": {
+      "dsi": 0.0263,
+      "preferred_direction_degrees": 264.3,
+      "distance_to_known_degrees": 5.7
+     }
+    }
+   },
+   {
+    "model": "022",
+    "largest_dsi_difference": 0.0,
+    "largest_direction_difference_degrees": 0.0,
+    "engine": {
+     "T4a": {
+      "dsi": 0.7557,
+      "preferred_direction_degrees": 177.9,
+      "distance_to_known_degrees": 2.1
+     },
+     "T4b": {
+      "dsi": 0.0226,
+      "preferred_direction_degrees": 328.6,
+      "distance_to_known_degrees": 31.4
+     },
+     "T4c": {
+      "dsi": 0.5258,
+      "preferred_direction_degrees": 75.5,
+      "distance_to_known_degrees": 14.5
+     },
+     "T4d": {
+      "dsi": 0.5481,
+      "preferred_direction_degrees": 260.0,
+      "distance_to_known_degrees": 10.0
+     },
+     "T5a": {
+      "dsi": 0.0113,
+      "preferred_direction_degrees": 203.3,
+      "distance_to_known_degrees": 23.3
+     },
+     "T5b": {
+      "dsi": 0.7879,
+      "preferred_direction_degrees": 134.6,
+      "distance_to_known_degrees": 134.6
+     },
+     "T5c": {
+      "dsi": 0.1274,
+      "preferred_direction_degrees": 121.1,
+      "distance_to_known_degrees": 31.1
+     },
+     "T5d": {
+      "dsi": 0.0148,
+      "preferred_direction_degrees": 240.2,
+      "distance_to_known_degrees": 29.8
+     }
+    }
+   }
+  ]
+ }
+}

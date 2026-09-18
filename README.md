@@ -54,9 +54,20 @@ s_ij = alpha_{t_i t_j} * sigma_{t_i t_j} * N_{t_i t_j}(du, dv) * ReLU(V_j)
 ```
 
 `N` is the measured synapse count at hexagonal offset `(du, dv)` between two cell types, and `sigma` is the
-measured sign (excitatory or inhibitory). Both come from the connectome and are **frozen**. Depending on
-the regime, the learned set is a readout head alone, or the per-type `alpha`, `tau` and `V_rest`, or a
-per-edge gain. The equations, their symbols and their sources are documented in `docs/`.
+measured sign (excitatory or inhibitory). Both come from the connectome and are **frozen**. Three regimes
+decide what else may learn, measured on the right optic lobe (253 cell types, 40,051 cells, 2,922,900
+connections):
+
+| Regime | Trainable inside the network | Count |
+|---|---|---|
+| R0 reservoir | nothing; only a readout outside the network | 0 |
+| R1 biophysical | `alpha` per type pair, `tau` and `V_rest` per cell type (the published model's regime) | 8,409 |
+| R2 edge gain | `alpha` per connection, `tau` and `V_rest` per neuron | 3,003,002 |
+
+Every regime is compared against three null controls (degree-preserving rewiring, a size-matched random
+graph, a sign shuffle), and the construction is checked against the published connectome-constrained
+model, voltage for voltage. The equations, their symbols and their sources are in
+[docs/architecture/03](docs/architecture/03_network-and-regimes.md).
 
 ## Data and engines
 
@@ -77,7 +88,7 @@ per-edge gain. The equations, their symbols and their sources are documented in 
 
 | Path | What |
 |---|---|
-| `data-pipeline/` | the offline engine: staged, seeded, typed pipeline (arrives with U1) |
+| `data-pipeline/` | the offline engine: connectome construction (`conectoma/connectome/`), the network compiler, regimes, null controls and parity checks (`conectoma/network/`), and the command line (`run.py`) |
 | `data/` | `raw/` git-ignored source cache, `derived/` committed compact artifacts |
 | `models/` | small exported models; heavy checkpoints stay outside git |
 | `manifests/` | per-case artifact manifests (contract 2) |
@@ -94,8 +105,17 @@ python -m pytest            # repository invariants
 ruff check .                # lint
 ```
 
-The data pipeline, its environments and its commands arrive with U1 and are documented in `docs/guides/`
-as they land.
+The offline pipeline has its own environment and data roots:
+
+```bash
+python data-pipeline/run.py build-connectome          # the MaleCNS tables to the connectome specification
+python data-pipeline/run.py compare-consensus         # against the published consensus
+python data-pipeline/run.py parity-published          # the published model rebuilt through this path
+python data-pipeline/run.py characterize-connectome   # the MaleCNS connectome as a frozen network
+```
+
+Setup, data roots and expected run times: [fetch the connectome](docs/guides/02_fetch-the-connectome.md) and
+[the network engine](docs/guides/03_network-engine.md).
 
 ## License and attribution
 
