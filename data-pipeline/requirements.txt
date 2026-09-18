@@ -17,3 +17,10 @@ flyvis==1.2.0
 # open, which works on Linux and fails on Windows the first time a connectome is compiled; the fix is on the
 # upstream main branch (commit 3b9792c, 2026-02-27) and unreleased, so it is pinned by commit.
 datamate @ git+https://github.com/flyvis/datamate@3b9792c3c90fb29d741f8185c7aca912aa0c0942
+
+# U4, vision data: member-level fetching over HTTP ranges (requests), the source configuration (PyYAML), and
+# TartanAir V2 decoding through OpenCV, as its reference reader does it (the channel order of its packed
+# depth and flow PNGs is OpenCV's; a PIL decode swaps flow with its mask).
+requests==2.34.2
+PyYAML==6.0.3
+opencv-python-headless==5.0.0.93
