@@ -20,11 +20,13 @@ reordered from FlyGym's ommatidium ids to the engine's column order by the measu
 A seed fixes a scene (its textures, the approach direction, the path); the six levels of a case are
 rendered in that same scene, so they differ only in the quantity the case varies.
 
-- C10 gap crossing: the fly walks at 20 mm/s toward a gap in the ground, its right eye 1 mm above the
-  surface, starting 8.2 mm before the near edge and walking 6.2 mm along a heading up to 30 degrees to the
-  left of the gap's normal (so the gap sits in the right eye's frontal field). Surfaces carry 1/f texture;
-  the pit is 10 mm deep. Level: the gap's width in mm. Figure: the platform beyond the gap, the surface
-  the fly would have to reach.
+- C10 gap crossing: two catwalks 6 mm wide with a gap between them, over a pit 10 mm deep. The fly walks
+  at 20 mm/s along the near catwalk toward the gap, its right eye 1 mm above the surface, starting 8.2 mm
+  before the near edge and walking 6.2 mm along a heading up to 15 degrees off the catwalk's axis. Flies
+  "chiefly use the vertical edges on the targeted side to distill the gap width from the parallax motion
+  generated during the approach" (Pick and Strauss 2005, doi:10.1016/j.cub.2005.07.022); the far
+  catwalk's sides are those edges. Surfaces carry 1/f texture. Level: the gap's width in mm. Figure: the
+  far catwalk, the surface the fly would have to reach.
 - C11 looming: a dark disk of radius l = 2 mm approaches the eye head-on at constant speed v, its face
   toward the eye; the clip ends when it subtends 90 degrees, so its angular size follows
   `theta(t) = 2 atan(l / (v (t_c - t)))`. Level: l / v in ms.
@@ -296,16 +298,17 @@ GAP_START_MM = 8.2
 PIT_DEPTH_MM = 10.0
 EYE_HEIGHT_MM = 1.0
 PLATFORM_MM = 80.0
+CATWALK_HALF_WIDTH_MM = 3.0
 
 
 def gap_crossing(gaps_mm: list[float], seed: int) -> list[dict]:
     rng = np.random.default_rng(seed)
-    heading = np.radians(rng.uniform(0.0, 30.0))            # to the left: the gap in the right eye
+    heading = np.radians(rng.uniform(0.0, 15.0))            # to the left; stays on the 6 mm catwalk
 
     def add(spec):
         near, far, pit = (_texture(spec, n, seed * 10 + i) for i, n in enumerate(("near", "far", "pit")))
-        _ground(spec, "near_platform", near, (-PLATFORM_MM, 0.0), 0.0, PIT_DEPTH_MM)
-        _ground(spec, "far_platform", far, (0.0, PLATFORM_MM), 0.0, PIT_DEPTH_MM)
+        _ground(spec, "near_platform", near, (-PLATFORM_MM, 0.0), 0.0, PIT_DEPTH_MM, CATWALK_HALF_WIDTH_MM)
+        _ground(spec, "far_platform", far, (0.0, PLATFORM_MM), 0.0, PIT_DEPTH_MM, CATWALK_HALF_WIDTH_MM)
         _ground(spec, "pit_floor", pit, (-PLATFORM_MM, 2 * PLATFORM_MM), -PIT_DEPTH_MM, 1.0)
 
     scene = build(add, EYE_HEIGHT_MM)
