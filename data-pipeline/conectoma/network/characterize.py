@@ -27,7 +27,7 @@ from pathlib import Path
 import numpy as np
 
 from conectoma.connectome.nulls import CONTROLS
-from conectoma.network.engine import engine_root, load_engine, published_model_dir
+from conectoma.network.engine import engine_root, load_engine, published_model_dir, run_log
 from conectoma.network.lattice import spec_digest
 from conectoma.network.regimes import build_network, trainable_report
 from conectoma.network.tuning import (
@@ -35,6 +35,7 @@ from conectoma.network.tuning import (
     motion_tuning,
     moving_edges,
     response_dataset,
+    stimulus_description,
     summarise_tuning,
 )
 
@@ -155,22 +156,29 @@ def merge(rows: list[dict]) -> dict:
 
 
 def characterize(spec_path: Path, seeds: tuple[int, ...] = (0, 1, 2, 3, 4), log=print) -> dict:
+    """Every stage stored in a run log as it finishes, so a rerun resumes rather than restarts."""
     import torch
 
     flyvis = load_engine()
     transfer_from = published_model_dir("000")
     dataset = moving_edges()
+    digest = spec_digest(spec_path)
+    runs = run_log(f"characterize-{digest[:12]}", {
+        "digest": digest,
+        "stimulus": stimulus_description(dataset),
+        "transfer_from": "flow/0000/000",
+        "device": torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu",
+    })
     report: dict = {
         "connectome": Path(spec_path).name,
-        "digest": spec_digest(spec_path),
+        "digest": digest,
         "device": torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu",
         "torch": torch.__version__,
         "engine": getattr(flyvis, "__version__", "1.2.0"),
+        "stimulus": stimulus_description(dataset),
     }
 
-    log("[1/4] the frozen network (R0) from both starting points")
-    report["frozen"] = {}
-    for init in ("default", "transfer"):
+    def frozen(init: str) -> dict:
         network = build_network(spec_path, "R0", transfer_from=transfer_from if init == "transfer" else None)
         entry = {
             "parameters": trainable_report(network),
@@ -182,55 +190,58 @@ def characterize(spec_path: Path, seeds: tuple[int, ...] = (0, 1, 2, 3, 4), log=
         tuning = tuning_of(network, dataset)
         entry["tuning"] = tuning
         entry["tuning_summary"] = summarise_tuning(tuning)
+        del network
+        torch.cuda.empty_cache()
+        return entry
+
+    log("[1/3] the frozen network (R0) from both starting points")
+    report["frozen"] = {}
+    for init in ("default", "transfer"):
+        entry = runs.step(f"frozen/{init}", lambda init=init: frozen(init))
         report["frozen"][init] = entry
         log(f"      {init}: stable {entry['stability']['finite']}, "
             f"{entry['simulation']['simulated_seconds_per_wall_second_per_sample']} sim s per s per sample")
-        del network
-        torch.cuda.empty_cache()
 
-    log("[2/4] cost of one training step per regime")
-    report["training_step"] = {}
-    for regime in ("R1", "R2"):
-        network = build_network(spec_path, regime, transfer_from=transfer_from)
+    def step_cost(regime: str) -> dict:
+        from conectoma.network.parity import product_network
+
+        if regime == "published_R1":
+            network = product_network(transfer_from)
+        else:
+            network = build_network(spec_path, regime, transfer_from=transfer_from)
         network.train()
-        report["training_step"][regime] = training_step(network) | {
-            "trainable": trainable_report(network)["trainable"],
-        }
-        log(f"      {regime}: {report['training_step'][regime]}")
+        result = training_step(network) | {"trainable": trainable_report(network)["trainable"]}
         del network
         torch.cuda.empty_cache()
-    from conectoma.network.parity import product_network
+        return result
 
-    published = product_network(transfer_from)
-    published.train()
-    report["training_step"]["published_R1"] = training_step(published) | {
-        "trainable": trainable_report(published)["trainable"],
-    }
-    log(f"      published R1: {report['training_step']['published_R1']}")
-    del published
-    torch.cuda.empty_cache()
+    log("[2/3] cost of one training step per regime")
+    report["training_step"] = {}
+    for regime in ("R1", "R2", "published_R1"):
+        report["training_step"][regime] = runs.step(f"training_step/{regime}", lambda r=regime: step_cost(r))
+        log(f"      {regime}: {report['training_step'][regime]}")
 
-    log("[3/4] null controls with the transferred parameters")
+    def control(kind: str, seed: int) -> dict:
+        path = control_spec_path(Path(spec_path), kind, seed)
+        network = build_network(path, "R0", transfer_from=transfer_from)
+        result = {"stability": stability(network), "tuning": tuning_of(network, dataset)}
+        del network
+        torch.cuda.empty_cache()
+        return result
+
+    log("[3/3] null controls with the transferred parameters")
     report["controls"] = {}
     for kind in sorted(CONTROLS):
         rows = []
-        stable = []
         for seed in seeds:
-            path = control_spec_path(Path(spec_path), kind, seed)
-            network = build_network(path, "R0", transfer_from=transfer_from)
-            stable.append(stability(network))
-            rows.append(tuning_of(network, dataset))
+            rows.append(runs.step(f"controls/{kind}/seed{seed}", lambda k=kind, s=seed: control(k, s)))
             log(f"      {kind} seed {seed}")
-            del network
-            torch.cuda.empty_cache()
+        tuning = merge([row["tuning"] for row in rows])
         report["controls"][kind] = {
             "seeds": list(seeds),
-            "stability": stable,
-            "tuning": merge(rows),
-            "tuning_summary": summarise_tuning(merge(rows)),
+            "stability": [row["stability"] for row in rows],
+            "tuning": tuning,
+            "tuning_summary": summarise_tuning(tuning),
         }
-
-    log("[4/4] done")
-    report["stimulus"] = {"kind": "moving edges", "dt": dataset.dt, "speeds": list(dataset.speeds),
-                          "angles": list(dataset.angles), "intensities": [0, 1]}
+    report["reused_steps"] = runs.reused
     return report

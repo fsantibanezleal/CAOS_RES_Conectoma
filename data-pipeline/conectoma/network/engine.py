@@ -89,6 +89,15 @@ def published_model_dir(model: str = "000") -> Path:
     return path
 
 
+def run_log(name: str, signature: dict):
+    """The resumable log of a long run, kept next to the engine's data (see `conectoma.core.runlog`)."""
+    from conectoma.core.runlog import RunLog
+
+    base = engine_root()
+    folder = (base.parent if base is not None else Path.cwd()) / "runs"
+    return RunLog(folder / f"{name}.json", signature)
+
+
 def device() -> str:
     import torch
 

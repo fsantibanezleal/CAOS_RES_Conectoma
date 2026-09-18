@@ -21,13 +21,14 @@ from pathlib import Path
 
 import numpy as np
 
-from conectoma.network.engine import PUBLISHED_ENSEMBLE, load_engine, published_model_dir
+from conectoma.network.engine import PUBLISHED_ENSEMBLE, load_engine, published_model_dir, run_log
 from conectoma.network.regimes import PER_OFFSET, build_network
 from conectoma.network.tuning import (
     central_responses,
     motion_tuning,
     moving_edges,
     response_dataset,
+    stimulus_description,
     summarise_tuning,
 )
 
@@ -63,8 +64,11 @@ def product_network(model_dir: Path):
     return network
 
 
-def voltage_parity(model: str = "000", samples: tuple[int, ...] = (0, 17, 71, 143)) -> dict:
+def voltage_parity(model: str = "000", samples: tuple[int, ...] = (0, 17, 71, 143), runs=None) -> dict:
     """Every voltage of every cell, both paths, the same stimuli: the largest absolute difference."""
+    key = f"voltage/{model}/{'-'.join(str(s) for s in samples)}"
+    if runs is not None:
+        return runs.step(key, lambda: voltage_parity(model, samples))
     import torch
 
     model_dir = published_model_dir(model)
@@ -101,8 +105,22 @@ def voltage_parity(model: str = "000", samples: tuple[int, ...] = (0, 17, 71, 14
     }
 
 
-def ensemble_tuning(models: list[str] | None = None, batch_size: int = 4, log=print) -> dict:
-    """Motion tuning of every model of the published ensemble, built through this product's path."""
+def parity_log(dataset):
+    """The resumable log of a parity run; valid only for this ensemble, engine and stimulus."""
+    flyvis = load_engine()
+    return run_log("parity-published", {
+        "ensemble": PUBLISHED_ENSEMBLE,
+        "engine": getattr(flyvis, "__version__", "1.2.0"),
+        "stimulus": stimulus_description(dataset),
+        "tolerance": VOLTAGE_TOLERANCE,
+    })
+
+
+def ensemble_tuning(models: list[str] | None = None, batch_size: int = 4, log=print, runs=None) -> dict:
+    """Motion tuning of every model of the published ensemble, built through this product's path.
+
+    With a run log, each model's tuning is stored as soon as it is measured and reused on a rerun.
+    """
     import torch
 
     models = models or [f"{i:03d}" for i in range(ENSEMBLE_SIZE)]
@@ -110,25 +128,29 @@ def ensemble_tuning(models: list[str] | None = None, batch_size: int = 4, log=pr
     per_model = []
     tuning_rows: dict[str, dict[str, list]] = {}
     started = time.time()
-    for position, model in enumerate(models):
+
+    def measure(model: str) -> dict:
         network = product_network(published_model_dir(model))
         with torch.no_grad():
             responses = central_responses(network, dataset, batch_size=batch_size)
-        data = response_dataset(responses[None], dataset, network)
-        tuning = motion_tuning(data)
-        per_model.append({"model": model, "tuning": tuning})
-        for cell_type, row in tuning.items():
-            merged = tuning_rows.setdefault(cell_type, {k: [] for k in row})
-            for key, values in row.items():
-                merged[key].extend(values)
+        result = motion_tuning(response_dataset(responses[None], dataset, network))
         del network
         torch.cuda.empty_cache()
+        return result
+
+    for position, model in enumerate(models):
+        key = f"tuning/{model}"
+        tuning = runs.step(key, lambda model=model: measure(model)) if runs is not None else measure(model)
+        per_model.append({"model": model, "tuning": tuning})
+        for cell_type, row in tuning.items():
+            merged = tuning_rows.setdefault(cell_type, {name: [] for name in row})
+            for name, values in row.items():
+                merged[name].extend(values)
         log(f"      {position + 1}/{len(models)} {model} ({time.time() - started:.0f}s)")
     return {
         "ensemble": PUBLISHED_ENSEMBLE,
         "models": models,
         "summary": summarise_tuning(tuning_rows),
         "per_model": per_model,
-        "stimulus": {"kind": "moving edges", "dt": dataset.dt, "speeds": list(dataset.speeds),
-                     "angles": list(dataset.angles), "intensities": [0, 1]},
+        "stimulus": stimulus_description(dataset),
     }

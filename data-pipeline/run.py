@@ -29,6 +29,7 @@ from conectoma.connectome.malecns import (  # noqa: E402
     to_flyvis_spec,
     write_spec,
 )
+from conectoma.core.jsonio import write_json  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
@@ -167,28 +168,32 @@ def cmd_compare_consensus(args: argparse.Namespace) -> int:
 
 
 def write_report(report: dict, path: Path) -> Path:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8", newline="\n")
-    return path
+    """Numpy values made plain and the file replaced in one step (conectoma.core.jsonio)."""
+    return write_json(path, report)
 
 
 def cmd_parity_published(args: argparse.Namespace) -> int:
     """Rebuild the published model through this product's path and check it against the engine's."""
-    from conectoma.network.parity import ENSEMBLE_SIZE, ensemble_tuning, voltage_parity
+    from conectoma.network.parity import ENSEMBLE_SIZE, ensemble_tuning, parity_log, voltage_parity
+    from conectoma.network.tuning import moving_edges
 
     started = time.time()
+    runs = parity_log(moving_edges())
+    if runs.steps:
+        print(f"      resuming: {len(runs.steps)} finished steps in {runs.path}")
     print("[1/2] voltage parity, engine loader against this product's builder")
     voltages = []
     for model in args.parity_models:
-        result = voltage_parity(model)
+        result = voltage_parity(model, runs=runs)
         voltages.append(result)
         print(f"      {result['model']}: max |dV| {result['max_abs_difference']:.3g} over {result['cells']} "
               f"cells, passed {result['passed']}")
     count = args.ensemble_models or ENSEMBLE_SIZE
     print(f"[2/2] motion tuning of {count} published models, built through this product's path")
-    tuning = ensemble_tuning([f"{i:03d}" for i in range(count)], log=print)
+    tuning = ensemble_tuning([f"{i:03d}" for i in range(count)], log=print, runs=runs)
     report = {
         "elapsed_seconds": round(time.time() - started, 1),
+        "reused_steps": len(runs.reused),
         "voltage_parity": voltages,
         "tuning": tuning,
     }

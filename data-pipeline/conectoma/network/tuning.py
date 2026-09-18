@@ -54,6 +54,19 @@ def moving_edges(dt: float = DT, speeds=SPEEDS, device: str | None = None):
     )
 
 
+def stimulus_description(dataset) -> dict:
+    """The stimulus configuration as plain values, for reports and run-log signatures."""
+    return {
+        "kind": "moving edges",
+        "dt": float(dataset.dt),
+        "speeds": [float(s) for s in dataset.speeds],
+        "angles": [int(a) for a in dataset.angles],
+        "intensities": [0, 1],
+        "t_pre": 1.0,
+        "t_post": 1.0,
+    }
+
+
 def central_responses(network, dataset, batch_size: int = 4, cell_index: np.ndarray | None = None):
     """Voltages of the central cell of every type (or of `cell_index`) for every stimulus of `dataset`.
 
