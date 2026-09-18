@@ -28,7 +28,9 @@ from pathlib import Path
 # the left name exists only in the reference, the right names are what this release calls the same cells.
 #
 # - the outer photoreceptors are one type here ("R1-R6") where the reference lists six;
-# - the inner photoreceptors are split by spectral subtype here, with an explicit unclear variant;
+# - the inner photoreceptors are split by spectral subtype in the release, with an explicit unclear
+#   variant; the build pools them back into R7 and R8, and the subtype names stay listed so a build that
+#   keeps the split still compares;
 # - the reference counts the wide-field CT1 twice, once per neuropil compartment, because its compartments
 #   are electrically separate; this release carries it as one cell;
 # - "Am" is "Am1" here.
@@ -43,8 +45,8 @@ REFERENCE_ALIASES: dict[str, tuple[str, ...]] = {
     "R4": ("R1-R6",),
     "R5": ("R1-R6",),
     "R6": ("R1-R6",),
-    "R7": ("R7p", "R7y", "R7d", "R7_unclear"),
-    "R8": ("R8p", "R8y", "R8d", "R8_unclear"),
+    "R7": ("R7", "R7p", "R7y", "R7d", "R7_unclear"),
+    "R8": ("R8", "R8p", "R8y", "R8d", "R8_unclear"),
     "CT1(M10)": ("CT1",),
     "CT1(Lo1)": ("CT1",),
     "Am": ("Am1",),
@@ -106,6 +108,88 @@ def spearman(x: list[float], y: list[float]) -> float | None:
     if var_x == 0 or var_y == 0:
         return None
     return cov / (var_x * var_y)
+
+
+# -- orientation -------------------------------------------------------------------------------------------
+
+# The twelve symmetries of the hexagonal lattice, in axial coordinates: a permutation of the three axial
+# coordinates (u, v, w = -u - v) followed by an optional point reflection. Named by what (u, v) becomes.
+_AXES = "uvw"
+SYMMETRIES = [
+    (perm, sign)
+    for perm in ((0, 1, 2), (0, 2, 1), (1, 0, 2), (1, 2, 0), (2, 0, 1), (2, 1, 0))
+    for sign in (1, -1)
+]
+
+
+def symmetry_name(perm: tuple[int, ...], sign: int) -> str:
+    return f"{'-' if sign < 0 else '+'}({_AXES[perm[0]]},{_AXES[perm[1]]})"
+
+
+def apply_symmetry(offset, perm: tuple[int, ...], sign: int) -> tuple[int, int]:
+    u, v = offset
+    triple = (u, v, -u - v)
+    return sign * triple[perm[0]], sign * triple[perm[1]]
+
+
+def displacement(offsets: dict) -> tuple[float, float] | None:
+    """Synapse-weighted mean offset of a filter in Cartesian lattice units, the centre entry excluded.
+
+    It is the direction a target cell's inputs of this type sit in; a filter that is symmetric around the
+    centre has none.
+    """
+    total = sum(n for o, n in offsets.items() if o != (0, 0))
+    if total <= 0:
+        return None
+    x = sum(n * math.sqrt(3) * (o[0] + o[1] / 2) for o, n in offsets.items() if o != (0, 0)) / total
+    y = sum(n * 1.5 * o[1] for o, n in offsets.items() if o != (0, 0)) / total
+    return x, y
+
+
+def orientation(built: dict, reference: dict, min_length: float = 0.4) -> dict:
+    """How well the spatial layout of the filters agrees with the reference, under each lattice symmetry.
+
+    For every connection present in both with at least three filter entries, the displacement of the
+    built filter (after the symmetry) is compared with the reference displacement by the cosine of the angle
+    between them, weighted by the reference length; displacements shorter than `min_length` columns carry
+    no direction and are skipped. A build in the reference's frame scores highest with the identity. A
+    count comparison cannot see a rotated or mirrored frame, which is why this exists.
+    """
+    built_edges = {(e["src"], e["tar"]): e for e in built["edges"]}
+    pairs = []
+    for edge in reference["edges"]:
+        ref = {tuple(o): n for o, n in edge["offsets"]}
+        if len(ref) < 3:
+            continue
+        for a in aliases_for(edge["src"]):
+            for b in aliases_for(edge["tar"]):
+                if (a, b) in built_edges and len(built_edges[(a, b)]["offsets"]) >= 3:
+                    pairs.append((ref, {tuple(o): n for o, n in built_edges[(a, b)]["offsets"]}))
+
+    scores = {}
+    used = 0
+    for perm, sign in SYMMETRIES:
+        agree = weight = 0.0
+        used = 0
+        for ref, own in pairs:
+            a = displacement(ref)
+            b = displacement({apply_symmetry(o, perm, sign): n for o, n in own.items()})
+            if a is None or b is None:
+                continue
+            la, lb = math.hypot(*a), math.hypot(*b)
+            if la < min_length or lb < min_length:
+                continue
+            agree += (a[0] * b[0] + a[1] * b[1]) / lb
+            weight += la
+            used += 1
+        scores[symmetry_name(perm, sign)] = round(agree / weight, 4) if weight else None
+    ranked = sorted((v, k) for k, v in scores.items() if v is not None)
+    return {
+        "filters_compared": used,
+        "identity": scores[symmetry_name((0, 1, 2), 1)],
+        "best": ranked[-1][1] if ranked else None,
+        "by_symmetry": scores,
+    }
 
 
 def compare(built: dict, reference: dict, strong_threshold: float = 5.0) -> dict:
@@ -178,6 +262,7 @@ def compare(built: dict, reference: dict, strong_threshold: float = 5.0) -> dict
     )
 
     return {
+        "orientation": orientation(built, reference),
         "types": {
             "built": len(built_types),
             "reference": len(reference_types),

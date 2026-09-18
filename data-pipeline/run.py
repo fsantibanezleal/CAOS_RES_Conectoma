@@ -29,6 +29,7 @@ from conectoma.connectome.malecns import (  # noqa: E402
     to_flyvis_spec,
     write_spec,
 )
+from conectoma.core.jsonio import write_json  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
@@ -166,6 +167,74 @@ def cmd_compare_consensus(args: argparse.Namespace) -> int:
     return 0
 
 
+def write_report(report: dict, path: Path) -> Path:
+    """Numpy values made plain and the file replaced in one step (conectoma.core.jsonio)."""
+    return write_json(path, report)
+
+
+def cmd_parity_published(args: argparse.Namespace) -> int:
+    """Rebuild the published model through this product's path and check it against the engine's."""
+    from conectoma.network.parity import (
+        ENSEMBLE_SIZE,
+        ensemble_tuning,
+        parity_log,
+        pipeline_crosscheck,
+        voltage_parity,
+    )
+    from conectoma.network.tuning import moving_edges
+
+    started = time.time()
+    runs = parity_log(moving_edges())
+    if runs.steps:
+        print(f"      resuming: {len(runs.steps)} finished steps in {runs.path}")
+    print("[1/3] voltage parity, engine loader against this product's builder")
+    voltages = []
+    for model in args.parity_models:
+        result = voltage_parity(model, runs=runs)
+        voltages.append(result)
+        print(f"      {result['model']}: max |dV| {result['max_abs_difference']:.3g} over {result['cells']} "
+              f"cells, passed {result['passed']}")
+    count = args.ensemble_models or ENSEMBLE_SIZE
+    print(f"[2/3] motion tuning of {count} published models, built through this product's path")
+    tuning = ensemble_tuning([f"{i:03d}" for i in range(count)], log=print, runs=runs)
+    print("[3/3] the same models through the engine's own end-to-end pipeline")
+    per_model = {row["model"]: row["tuning"] for row in tuning["per_model"]}
+    checked = [model for model in args.crosscheck_models if model in per_model]
+    crosscheck = pipeline_crosscheck(per_model, checked, runs=runs)
+    print(f"      largest DSI difference {crosscheck['largest_dsi_difference']}, largest direction "
+          f"difference {crosscheck['largest_direction_difference_degrees']} degrees")
+    report = {
+        "elapsed_seconds": round(time.time() - started, 1),
+        "reused_steps": len(runs.reused),
+        "voltage_parity": voltages,
+        "tuning": tuning,
+        "pipeline_crosscheck": crosscheck,
+    }
+    out = Path(args.out) if args.out else REPO_ROOT / "data/derived/network/parity-published.json"
+    write_report(report, out)
+    for cell_type, row in tuning["summary"].items():
+        print(f"      {cell_type}: median DSI {row['median_dsi']}, median distance to known "
+              f"{row['median_distance_to_known_degrees']} deg, "
+              f"within 45 deg {row['share_within_45_degrees']}")
+    print(f"wrote {out}")
+    passed = all(v["passed"] for v in voltages) and crosscheck["largest_dsi_difference"] <= 1e-3
+    return 0 if passed else 1
+
+
+def cmd_characterize_connectome(args: argparse.Namespace) -> int:
+    """Stability, cost, motion tuning and null controls of the built connectome as a frozen network."""
+    from conectoma.network.characterize import characterize
+
+    spec = Path(args.spec) if args.spec else REPO_ROOT / "data/derived/connectome/malecns-optic-lobe-r.json"
+    started = time.time()
+    report = characterize(spec, seeds=tuple(range(args.seeds)))
+    report["elapsed_seconds"] = round(time.time() - started, 1)
+    out = Path(args.out) if args.out else spec.with_suffix(".characterization.json")
+    write_report(report, out)
+    print(f"wrote {out} in {report['elapsed_seconds']}s")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="run.py", description="Conectoma offline pipeline")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -187,6 +256,26 @@ def main(argv: list[str] | None = None) -> int:
     compare_parser.add_argument("--reference", default=None, help="path to the reference connectome JSON")
     compare_parser.add_argument("--out", default=None, help="where to write the comparison report")
     compare_parser.set_defaults(func=cmd_compare_consensus)
+
+    parity = sub.add_parser(
+        "parity-published", help="rebuild the published model through this product's path and check it"
+    )
+    parity.add_argument("--parity-models", nargs="+", default=["000", "001", "002"],
+                        help="models of the published ensemble for the voltage comparison")
+    parity.add_argument("--crosscheck-models", nargs="+", default=["004", "009", "022"],
+                        help="models also run through the engine's own end-to-end pipeline")
+    parity.add_argument("--ensemble-models", type=int, default=None,
+                        help="how many ensemble models to characterise (default: all fifty)")
+    parity.add_argument("--out", default=None, help="where to write the parity report")
+    parity.set_defaults(func=cmd_parity_published)
+
+    character = sub.add_parser(
+        "characterize-connectome", help="stability, cost, tuning and null controls of the frozen network"
+    )
+    character.add_argument("--spec", default=None, help="connectome JSON (default: the right optic lobe)")
+    character.add_argument("--seeds", type=int, default=5, help="seeds per null control")
+    character.add_argument("--out", default=None, help="where to write the characterisation report")
+    character.set_defaults(func=cmd_characterize_connectome)
 
     args = parser.parse_args(argv)
     return args.func(args)

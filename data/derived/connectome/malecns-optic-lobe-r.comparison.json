@@ -1,6 +1,25 @@
 {
+  "orientation": {
+    "filters_compared": 108,
+    "identity": 0.3714,
+    "best": "+(u,v)",
+    "by_symmetry": {
+      "+(u,v)": 0.3714,
+      "-(u,v)": -0.3714,
+      "+(u,w)": -0.1929,
+      "-(u,w)": 0.1929,
+      "+(v,u)": -0.026,
+      "-(v,u)": 0.026,
+      "+(v,w)": -0.111,
+      "-(v,w)": 0.111,
+      "+(w,u)": -0.2604,
+      "-(w,u)": 0.2604,
+      "+(w,v)": 0.2189,
+      "-(w,v)": -0.2189
+    }
+  },
   "types": {
-    "built": 274,
+    "built": 253,
     "reference": 65,
     "reference_matched": 59,
     "reference_unmatched": [
@@ -14,8 +33,8 @@
   },
   "connections": {
     "reference_comparable": 545,
-    "recovered": 413,
-    "recovered_fraction": 0.7578,
+    "recovered": 414,
+    "recovered_fraction": 0.7596,
     "missing_here": [
       [
         "Am",
@@ -218,8 +237,12 @@
         "T4d"
       ]
     ],
-    "missing_here_total": 132,
+    "missing_here_total": 131,
     "strong_connections_absent_from_reference": [
+      [
+        "Am1",
+        "TmY15"
+      ],
       [
         "T4b",
         "Am1"
@@ -233,12 +256,12 @@
         "Am1"
       ]
     ],
-    "strong_connections_absent_from_reference_total": 3
+    "strong_connections_absent_from_reference_total": 4
   },
   "signs": {
-    "compared": 413,
-    "agreeing": 401,
-    "agreement_fraction": 0.9709,
+    "compared": 414,
+    "agreeing": 402,
+    "agreement_fraction": 0.971,
     "disagreeing": [
       {
         "connection": [
@@ -339,8 +362,8 @@
     ]
   },
   "central_synapse_counts": {
-    "spearman": 0.7928,
-    "n": 413
+    "spearman": 0.8041,
+    "n": 414
   },
   "built": "malecns-optic-lobe-r.json",
   "reference": "fib25-fib19_v2.2.json"

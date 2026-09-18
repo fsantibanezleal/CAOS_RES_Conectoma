@@ -61,9 +61,21 @@ def test_artifact_matches_the_schema_the_engine_reads() -> None:
         assert key in spec
 
     names = {node["name"] for node in spec["nodes"]}
+    assert len(names) == len(spec["nodes"]), "a cell type is declared twice"
     for node in spec["nodes"]:
-        assert node["pattern"][0] in {"stride", "single"}
+        kind, args = node["pattern"]
+        assert kind in {"stride", "single"}
+        if kind == "stride":
+            assert args[0] == args[1] and 1 <= args[0] <= 4
         assert node["activation"] == "relu"
+        assert not node["name"].endswith("_unclear"), "placeholder types are left out of the network"
+        assert 0 <= node["n_cells_placed"] <= node["n_cells"]
+
+    patterns = {node["name"]: node["pattern"] for node in spec["nodes"]}
+    for unit in spec["input_units"]:
+        assert patterns[unit] == ["stride", [1, 1]], f"input {unit} must occupy every column"
+    assert {"R7", "R8"} <= set(spec["input_units"]), "the inner photoreceptors are pooled into R7 and R8"
+    assert spec["compile"] == {"population_broadcast": True, "target_centric": True}
 
     for edge in spec["edges"]:
         assert edge["src"] in names and edge["tar"] in names
@@ -73,6 +85,8 @@ def test_artifact_matches_the_schema_the_engine_reads() -> None:
         for (offset, count) in edge["offsets"]:
             assert len(offset) == 2
             assert count > 0
+        if patterns[edge["src"]][0] == "single":
+            assert edge["offsets"] == [[[0, 0], edge["offsets"][0][1]]], "a population sends one average"
 
 
 @requires_artifact
@@ -107,8 +121,8 @@ requires_comparison = pytest.mark.skipif(
 def test_the_committed_connectome_agrees_with_the_published_consensus() -> None:
     """Acceptance floors for the connectome build.
 
-    These are floors, not targets, and they are deliberately below the measured values (75.8 percent
-    recovery, 97.1 percent sign agreement, 0.79 rank correlation at the time of writing). A change that
+    These are floors, not targets, and they are deliberately below the measured values (76.0 percent
+    recovery, 97.1 percent sign agreement, 0.80 rank correlation at the time of writing). A change that
     drops through a floor is a regression that has to be explained, not silently accepted.
     """
     report = json.loads(COMPARISON.read_text(encoding="utf-8"))
@@ -116,6 +130,12 @@ def test_the_committed_connectome_agrees_with_the_published_consensus() -> None:
     assert report["connections"]["recovered_fraction"] >= 0.70
     assert report["signs"]["agreement_fraction"] >= 0.95
     assert report["central_synapse_counts"]["spearman"] >= 0.70
+    # the filters must point the way the reference's do: the identity is the best of the twelve lattice
+    # symmetries, by a margin (0.37 against 0.26 for the runner-up at the time of writing)
+    orientation = report["orientation"]
+    assert orientation["best"] == "+(u,v)"
+    assert orientation["identity"] >= 0.30
+    assert orientation["filters_compared"] >= 80
 
 
 @requires_comparison

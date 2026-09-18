@@ -3,6 +3,68 @@
 All notable changes to this project are documented here. Format: Keep a Changelog, newest on top.
 Versions use the `X.XX.XXX` display form; the semver form (zeros dropped) appears in manifests.
 
+## [0.02.000] - 2026-09-18
+
+### Added
+
+- The network: `LatticeConnectome`, an in-memory compiler registered with the network engine, identical to
+  the engine's own compiler on the published connectome (45,669 cells, 1,513,231 connections, every table
+  equal) and bound to the SHA-256 of its specification. On the MaleCNS right optic lobe: 253 cell types,
+  40,051 cells, 2,922,900 connections, compiled in about three seconds.
+- Target-centric filter expansion: every target cell receives its full measured filter whatever the
+  sublattices of the two types (checked on 2,873 connections, largest relative error 6e-8), and population
+  nodes that drive every cell of their targets. The engine's source-centric expansion loses entries between
+  sublattices; on the published connectome it drops the Lawf1 self-connection, now reported by name.
+- The three frozen regimes as engine configurations with one shared starting point: R0 reservoir (0
+  trainable), R1 biophysical (8,409), R2 edge gain (3,003,002). A gradient check through the dynamics
+  confirms every frozen parameter receives no gradient and every trainable one does.
+- Transfer of the published model's trained parameters onto matching cell types, preserving the total
+  drive onto a central cell (53 of 253 types, 388 of 7,903 type pairs).
+- Null controls N1 (degree-preserving rewiring), N2 (size-matched random graph) and N3 (sign shuffle), pure
+  functions of the specification and a seed, with their invariants tested. Rewiring and the random graph
+  move connections only between types of the same placement, so every control compiles to exactly the
+  measured 2,922,900 cell connections and 10,281,886 synapses; an unstratified first version produced a
+  control with 3.3 times the synapses.
+- Numpy-safe, atomic report writing and resumable run logs for the long runs, after a forty-minute run
+  lost its results to a serialisation error at the very end.
+- `parity-published`: the published model rebuilt through this path against the engine's own loader,
+  voltage for voltage (largest difference 3.8e-6 over 113 million finite values per model on three
+  models, NaN padding identical in both paths), a cross-check against
+  the engine's own end-to-end tuning pipeline (identical on three models), and the motion tuning of the
+  whole published ensemble: better-ranked models tune more T4/T5 subtypes as known (34 of 80 in the best
+  ten, 14 of 80 in the worst ten, rank correlation -0.45), as published.
+- `characterize-connectome`: stability, simulation cost, the cost of one training step per regime, and
+  the motion tuning of the frozen MaleCNS network against the three null controls. Every network is stable;
+  one training step costs 0.20 s and 2.6 GB in R1 or R2 (0.10 s for the published network), about 14 hours
+  of network time at the published schedule; the frozen network has no direction selectivity from either
+  starting point (edges barely reach T4 and T5 at the engine's initialisation; with the published values T4
+  stays below threshold and T5 is driven but untuned), and neither do the controls.
+- The orientation measure in the consensus comparison: filter directions compared under the twelve
+  symmetries of the hexagonal lattice.
+- Documentation: the network, its regimes and its controls (with two diagrams); the network-engine guide;
+  the engine card rewritten around what the product uses and what it had to work around; the connectome
+  specification in the data contracts.
+
+### Changed
+
+- The connectome is written in the engine's frame. The release's column axes point the opposite way from
+  the engine's: as first built the identity scored -0.42 and the half-turn +0.42 over 98 filters. Offsets are
+  now half-turned; the identity scores +0.37 over 108 filters and wins.
+- Cell types are placed at their measured density (every column, a 2x2, 3x3 or 4x4 sublattice, or one
+  population node below one cell per 20 columns). The earlier rule compared cell counts with the pooled
+  outer photoreceptors, collapsed tiling populations of up to 494 cells to one node, and let 3,270 of 6,077
+  connections vanish at compile time.
+- The inner photoreceptors are pooled into R7 and R8, and placeholder types ("_unclear") are left out (108
+  cells). Population nodes send the whole-pair average per target cell.
+- The threshold sweep was re-run on the new build; the default is unchanged. Against the published
+  consensus: 76.0 percent connection recovery, 97.1 percent sign agreement, rank correlation 0.80.
+
+### Pins
+
+- torch 2.14.0 and torchvision 0.29.0, pinned without a build tag (CPU wheel in CI, CUDA 12.6 on the GPU
+  lane), flyvis 1.2.0, and datamate at upstream commit 3b9792c because its last release fails to compile a
+  connectome on Windows.
+
 ## [0.01.000] - 2026-09-16
 
 ### Added

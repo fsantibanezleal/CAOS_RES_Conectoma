@@ -32,15 +32,16 @@ The connectome supplies the graph: which cell types connect, how many synapses a
 and the sign of each connection. Those are measurements and they never change during training. Three
 regimes differ only in what the optimizer is allowed to touch:
 
-| Regime | Frozen | Learned |
-|---|---|---|
-| Reservoir | wiring, counts, signs, synapse scale, time constants, resting potentials | the readout head only |
-| Biophysical | wiring, counts, signs | per-cell-type synapse scale, time constant, resting potential, plus the head |
-| Edge gain | wiring, signs | a per-connection gain, per-neuron leak and bias, plus the head |
+| Regime | Frozen | Learned | Trainable in the network, right optic lobe |
+|---|---|---|---|
+| R0 reservoir | wiring, counts, signs, synaptic strengths, time constants, resting potentials | the readout head only | 0 |
+| R1 biophysical | wiring, counts, signs | synaptic strength per type pair, time constant and resting potential per cell type, plus the head | 8,409 |
+| R2 edge gain | wiring, counts, signs | synaptic strength per connection, time constant and resting potential per neuron, plus the head | 3,003,002 |
 
 Every regime is reported against the same null controls: a degree-preserving rewiring, a size-matched
 random sparse graph, and a sign-shuffled connectome. A result that does not separate from those controls is
-reported as such.
+reported as such. How the network is compiled, what each regime trains and how the construction is checked
+against the published model: [03, the network](03_network-and-regimes.md).
 
 ## Boundaries
 

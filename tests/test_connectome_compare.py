@@ -13,7 +13,13 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "data-pipeline"))
 
-from conectoma.connectome.compare import aliases_for, central_count, compare, spearman  # noqa: E402
+from conectoma.connectome.compare import (  # noqa: E402
+    aliases_for,
+    central_count,
+    compare,
+    orientation,
+    spearman,
+)
 
 
 def node(name: str) -> dict:
@@ -86,3 +92,36 @@ def test_comparison_takes_the_strongest_match_of_a_one_to_many_rename() -> None:
     result = compare(built, reference)
     assert result["connections"]["recovered"] == 1
     assert result["signs"]["agreement_fraction"] == 1.0
+
+
+# --- orientation -----------------------------------------------------------------------------------------
+
+
+def _spatial(name_pairs, turn: int = 1) -> dict:
+    """Filters with a clear direction each, optionally turned half a turn."""
+    filters = {
+        ("Mi9", "T4a"): [[[0, 0], 5.0], [[1, 0], 3.0], [[2, -1], 2.0]],
+        ("Mi4", "T4a"): [[[0, 0], 4.0], [[-1, 0], 3.0], [[-1, 1], 2.0]],
+        ("Tm9", "T5a"): [[[0, 0], 3.0], [[0, 1], 4.0], [[1, 1], 1.0]],
+    }
+    nodes = {n for pair in filters for n in pair}
+    return {
+        "nodes": [node(n) for n in sorted(nodes)],
+        "edges": [
+            {"src": s, "tar": t, "alpha": 1, "offsets": [[[turn * o[0], turn * o[1]], c] for o, c in offsets]}
+            for (s, t), offsets in filters.items()
+        ],
+    }
+
+
+def test_orientation_is_identity_for_a_build_in_the_reference_frame() -> None:
+    result = orientation(_spatial(None), _spatial(None))
+    assert result["best"] == "+(u,v)"
+    assert result["identity"] == pytest.approx(1.0)
+    assert result["filters_compared"] == 3
+
+
+def test_orientation_detects_a_half_turned_frame() -> None:
+    result = orientation(_spatial(None, turn=-1), _spatial(None))
+    assert result["best"] == "-(u,v)"
+    assert result["identity"] == pytest.approx(-1.0)

@@ -1,0 +1,209 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 540" width="900" class="fx-svg" role="img" aria-label="How a measured filter reaches its target cells when cell types sit on sublattices">
+  <!-- Hand-designed; generated from exact lattice coordinates. Every colour is a shell variable with a
+       fallback that follows the reader's colour scheme, so the diagram reads correctly both inlined in
+       the app (ADR-0058) and as an image in the repository. -->
+  <style>
+    .fx-svg { --fx-bg:#ffffff; --fx-fg:#1f2328; --fx-sub:#57606a; --fx-grid:#d8dee4; --fx-acc:#0969da;
+              --fx-mag:#bf3989; --fx-good:#1a7f37; --fx-bad:#cf222e; --fx-panel:#f6f8fa; }
+    @media (prefers-color-scheme: dark) {
+      .fx-svg { --fx-bg:#0d1117; --fx-fg:#e6edf3; --fx-sub:#8b949e; --fx-grid:#30363d; --fx-acc:#58a6ff;
+                --fx-mag:#db61a2; --fx-good:#3fb950; --fx-bad:#f85149; --fx-panel:#161b22; }
+    }
+    .fx-svg text { font-family: var(--font-sans, Inter, "Segoe UI", system-ui, sans-serif); }
+    .fx-svg .bg { fill: var(--color-surface, var(--fx-bg)); }
+    .fx-svg .panel { fill: var(--color-surface-2, var(--fx-panel)); stroke: var(--color-border, var(--fx-grid)); stroke-width: 1; }
+    .fx-svg .ttl { fill: var(--color-fg, var(--fx-fg)); font-size: 15px; font-weight: 700; }
+    .fx-svg .h { fill: var(--color-fg, var(--fx-fg)); font-size: 12.5px; font-weight: 700; }
+    .fx-svg .sub { fill: var(--color-fg-subtle, var(--fx-sub)); font-size: 10.5px; }
+    .fx-svg .hx { fill: none; stroke: var(--color-border, var(--fx-grid)); stroke-width: 0.9; }
+    .fx-svg .mi { fill: var(--color-accent, var(--fx-acc)); }
+    .fx-svg .dm { fill: none; stroke: var(--color-magenta, var(--fx-mag)); stroke-width: 2; }
+    .fx-svg .pop { fill: var(--color-magenta, var(--fx-mag)); }
+    .fx-svg .kept { fill: none; stroke: var(--color-good, var(--fx-good)); stroke-width: 1.6; }
+    .fx-svg .lost { fill: none; stroke: var(--color-bad, var(--fx-bad)); stroke-width: 1.4; stroke-dasharray: 4 3; }
+    .fx-svg .al { fill: var(--color-fg, var(--fx-fg)); font-size: 10px; font-weight: 700; }
+    .fx-svg .ok { fill: var(--color-good, var(--fx-good)); font-size: 10.5px; font-weight: 700; }
+    .fx-svg .no { fill: var(--color-bad, var(--fx-bad)); font-size: 10.5px; font-weight: 700; }
+    .fx-svg .mono { font-family: var(--font-mono, ui-monospace, Consolas, monospace); fill: var(--color-fg, var(--fx-fg)); font-size: 10.5px; }
+  </style>
+  <defs>
+    <marker id="fx-arrow-kept" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L8,4 L0,8 z" fill="var(--color-good, var(--fx-good))"/>
+    </marker>
+    <marker id="fx-arrow-lost" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L8,4 L0,8 z" fill="var(--color-bad, var(--fx-bad))"/>
+    </marker>
+  </defs>
+<rect class="bg" x="0" y="0" width="900" height="540" rx="12"/>
+<text class="ttl" x="22" y="32">How a measured filter reaches its target cells on sublattices</text>
+<text class="sub" x="22" y="50">Mi sits on every second column (2x2 sublattice), Dm on every third (3x3). The measured filter from Mi onto a Dm cell has two entries, 3 synapses at offset (0,0) and 2 at (1,-1): 5 in total.</text>
+<circle class="mi" cx="28" cy="72" r="5.2"/><text class="sub" x="38" y="76">Mi cell (source)</text>
+<rect class="dm" x="146" y="65.5" width="13" height="13" rx="2" transform="rotate(45 152.5 72)"/><text class="sub" x="166" y="76">Dm cell (target)</text>
+<path class="kept" d="M284,72 L314,72" marker-end="url(#fx-arrow-kept)"/><text class="sub" x="322" y="76">filter entry realised</text>
+<path class="lost" d="M442,72 L472,72" marker-end="url(#fx-arrow-lost)"/><text class="sub" x="480" y="76">entry that lands on no cell</text>
+<rect class="panel" x="22" y="92" width="418" height="316" rx="10"/>
+<text class="h" x="36" y="114">Expanded from the sources (the engine's rule)</text>
+<text class="sub" x="36" y="130">each Mi cell sends each entry to the column at its offset, if a Dm cell is there</text>
+<g transform="translate(0,0)">
+<polygon class="hx" points="152.4,251.4 152.4,268.6 137.5,277.3 122.5,268.6 122.5,251.4 137.5,242.7"/>
+<polygon class="hx" points="168.0,278.4 168.0,295.6 153.1,304.3 138.1,295.6 138.1,278.4 153.1,269.7"/>
+<polygon class="hx" points="183.6,305.4 183.6,322.6 168.6,331.3 153.7,322.6 153.7,305.4 168.6,296.7"/>
+<polygon class="hx" points="199.2,332.4 199.2,349.6 184.2,358.3 169.3,349.6 169.3,332.4 184.2,323.7"/>
+<polygon class="hx" points="168.0,224.4 168.0,241.6 153.1,250.3 138.1,241.6 138.1,224.4 153.1,215.7"/>
+<polygon class="hx" points="183.6,251.4 183.6,268.6 168.6,277.3 153.7,268.6 153.7,251.4 168.6,242.7"/>
+<polygon class="hx" points="199.2,278.4 199.2,295.6 184.2,304.3 169.3,295.6 169.3,278.4 184.2,269.7"/>
+<polygon class="hx" points="214.8,305.4 214.8,322.6 199.8,331.3 184.9,322.6 184.9,305.4 199.8,296.7"/>
+<polygon class="hx" points="230.4,332.4 230.4,349.6 215.4,358.3 200.4,349.6 200.4,332.4 215.4,323.7"/>
+<polygon class="hx" points="183.6,197.4 183.6,214.6 168.6,223.3 153.7,214.6 153.7,197.4 168.6,188.7"/>
+<polygon class="hx" points="199.2,224.4 199.2,241.6 184.2,250.3 169.3,241.6 169.3,224.4 184.2,215.7"/>
+<polygon class="hx" points="214.8,251.4 214.8,268.6 199.8,277.3 184.9,268.6 184.9,251.4 199.8,242.7"/>
+<polygon class="hx" points="230.4,278.4 230.4,295.6 215.4,304.3 200.4,295.6 200.4,278.4 215.4,269.7"/>
+<polygon class="hx" points="246.0,305.4 246.0,322.6 231.0,331.3 216.0,322.6 216.0,305.4 231.0,296.7"/>
+<polygon class="hx" points="261.6,332.4 261.6,349.6 246.6,358.3 231.6,349.6 231.6,332.4 246.6,323.7"/>
+<polygon class="hx" points="199.2,170.4 199.2,187.6 184.2,196.3 169.3,187.6 169.3,170.4 184.2,161.7"/>
+<polygon class="hx" points="214.8,197.4 214.8,214.6 199.8,223.3 184.9,214.6 184.9,197.4 199.8,188.7"/>
+<polygon class="hx" points="230.4,224.4 230.4,241.6 215.4,250.3 200.4,241.6 200.4,224.4 215.4,215.7"/>
+<polygon class="hx" points="246.0,251.4 246.0,268.6 231.0,277.3 216.0,268.6 216.0,251.4 231.0,242.7"/>
+<polygon class="hx" points="261.6,278.4 261.6,295.6 246.6,304.3 231.6,295.6 231.6,278.4 246.6,269.7"/>
+<polygon class="hx" points="277.1,305.4 277.1,322.6 262.2,331.3 247.2,322.6 247.2,305.4 262.2,296.7"/>
+<polygon class="hx" points="292.7,332.4 292.7,349.6 277.8,358.3 262.8,349.6 262.8,332.4 277.8,323.7"/>
+<polygon class="hx" points="230.4,170.4 230.4,187.6 215.4,196.3 200.4,187.6 200.4,170.4 215.4,161.7"/>
+<polygon class="hx" points="246.0,197.4 246.0,214.6 231.0,223.3 216.0,214.6 216.0,197.4 231.0,188.7"/>
+<polygon class="hx" points="261.6,224.4 261.6,241.6 246.6,250.3 231.6,241.6 231.6,224.4 246.6,215.7"/>
+<polygon class="hx" points="277.1,251.4 277.1,268.6 262.2,277.3 247.2,268.6 247.2,251.4 262.2,242.7"/>
+<polygon class="hx" points="292.7,278.4 292.7,295.6 277.8,304.3 262.8,295.6 262.8,278.4 277.8,269.7"/>
+<polygon class="hx" points="308.3,305.4 308.3,322.6 293.4,331.3 278.4,322.6 278.4,305.4 293.4,296.7"/>
+<polygon class="hx" points="261.6,170.4 261.6,187.6 246.6,196.3 231.6,187.6 231.6,170.4 246.6,161.7"/>
+<polygon class="hx" points="277.1,197.4 277.1,214.6 262.2,223.3 247.2,214.6 247.2,197.4 262.2,188.7"/>
+<polygon class="hx" points="292.7,224.4 292.7,241.6 277.8,250.3 262.8,241.6 262.8,224.4 277.8,215.7"/>
+<polygon class="hx" points="308.3,251.4 308.3,268.6 293.4,277.3 278.4,268.6 278.4,251.4 293.4,242.7"/>
+<polygon class="hx" points="323.9,278.4 323.9,295.6 308.9,304.3 294.0,295.6 294.0,278.4 308.9,269.7"/>
+<polygon class="hx" points="292.7,170.4 292.7,187.6 277.8,196.3 262.8,187.6 262.8,170.4 277.8,161.7"/>
+<polygon class="hx" points="308.3,197.4 308.3,214.6 293.4,223.3 278.4,214.6 278.4,197.4 293.4,188.7"/>
+<polygon class="hx" points="323.9,224.4 323.9,241.6 308.9,250.3 294.0,241.6 294.0,224.4 308.9,215.7"/>
+<polygon class="hx" points="339.5,251.4 339.5,268.6 324.5,277.3 309.6,268.6 309.6,251.4 324.5,242.7"/>
+<circle class="mi" cx="168.6" cy="260.0" r="5.2"/>
+<circle class="mi" cx="199.8" cy="314.0" r="5.2"/>
+<circle class="mi" cx="199.8" cy="206.0" r="5.2"/>
+<circle class="mi" cx="231.0" cy="260.0" r="5.2"/>
+<circle class="mi" cx="262.2" cy="314.0" r="5.2"/>
+<circle class="mi" cx="262.2" cy="206.0" r="5.2"/>
+<circle class="mi" cx="293.4" cy="260.0" r="5.2"/>
+<rect class="dm" x="131.0" y="253.5" width="13" height="13" rx="2" transform="rotate(45 137.5 260.0)"/>
+<rect class="dm" x="177.7" y="334.5" width="13" height="13" rx="2" transform="rotate(45 184.2 341.0)"/>
+<rect class="dm" x="177.7" y="172.5" width="13" height="13" rx="2" transform="rotate(45 184.2 179.0)"/>
+<rect class="dm" x="224.5" y="253.5" width="13" height="13" rx="2" transform="rotate(45 231.0 260.0)"/>
+<rect class="dm" x="271.3" y="334.5" width="13" height="13" rx="2" transform="rotate(45 277.8 341.0)"/>
+<rect class="dm" x="271.3" y="172.5" width="13" height="13" rx="2" transform="rotate(45 277.8 179.0)"/>
+<rect class="dm" x="318.0" y="253.5" width="13" height="13" rx="2" transform="rotate(45 324.5 260.0)"/>
+</g>
+<path class="lost" d="M172.1,253.9 Q180.9,250.8 179.2,241.7" marker-end="url(#fx-arrow-lost)"/>
+<path class="lost" d="M203.3,307.9 Q212.1,304.8 210.4,295.7" marker-end="url(#fx-arrow-lost)"/>
+<path class="lost" d="M203.3,199.9 Q212.1,196.8 210.4,187.7" marker-end="url(#fx-arrow-lost)"/>
+<path class="kept" d="M227.0,253.0 C215.0,230.0 247.0,230.0 235.0,252.0" marker-end="url(#fx-arrow-kept)"/>
+<text class="al" x="231.0" y="233.0" text-anchor="middle">3</text>
+<path class="lost" d="M234.5,253.9 Q243.2,250.8 241.6,241.7" marker-end="url(#fx-arrow-lost)"/>
+<path class="lost" d="M265.7,307.9 Q274.4,304.8 272.8,295.7" marker-end="url(#fx-arrow-lost)"/>
+<path class="kept" d="M265.7,199.9 Q277.9,198.8 272.8,187.7" marker-end="url(#fx-arrow-kept)"/>
+<path class="lost" d="M296.9,253.9 Q305.6,250.8 303.9,241.7" marker-end="url(#fx-arrow-lost)"/>
+<text class="no" x="137.5" y="282.0" text-anchor="middle">0/5</text>
+<text class="no" x="184.2" y="363.0" text-anchor="middle">0/5</text>
+<text class="no" x="184.2" y="201.0" text-anchor="middle">0/5</text>
+<text class="no" x="231.0" y="282.0" text-anchor="middle">3/5</text>
+<text class="no" x="277.8" y="363.0" text-anchor="middle">0/5</text>
+<text class="no" x="277.8" y="201.0" text-anchor="middle">2/5</text>
+<text class="no" x="324.5" y="282.0" text-anchor="middle">0/5</text>
+<text class="no" x="36" y="380">Offsets that are not multiples of both strides fall between</text>
+<text class="no" x="36" y="395">Dm cells: 5 of the 7 Dm cells receive nothing.</text>
+<rect class="panel" x="460" y="92" width="418" height="316" rx="10"/>
+<text class="h" x="474" y="114">Expanded from the targets (this product's rule)</text>
+<text class="sub" x="474" y="130">each Dm cell takes every entry, from the Mi cell nearest to where the entry points</text>
+<g transform="translate(0,0)">
+<polygon class="hx" points="590.4,251.4 590.4,268.6 575.5,277.3 560.5,268.6 560.5,251.4 575.5,242.7"/>
+<polygon class="hx" points="606.0,278.4 606.0,295.6 591.1,304.3 576.1,295.6 576.1,278.4 591.1,269.7"/>
+<polygon class="hx" points="621.6,305.4 621.6,322.6 606.6,331.3 591.7,322.6 591.7,305.4 606.6,296.7"/>
+<polygon class="hx" points="637.2,332.4 637.2,349.6 622.2,358.3 607.3,349.6 607.3,332.4 622.2,323.7"/>
+<polygon class="hx" points="606.0,224.4 606.0,241.6 591.1,250.3 576.1,241.6 576.1,224.4 591.1,215.7"/>
+<polygon class="hx" points="621.6,251.4 621.6,268.6 606.6,277.3 591.7,268.6 591.7,251.4 606.6,242.7"/>
+<polygon class="hx" points="637.2,278.4 637.2,295.6 622.2,304.3 607.3,295.6 607.3,278.4 622.2,269.7"/>
+<polygon class="hx" points="652.8,305.4 652.8,322.6 637.8,331.3 622.9,322.6 622.9,305.4 637.8,296.7"/>
+<polygon class="hx" points="668.4,332.4 668.4,349.6 653.4,358.3 638.4,349.6 638.4,332.4 653.4,323.7"/>
+<polygon class="hx" points="621.6,197.4 621.6,214.6 606.6,223.3 591.7,214.6 591.7,197.4 606.6,188.7"/>
+<polygon class="hx" points="637.2,224.4 637.2,241.6 622.2,250.3 607.3,241.6 607.3,224.4 622.2,215.7"/>
+<polygon class="hx" points="652.8,251.4 652.8,268.6 637.8,277.3 622.9,268.6 622.9,251.4 637.8,242.7"/>
+<polygon class="hx" points="668.4,278.4 668.4,295.6 653.4,304.3 638.4,295.6 638.4,278.4 653.4,269.7"/>
+<polygon class="hx" points="684.0,305.4 684.0,322.6 669.0,331.3 654.0,322.6 654.0,305.4 669.0,296.7"/>
+<polygon class="hx" points="699.6,332.4 699.6,349.6 684.6,358.3 669.6,349.6 669.6,332.4 684.6,323.7"/>
+<polygon class="hx" points="637.2,170.4 637.2,187.6 622.2,196.3 607.3,187.6 607.3,170.4 622.2,161.7"/>
+<polygon class="hx" points="652.8,197.4 652.8,214.6 637.8,223.3 622.9,214.6 622.9,197.4 637.8,188.7"/>
+<polygon class="hx" points="668.4,224.4 668.4,241.6 653.4,250.3 638.4,241.6 638.4,224.4 653.4,215.7"/>
+<polygon class="hx" points="684.0,251.4 684.0,268.6 669.0,277.3 654.0,268.6 654.0,251.4 669.0,242.7"/>
+<polygon class="hx" points="699.6,278.4 699.6,295.6 684.6,304.3 669.6,295.6 669.6,278.4 684.6,269.7"/>
+<polygon class="hx" points="715.1,305.4 715.1,322.6 700.2,331.3 685.2,322.6 685.2,305.4 700.2,296.7"/>
+<polygon class="hx" points="730.7,332.4 730.7,349.6 715.8,358.3 700.8,349.6 700.8,332.4 715.8,323.7"/>
+<polygon class="hx" points="668.4,170.4 668.4,187.6 653.4,196.3 638.4,187.6 638.4,170.4 653.4,161.7"/>
+<polygon class="hx" points="684.0,197.4 684.0,214.6 669.0,223.3 654.0,214.6 654.0,197.4 669.0,188.7"/>
+<polygon class="hx" points="699.6,224.4 699.6,241.6 684.6,250.3 669.6,241.6 669.6,224.4 684.6,215.7"/>
+<polygon class="hx" points="715.1,251.4 715.1,268.6 700.2,277.3 685.2,268.6 685.2,251.4 700.2,242.7"/>
+<polygon class="hx" points="730.7,278.4 730.7,295.6 715.8,304.3 700.8,295.6 700.8,278.4 715.8,269.7"/>
+<polygon class="hx" points="746.3,305.4 746.3,322.6 731.4,331.3 716.4,322.6 716.4,305.4 731.4,296.7"/>
+<polygon class="hx" points="699.6,170.4 699.6,187.6 684.6,196.3 669.6,187.6 669.6,170.4 684.6,161.7"/>
+<polygon class="hx" points="715.1,197.4 715.1,214.6 700.2,223.3 685.2,214.6 685.2,197.4 700.2,188.7"/>
+<polygon class="hx" points="730.7,224.4 730.7,241.6 715.8,250.3 700.8,241.6 700.8,224.4 715.8,215.7"/>
+<polygon class="hx" points="746.3,251.4 746.3,268.6 731.4,277.3 716.4,268.6 716.4,251.4 731.4,242.7"/>
+<polygon class="hx" points="761.9,278.4 761.9,295.6 746.9,304.3 732.0,295.6 732.0,278.4 746.9,269.7"/>
+<polygon class="hx" points="730.7,170.4 730.7,187.6 715.8,196.3 700.8,187.6 700.8,170.4 715.8,161.7"/>
+<polygon class="hx" points="746.3,197.4 746.3,214.6 731.4,223.3 716.4,214.6 716.4,197.4 731.4,188.7"/>
+<polygon class="hx" points="761.9,224.4 761.9,241.6 746.9,250.3 732.0,241.6 732.0,224.4 746.9,215.7"/>
+<polygon class="hx" points="777.5,251.4 777.5,268.6 762.5,277.3 747.6,268.6 747.6,251.4 762.5,242.7"/>
+<circle class="mi" cx="606.6" cy="260.0" r="5.2"/>
+<circle class="mi" cx="637.8" cy="314.0" r="5.2"/>
+<circle class="mi" cx="637.8" cy="206.0" r="5.2"/>
+<circle class="mi" cx="669.0" cy="260.0" r="5.2"/>
+<circle class="mi" cx="700.2" cy="314.0" r="5.2"/>
+<circle class="mi" cx="700.2" cy="206.0" r="5.2"/>
+<circle class="mi" cx="731.4" cy="260.0" r="5.2"/>
+<rect class="dm" x="569.0" y="253.5" width="13" height="13" rx="2" transform="rotate(45 575.5 260.0)"/>
+<rect class="dm" x="615.7" y="334.5" width="13" height="13" rx="2" transform="rotate(45 622.2 341.0)"/>
+<rect class="dm" x="615.7" y="172.5" width="13" height="13" rx="2" transform="rotate(45 622.2 179.0)"/>
+<rect class="dm" x="662.5" y="253.5" width="13" height="13" rx="2" transform="rotate(45 669.0 260.0)"/>
+<rect class="dm" x="709.3" y="334.5" width="13" height="13" rx="2" transform="rotate(45 715.8 341.0)"/>
+<rect class="dm" x="709.3" y="172.5" width="13" height="13" rx="2" transform="rotate(45 715.8 179.0)"/>
+<rect class="dm" x="756.0" y="253.5" width="13" height="13" rx="2" transform="rotate(45 762.5 260.0)"/>
+</g>
+<text class="ok" x="575.5" y="282.0" text-anchor="middle">5/5</text>
+<text class="ok" x="622.2" y="363.0" text-anchor="middle">5/5</text>
+<path class="kept" d="M634.3,199.9 Q639.4,188.8 627.2,187.7" marker-end="url(#fx-arrow-kept)"/>
+<text class="ok" x="622.2" y="201.0" text-anchor="middle">5/5</text>
+<path class="kept" d="M665.0,253.0 C653.0,230.0 685.0,230.0 673.0,252.0" marker-end="url(#fx-arrow-kept)"/>
+<text class="al" x="669.0" y="233.0" text-anchor="middle">3</text>
+<path class="kept" d="M696.7,307.9 Q694.0,283.3 674.0,268.7" marker-end="url(#fx-arrow-kept)"/>
+<text class="al" x="686.2" y="290.8" text-anchor="middle">2</text>
+<text class="ok" x="669.0" y="282.0" text-anchor="middle">5/5</text>
+<text class="ok" x="715.8" y="363.0" text-anchor="middle">5/5</text>
+<text class="ok" x="715.8" y="201.0" text-anchor="middle">5/5</text>
+<text class="ok" x="762.5" y="282.0" text-anchor="middle">5/5</text>
+<text class="ok" x="474" y="380">Every Dm cell receives its full measured input;</text>
+<text class="ok" x="474" y="395">entries that meet at one Mi cell are summed.</text>
+<rect class="panel" x="22" y="424" width="856" height="100" rx="10"/>
+<text class="h" x="36" y="446">A population node</text>
+<text class="sub" x="36" y="464">A type with fewer than one cell per 20 columns is one node standing for the mean activity of its cells.</text>
+<text class="sub" x="36" y="480">It receives through its filter like a cell at the centre, and it drives every cell of each target type</text>
+<text class="sub" x="36" y="496">with the measured average synapses per target cell over the whole pair, because each cell is reached by some member.</text>
+<circle class="pop" cx="640" cy="482" r="9"/>
+<text class="al" x="640" y="508" text-anchor="middle">population</text>
+<rect class="dm" x="715" y="453" width="10" height="10" rx="2" transform="rotate(45 720 458)"/>
+<path class="kept" d="M651,482 L711,458" marker-end="url(#fx-arrow-kept)"/>
+<rect class="dm" x="735" y="475" width="10" height="10" rx="2" transform="rotate(45 740 480)"/>
+<path class="kept" d="M651,482 L731,480" marker-end="url(#fx-arrow-kept)"/>
+<rect class="dm" x="755" y="497" width="10" height="10" rx="2" transform="rotate(45 760 502)"/>
+<path class="kept" d="M651,482 L751,502" marker-end="url(#fx-arrow-kept)"/>
+<rect class="dm" x="775" y="453" width="10" height="10" rx="2" transform="rotate(45 780 458)"/>
+<path class="kept" d="M651,482 L771,458" marker-end="url(#fx-arrow-kept)"/>
+<rect class="dm" x="795" y="475" width="10" height="10" rx="2" transform="rotate(45 800 480)"/>
+<path class="kept" d="M651,482 L791,480" marker-end="url(#fx-arrow-kept)"/>
+<rect class="dm" x="815" y="497" width="10" height="10" rx="2" transform="rotate(45 820 502)"/>
+<path class="kept" d="M651,482 L811,502" marker-end="url(#fx-arrow-kept)"/>
+<rect class="dm" x="835" y="453" width="10" height="10" rx="2" transform="rotate(45 840 458)"/>
+<path class="kept" d="M651,482 L831,458" marker-end="url(#fx-arrow-kept)"/>
+</svg>
