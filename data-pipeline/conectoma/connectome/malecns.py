@@ -11,9 +11,13 @@ Two conventions matter and both are taken from the consuming engine rather than 
 
 - an offset is defined from the source, so a target sits at `(u_src + du, v_src + dv)`; this module
   therefore computes `du = u_post - u_pre`;
-- the per-connection certainty the engine reads as `lambda_mult` is recorded as the fraction of eligible
-  column pairs that actually carry the connection, so a filter built from one lucky pair is not presented
-  with the same weight as one seen across the whole eye;
+- the per-connection certainty the engine reads as `lambda_mult` is recorded as how often the connection is
+  seen: for a filter entry, the connected source-target cell pairs at that offset per placed target cell,
+  averaged over the entries of the connection; for a population source, the share of target cells it
+  reaches. With at most one source cell per column the entry value is the share of target cells that
+  receive from that offset; where two source cells share a column it can exceed 1. The engine stores the
+  field on every edge and does not use it in the dynamics (the published consensus carries values from
+  0.71 to 134 in it), so it is an annotation of support, not a probability;
 - offsets are written in the engine's lattice frame, which is the release's column frame turned half a
   turn (`RELEASE_TO_ENGINE`, measured, not assumed).
 
@@ -439,6 +443,8 @@ def build_filters(accumulated: dict, selection: Selection, signs: dict, config: 
 
         target_columns = placed_per_type[selection.types[t_post]]
         mean_synapses = total / max(target_columns, 1)
+        # connected cell pairs at this offset per placed target cell; above 1 where two source cells
+        # share a column
         certainty = accumulated["pairs"][key] / max(target_columns, 1)
 
         if mean_synapses < config.min_mean_synapses:

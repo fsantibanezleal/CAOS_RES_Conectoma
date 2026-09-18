@@ -61,11 +61,17 @@ filter entry. The offset convention is taken from the consuming engine: a target
 `(u_source + du, v_source + dv)`, so the code computes `du = u_target - u_source`.
 
 Two thresholds keep noise out of the architecture, both recorded in the artifact: a minimum average
-synapse count per filter entry, and a minimum fraction of eligible column pairs that must carry the
-connection. Their values were chosen by measurement rather than taste, see the sweep below.
+synapse count per filter entry, and a minimum support, the connected source-target cell pairs at that
+offset per placed target cell. Their values were chosen by measurement rather than taste, see the sweep
+below.
 
-The certainty the engine reads as a per-connection multiplier is the fraction of eligible column pairs that
-actually carry the connection, so a filter seen across the whole eye is not presented like one seen twice.
+That support is also recorded on each connection, as the field the engine names `lambda_mult`: the mean over
+the connection's filter entries, or, for a population source, the share of target cells the type reaches.
+With at most one source cell per column an entry's support is the share of target cells that receive from
+that offset, so a filter seen across the whole eye is not presented like one seen twice; where column
+assignment puts two source cells in one column it exceeds 1 (118 of the 7,907 connections, at most 2.4).
+It is an annotation, not a probability: the engine stores it on every edge and does not use it in the
+dynamics, and the published consensus carries values from 0.71 to 134 in the same field.
 
 ## Orientation: the release's frame and the engine's
 

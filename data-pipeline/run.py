@@ -291,6 +291,21 @@ def cmd_characterize_visual_cns(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_export_web(args: argparse.Namespace) -> int:
+    """Contract 2: the compact artifacts the web reads, each with a manifest."""
+    from conectoma.stages.export_web import export_explorer
+
+    spec = Path(args.spec) if args.spec else REPO_ROOT / "data/derived/connectome/malecns-optic-lobe-r.json"
+    reference_path = Path(args.reference) if args.reference else find_reference()
+    manifest = export_explorer(
+        spec, reference_path, REPO_ROOT / "data/derived/explorer", REPO_ROOT / "data/derived/manifests",
+    )
+    counts = manifest["counts"]
+    print(f"wrote {manifest['path']} ({manifest['bytes'] / 1e6:.2f} MB): {counts['types']} types, "
+          f"{counts['connections']} connections, {counts['published_connections']} published matches")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="run.py", description="Conectoma offline pipeline")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -332,6 +347,11 @@ def main(argv: list[str] | None = None) -> int:
     character.add_argument("--seeds", type=int, default=5, help="seeds per null control")
     character.add_argument("--out", default=None, help="where to write the characterisation report")
     character.set_defaults(func=cmd_characterize_connectome)
+
+    web = sub.add_parser("export-web", help="the compact artifacts the web reads, with manifests")
+    web.add_argument("--spec", default=None, help="connectome JSON (default: the right optic lobe)")
+    web.add_argument("--reference", default=None, help="published consensus JSON (default: the engine's)")
+    web.set_defaults(func=cmd_export_web)
 
     visual = sub.add_parser("build-visual-cns", help="the whole visual system as a neuron-level graph")
     visual.add_argument("--data-root", default=None, help="directory holding the MaleCNS tables")

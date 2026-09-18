@@ -39,7 +39,8 @@ Three pieces of the library's public surface matter here.
 3. **The offset convention.** An offset is applied from the source: a target sits at
    `(u_source + du, v_source + dv)`. The construction code here computes `du = u_target - u_source` to
    match, and the per-connection `lambda_mult` field is the synapse-count certainty the engine carries
-   through to the edge.
+   through to the edge table as `n_syn_certainty`. It is stored, not used by the dynamics; the published
+   consensus fills it with values from 0.71 to 134, and this build with the support of each connection.
 
 ## How it is used here
 

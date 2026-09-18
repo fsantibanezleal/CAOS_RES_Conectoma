@@ -1,0 +1,35 @@
+{
+  "name": "conectoma-frontend",
+  "private": true,
+  "version": "0.4.0",
+  "type": "module",
+  "scripts": {
+    "predev": "node copy-data.mjs",
+    "dev": "vite",
+    "prebuild": "node copy-data.mjs",
+    "build": "tsc --noEmit && vitest run && vite build && node static-routes.mjs",
+    "preview": "vite preview --port 4317 --strictPort",
+    "test": "vitest run",
+    "gate": "node e2e/fit.mjs"
+  },
+  "dependencies": {
+    "@fasl-work/caos-app-shell": "^0.6.8",
+    "katex": "^0.16.47",
+    "lucide-react": "^0.469.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router": "^8.3.0",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/katex": "^0.16.8",
+    "@types/node": "^22.20.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "playwright": "^1.55.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7",
+    "vitest": "^2.1.8"
+  }
+}

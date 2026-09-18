@@ -26,6 +26,32 @@ jobs:
       - name: Tests
         run: pytest
 
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - name: Build (typecheck, contract tests on the committed artifacts, bundle, a document per route)
+        run: npm run build
+      - name: Browser for the fit gate
+        run: npx playwright install --with-deps chromium
+      - name: Fit gate on the built site (ADR-0071, both themes, both languages, three sizes)
+        run: npm run gate
+      - name: Keep the gate's screenshots when it fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fit-gate-shots
+          path: frontend/e2e-shots
+
   guards:
     runs-on: ubuntu-latest
     steps:
