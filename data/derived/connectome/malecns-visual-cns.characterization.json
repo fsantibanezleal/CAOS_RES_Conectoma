@@ -1,0 +1,249 @@
+{
+ "graph": "malecns-visual-cns-w1.npz",
+ "digest": "804303791299b977c753f3a7cea944fae82a96b0419a363125f9bb0745ade26e",
+ "device": "NVIDIA GeForce RTX 4070 Laptop GPU",
+ "torch": "2.14.0+cu126",
+ "gain_target": 0.9,
+ "frozen": {
+  "default": {
+   "parameters": {
+    "parameters": {
+     "nodes_bias": {
+      "count": 695,
+      "trainable": false
+     },
+     "nodes_time_const": {
+      "count": 695,
+      "trainable": false
+     },
+     "edges_sign": {
+      "count": 12450379,
+      "trainable": false
+     },
+     "edges_syn_count": {
+      "count": 12450379,
+      "trainable": false
+     },
+     "edges_syn_strength": {
+      "count": 129437,
+      "trainable": false
+     }
+    },
+    "trainable": 0,
+    "frozen": 25031585
+   },
+   "transfer": null,
+   "gain": {
+    "target": 0.9,
+    "spectral_radius_before": 3.0699336182803143,
+    "scale": 0.29316594816279884,
+    "spectral_radius_after": 0.9000000111647883,
+    "exact": true,
+    "relative_residual": 2.186211852184192e-15,
+    "components": 954,
+    "largest_component": 104058,
+    "cells_in_recurrent_components": 104058
+   },
+   "compile": {
+    "nodes": 105011,
+    "edges": 12450379,
+    "input_neurons": 5923,
+    "photoreceptors_without_a_column": 83
+   },
+   "stability": {
+    "finite": true,
+    "min": -1.0211,
+    "max": 11.4939,
+    "mean_abs": 0.5157,
+    "drift_last_half_second": 0.0
+   },
+   "simulation": {
+    "batch_size": 1,
+    "dt": 0.005,
+    "simulated_seconds": 1.0,
+    "wall_seconds": 0.499,
+    "simulated_seconds_per_wall_second_per_sample": 2.0
+   },
+   "flash": {
+    "intensity": 1.0,
+    "seconds": 0.5,
+    "dt": 0.02,
+    "threshold": 1e-05,
+    "by_role": {
+     "input": {
+      "cells": 6006,
+      "responding_fraction": 0.9885,
+      "median_change": 0.499839,
+      "max_change": 0.5005
+     },
+     "intermediate": {
+      "cells": 94347,
+      "responding_fraction": 0.8464,
+      "median_change": 8.3e-05,
+      "max_change": 0.2362
+     },
+     "output": {
+      "cells": 4658,
+      "responding_fraction": 0.9244,
+      "median_change": 7.5e-05,
+      "max_change": 0.0028
+     }
+    }
+   },
+   "peak_memory_gb": 6.47,
+   "settled": true
+  },
+  "transfer": {
+   "parameters": {
+    "parameters": {
+     "nodes_bias": {
+      "count": 695,
+      "trainable": false
+     },
+     "nodes_time_const": {
+      "count": 695,
+      "trainable": false
+     },
+     "edges_sign": {
+      "count": 12450379,
+      "trainable": false
+     },
+     "edges_syn_count": {
+      "count": 12450379,
+      "trainable": false
+     },
+     "edges_syn_strength": {
+      "count": 129437,
+      "trainable": false
+     }
+    },
+    "trainable": 0,
+    "frozen": 25031585
+   },
+   "transfer": {
+    "model": "flow/0000/000",
+    "bias": {
+     "transferred": 54,
+     "of": 695
+    },
+    "time_const": {
+     "transferred": 54,
+     "of": 695
+    },
+    "syn_strength": {
+     "transferred": 455,
+     "of": 129437
+    }
+   },
+   "gain": {
+    "target": 0.9,
+    "spectral_radius_before": 4.893965380328721,
+    "scale": 0.18389995229993805,
+    "spectral_radius_after": 0.9000000069649915,
+    "exact": true,
+    "relative_residual": 3.590484045177304e-15,
+    "components": 954,
+    "largest_component": 104058,
+    "cells_in_recurrent_components": 104058
+   },
+   "compile": {
+    "nodes": 105011,
+    "edges": 12450379,
+    "input_neurons": 5923,
+    "photoreceptors_without_a_column": 83
+   },
+   "stability": {
+    "finite": true,
+    "min": -0.9707,
+    "max": 6.3027,
+    "mean_abs": 0.575,
+    "drift_last_half_second": 0.000331
+   },
+   "simulation": {
+    "batch_size": 1,
+    "dt": 0.005,
+    "simulated_seconds": 1.0,
+    "wall_seconds": 0.51,
+    "simulated_seconds_per_wall_second_per_sample": 1.96
+   },
+   "flash": {
+    "intensity": 1.0,
+    "seconds": 0.5,
+    "dt": 0.02,
+    "threshold": 1e-05,
+    "by_role": {
+     "input": {
+      "cells": 6006,
+      "responding_fraction": 0.9893,
+      "median_change": 0.5,
+      "max_change": 0.5003
+     },
+     "intermediate": {
+      "cells": 94347,
+      "responding_fraction": 0.9864,
+      "median_change": 0.001399,
+      "max_change": 0.4292
+     },
+     "output": {
+      "cells": 4658,
+      "responding_fraction": 0.9974,
+      "median_change": 0.000507,
+      "max_change": 0.0108
+     }
+    }
+   },
+   "peak_memory_gb": 6.47,
+   "settled": true
+  }
+ },
+ "unnormalised": {
+  "default": {
+   "spectral_radius": {
+    "spectral_radius": 3.0699336182803063,
+    "components": 954,
+    "largest_component": 104058,
+    "cells_in_recurrent_components": 104058,
+    "relative_residual": 1.6560244729630458e-15,
+    "exact": true,
+    "cells": 105011
+   },
+   "stability": {
+    "finite": true,
+    "min": -1189.036,
+    "max": 17961.1367,
+    "mean_abs": 44.3934,
+    "drift_last_half_second": 15821.748047
+   },
+   "settled": false
+  },
+  "transfer": {
+   "spectral_radius": {
+    "spectral_radius": 4.893965380328729,
+    "components": 954,
+    "largest_component": 104058,
+    "cells_in_recurrent_components": 104058,
+    "relative_residual": 4.686638905873292e-15,
+    "exact": true,
+    "cells": 105011
+   },
+   "stability": {
+    "finite": true,
+    "min": -471.9447,
+    "max": 7111.2524,
+    "mean_abs": 19.7053,
+    "drift_last_half_second": 6257.574219
+   },
+   "settled": false
+  }
+ },
+ "training_step_R1": {
+  "frames": 19,
+  "batch_size": 1,
+  "dt": 0.02,
+  "seconds_per_step": 0.248,
+  "peak_memory_gb": 2.77,
+  "trainable": 130827
+ },
+ "reused_steps": [],
+ "elapsed_seconds": 323.6
+}

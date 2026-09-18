@@ -197,3 +197,66 @@ def test_a_flash_on_the_eyes_reaches_the_readout(neuron_networks) -> None:
     response = flash_response(neuron_networks["R0"])
     assert response["by_role"]["input"]["responding_fraction"] > 0.5
     assert response["by_role"]["output"]["responding_fraction"] == 1.0
+
+
+def test_neuron_regimes_start_from_the_same_values(neuron_networks) -> None:
+    from conectoma.network.regimes import element_values
+
+    for name in ("bias", "time_const", "syn_strength"):
+        reference = element_values(neuron_networks["R1"], name)
+        for regime in ("R0", "R2"):
+            assert np.allclose(element_values(neuron_networks[regime], name), reference), (regime, name)
+
+
+# --- loop gain ------------------------------------------------------------------------------------
+
+
+def test_the_settled_criterion_rejects_a_runaway_that_is_still_finite() -> None:
+    from conectoma.network.gain import settled
+
+    assert settled({"finite": True, "min": -1.7, "max": 3.6, "drift_last_half_second": 1e-6})
+    assert not settled({"finite": True, "min": -1189.0, "max": 17961.1, "drift_last_half_second": 15821.7})
+    assert not settled({"finite": False, "min": 0.0, "max": 0.0, "drift_last_half_second": 0.0})
+
+
+@requires_engine
+def test_the_spectral_radius_bound_matches_the_dense_matrix(tmp_path: Path) -> None:
+    from conectoma.network.gain import absolute_weights, normalise_gain, spectral_radius
+    from conectoma.network.neurons import build_neuron_network
+
+    graph = synthetic_graph(tmp_path / "g.npz")
+    arrays = dict(np.load(graph))
+    # close a recurrent loop so the matrix has a non-zero spectral radius
+    arrays["pre"] = np.concatenate([arrays["pre"], np.asarray([11, 6], dtype=np.int32)])
+    arrays["post"] = np.concatenate([arrays["post"], np.asarray([6, 11], dtype=np.int32)])
+    arrays["weight"] = np.concatenate([arrays["weight"], np.asarray([40, 40], dtype=np.int32)])
+    write_graph(arrays, graph)
+    network = build_neuron_network(graph, "R0", gain_target=None)
+    source, target, weight = absolute_weights(network)
+    dense = np.zeros((network.n_nodes, network.n_nodes))
+    np.add.at(dense, (target.cpu().numpy(), source.cpu().numpy()), weight.cpu().numpy())
+    expected = float(np.max(np.abs(np.linalg.eigvals(dense))))
+    measured = spectral_radius(network)
+    assert measured["spectral_radius"] == pytest.approx(expected, rel=1e-9)
+    assert measured["relative_residual"] < 1e-8
+    report = normalise_gain(network, target=expected / 4)
+    assert report["scale"] == pytest.approx(0.25, rel=1e-9)
+    assert report["spectral_radius_after"] == pytest.approx(expected / 4, rel=1e-6)
+
+
+
+def test_the_radius_ignores_feed_forward_chains_and_handles_a_signed_pair() -> None:
+    """A two-cell loop (+r and -r), a three-cell loop, a large ring and a long feed-forward chain."""
+    import scipy.sparse as sparse
+    from conectoma.network.gain import radius_of_matrix
+
+    edges = [(0, 1, 2.0), (1, 0, 3.0), (2, 3, 1.0), (3, 4, 1.0), (4, 2, 1.0)]
+    edges += [(5 + i, 5 + (i + 1) % 100, 1.2) for i in range(100)]        # a ring above the dense cut-off
+    edges += [(105 + i, 106 + i, 1.5) for i in range(190)]               # a nilpotent chain
+    edges += [(1, 105, 4.0), (104, 2, 4.0)]                              # feed-forward links between them
+    rows, cols, vals = zip(*edges, strict=True)
+    matrix = sparse.csr_matrix((vals, (cols, rows)), shape=(296, 296))
+    result = radius_of_matrix(matrix)
+    assert result["spectral_radius"] == pytest.approx(6 ** 0.5, rel=1e-8)
+    assert result["largest_component"] == 100
+    assert result["cells_in_recurrent_components"] == 105

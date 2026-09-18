@@ -22,7 +22,8 @@ import numpy as np
 
 from conectoma.network.characterize import TRAIN_DT, simulation_rate, stability, training_step
 from conectoma.network.engine import load_engine, published_model_dir, run_log
-from conectoma.network.neurons import build_neuron_network, graph_digest
+from conectoma.network.gain import settled, spectral_radius
+from conectoma.network.neurons import GAIN_TARGET, build_neuron_network, graph_digest
 from conectoma.network.regimes import trainable_report
 
 
@@ -30,9 +31,10 @@ def flash_response(network, intensity: float = 1.0, seconds: float = 0.5, dt: fl
                    threshold: float = 1e-5) -> dict:
     """Grey to a steady state, then a full-field step on every input; how far each role moves.
 
-    A cell counts as responding when its voltage moves by more than `threshold` volts, well above float32
-    resolution around the resting range; the size of the change is reported separately, because at the
-    engine's initial strengths each synaptic layer attenuates a signal by about two orders of magnitude.
+    A cell counts as responding when its voltage moves by more than `threshold`, in the engine's
+    dimensionless units where resting potentials start around 0.5: well above float32 resolution there. The
+    size of the change is reported separately, because at the engine's initial strengths each synaptic layer
+    attenuates a signal by about two orders of magnitude.
     """
     import torch
 
@@ -72,10 +74,23 @@ def characterize_visual_cns(graph_path: Path, log=print) -> dict:
     transfer_from = published_model_dir("000")
     digest = graph_digest(graph_path)
     device = torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu"
-    runs = run_log(f"characterize-visual-cns-{digest[:12]}", {"digest": digest, "device": device})
+    runs = run_log(f"characterize-visual-cns-{digest[:12]}", {
+        "digest": digest, "device": device, "gain_target": GAIN_TARGET,
+    })
     report: dict = {
         "graph": Path(graph_path).name, "digest": digest, "device": device, "torch": torch.__version__,
     }
+
+    def unnormalised(init: str) -> dict:
+        """The same network without the gain normalisation: the reason it exists."""
+        network = build_neuron_network(
+            graph_path, "R0", transfer_from=transfer_from if init == "transfer" else None, gain_target=None,
+        )
+        result = {"spectral_radius": spectral_radius(network), "stability": stability(network)}
+        result["settled"] = settled(result["stability"])
+        del network
+        torch.cuda.empty_cache()
+        return result
 
     def frozen(init: str) -> dict:
         if torch.cuda.is_available():
@@ -86,22 +101,28 @@ def characterize_visual_cns(graph_path: Path, log=print) -> dict:
         entry = {
             "parameters": trainable_report(network),
             "transfer": network.transfer_report,
+            "gain": network.gain_report,
             "compile": network.connectome.compile_report,
             "stability": stability(network),
             "simulation": simulation_rate(network, seconds=1.0, batch_size=1),
             "flash": flash_response(network),
             "peak_memory_gb": peak_memory_gb(),
         }
+        entry["settled"] = settled(entry["stability"])
         del network
         torch.cuda.empty_cache()
         return entry
 
-    log("[1/2] the frozen network (R0) from both starting points")
+    log("[1/2] the frozen network (R0) from both starting points, without and with the gain bound")
+    report["gain_target"] = GAIN_TARGET
     report["frozen"] = {}
+    report["unnormalised"] = {}
     for init in ("default", "transfer"):
+        report["unnormalised"][init] = runs.step(f"unnormalised/{init}", lambda init=init: unnormalised(init))
         report["frozen"][init] = runs.step(f"frozen/{init}", lambda init=init: frozen(init))
         entry = report["frozen"][init]
-        log(f"      {init}: stable {entry['stability']['finite']}, readouts responding "
+        log(f"      {init}: settled {entry['settled']} (without the bound: "
+            f"{report['unnormalised'][init]['settled']}), readouts responding "
             f"{entry['flash']['by_role']['output']['responding_fraction']}, "
             f"peak {entry['peak_memory_gb']} GB")
 

@@ -92,7 +92,23 @@ where it stopped, and a report can be regenerated in seconds. The parity command
 status if any voltage comparison exceeds its tolerance or the cross-check with the engine's own pipeline
 disagrees.
 
-## 6. On your own connectome
+## 6. The whole visual system, neuron by neuron
+
+The neuron-level network of [architecture/04](../architecture/04_the-whole-visual-system.md) is built from
+the release tables and written outside git (41 MB), with a committed summary:
+
+```bash
+.venv-pipeline/Scripts/python data-pipeline/run.py build-visual-cns          # about 1 minute
+.venv-pipeline/Scripts/python data-pipeline/run.py characterize-visual-cns   # about 6 minutes
+```
+
+`build-visual-cns --min-weight 3` keeps only connections of three synapses or more (a recorded option, not
+the default). In Python, `conectoma.network.neurons.build_neuron_network(graph, "R0")` builds the network with
+its loop gain bounded to 0.9; `gain_target=None` builds it as measured, which from the engine's
+initialisation runs away. `network.connectome.input_layout` lists the eye, column and type of every input
+value, in order, for a renderer to fill.
+
+## 7. On your own connectome
 
 Any specification in the average-filter format compiles the same way. Two things decide whether it compiles
 as intended:

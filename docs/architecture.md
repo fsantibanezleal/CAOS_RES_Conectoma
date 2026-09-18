@@ -6,6 +6,9 @@
 - [03, the network, its regimes and its controls](architecture/03_network-and-regimes.md): the compiler,
   placement and target-centric expansion, the dynamics, the three frozen regimes, the null controls, and
   parity with the published model
+- [04, the whole visual system as a network](architecture/04_the-whole-visual-system.md): both optic lobes
+  and their projections neuron by neuron, the photoreceptor input, and the loop-gain bound that keeps it
+  stable
 - [08, the data contracts](architecture/08_data-contracts.md): connectome and vision ingestion, the
   connectome specification, and the artifact contract the web consumes
 

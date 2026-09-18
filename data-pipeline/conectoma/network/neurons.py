@@ -244,22 +244,44 @@ def network_config(graph_path: Path, regime: str, seed: int = 0) -> dict:
     }
 
 
+# The loop-gain bound every neuron-level network starts from (see `gain.py`): from the engine's
+# initialisation the whole visual system runs away, so its synaptic strengths are scaled by one factor until
+# the spectral radius of |W| is at most this.
+GAIN_TARGET = 0.9
+
+
 def build_neuron_network(
     graph_path: Path, regime: str = "R0", seed: int = 0, transfer_from: Path | None = None,
+    gain_target: float | None = GAIN_TARGET,
 ):
-    """A neuron-level network of the given regime, from the same starting values as the lattice regimes."""
+    """A neuron-level network of the given regime, from the same starting values as the lattice regimes.
+
+    R0 and R1 share their grouping (per cell type and type pair), so they are built directly and the
+    published values are transferred into them; only R2, which groups per neuron and per connection, is
+    built from an R1 network and broadcast. At twelve million connections that avoids holding two networks.
+    The gain normalisation is applied to the starting values, before any broadcast, so all regimes share it.
+    """
+    from conectoma.network.gain import normalise_gain
+
     flyvis = load_engine()
     graph_path = Path(graph_path).resolve()
-    base = flyvis.Network(**network_config(graph_path, "R1", seed))
-    report = transfer(Path(transfer_from), base) if transfer_from is not None else None
-    if regime == "R1":
-        network = base
+    gain = None
+    if regime in ("R0", "R1"):
+        network = flyvis.Network(**network_config(graph_path, regime, seed))
+        report = transfer(Path(transfer_from), network) if transfer_from is not None else None
+        if gain_target is not None:
+            gain = normalise_gain(network, gain_target)
     else:
+        base = flyvis.Network(**network_config(graph_path, "R1", seed))
+        report = transfer(Path(transfer_from), base) if transfer_from is not None else None
+        if gain_target is not None:
+            gain = normalise_gain(base, gain_target)
         network = flyvis.Network(**network_config(graph_path, regime, seed))
         broadcast_parameters(base, network)
         del base
     network.regime = regime
     network.transfer_report = report
+    network.gain_report = gain
     if not REGIMES[regime].trainable:
         network.eval()
     return network

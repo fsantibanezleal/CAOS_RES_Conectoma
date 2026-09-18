@@ -295,7 +295,17 @@
      "largest_change_from_rest": 0.0,
      "share_of_stimuli_driving_above_zero": 1.0
     }
-   }
+   },
+   "loop_gain": {
+    "spectral_radius": 1.480184172875201,
+    "components": 827,
+    "largest_component": 39224,
+    "cells_in_recurrent_components": 39226,
+    "relative_residual": 7.105596844816401e-16,
+    "exact": true,
+    "cells": 40051
+   },
+   "settled": true
   },
   "transfer": {
    "parameters": {
@@ -569,7 +579,17 @@
      "largest_change_from_rest": 0.465,
      "share_of_stimuli_driving_above_zero": 1.0
     }
-   }
+   },
+   "loop_gain": {
+    "spectral_radius": 2.3330365931777144,
+    "components": 827,
+    "largest_component": 39224,
+    "cells_in_recurrent_components": 39226,
+    "relative_residual": 3.4195899270751685e-15,
+    "exact": true,
+    "cells": 40051
+   },
+   "settled": true
   }
  },
  "training_step": {
@@ -643,6 +663,13 @@
      "mean_abs": 0.5578,
      "drift_last_half_second": 0.003101
     }
+   ],
+   "settled": [
+    true,
+    true,
+    true,
+    true,
+    true
    ],
    "tuning": {
     "T4a": {
@@ -926,6 +953,13 @@
      "drift_last_half_second": 0.001961
     }
    ],
+   "settled": [
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
    "tuning": {
     "T4a": {
      "dsi": [
@@ -1208,6 +1242,13 @@
      "drift_last_half_second": 0.001719
     }
    ],
+   "settled": [
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
    "tuning": {
     "T4a": {
      "dsi": [
@@ -1448,7 +1489,9 @@
  },
  "reused_steps": [
   "frozen/default",
+  "frozen/default/motion_activity",
   "frozen/transfer",
+  "frozen/transfer/motion_activity",
   "training_step/R1",
   "training_step/R2",
   "training_step/published_R1",
@@ -1468,5 +1511,5 @@
   "controls/v2/N3/seed3",
   "controls/v2/N3/seed4"
  ],
- "elapsed_seconds": 239.1
+ "elapsed_seconds": 46.3
 }
