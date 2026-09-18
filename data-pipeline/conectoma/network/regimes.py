@@ -8,7 +8,7 @@ biophysical quantities a task may adjust:
 - **R1 biophysical**: resting potential and time constant per cell type, synaptic strength per connected
   type pair (8,409 parameters on the right optic lobe);
 - **R2 edge gain**: resting potential and time constant per neuron, synaptic strength per individual
-  connection (3,002,181 parameters on the right optic lobe).
+  connection (3,003,002 parameters on the right optic lobe).
 
 R0 is the literal reading of a connectome used as an architecture with frozen weights: only a readout
 outside the network learns. R1 is the regime of the published connectome-constrained model, whose 734

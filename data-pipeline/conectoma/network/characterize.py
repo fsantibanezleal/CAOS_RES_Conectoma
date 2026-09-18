@@ -137,6 +137,43 @@ def control_spec_path(spec_path: Path, kind: str, seed: int) -> Path:
     return path
 
 
+def motion_activity(network, dataset, batch_size: int = 4) -> dict:
+    """Whether the central T4 and T5 cells respond at all, before asking which direction they prefer.
+
+    A direction selectivity index of zero has two readings: a cell that responds equally to every direction,
+    or a cell that does not respond (its voltage stays below the rectification threshold, so every peak is
+    zero). Per subtype: the voltage at the end of the grey period, the largest voltage reached, and the share
+    of stimuli that drive the cell above zero at its own polarity.
+    """
+    import torch
+
+    from conectoma.network.tuning import MOTION_TYPES, POLARITY
+
+    with torch.no_grad():
+        responses = central_responses(network, dataset, batch_size=batch_size)
+    cell_types = np.asarray(network.connectome.unique_cell_types[:]).astype(str)
+    intensity = dataset.arg_df["intensity"].to_numpy()
+    # Stimuli at faster speeds are shorter and are padded with NaN to the longest one; the engine's analysis
+    # skips NaN, and so does this.
+    rest_frame = int(round(1.0 / dataset.dt)) - 1
+    result = {}
+    for cell_type in MOTION_TYPES:
+        where = np.nonzero(cell_types == cell_type)[0]
+        if where.size == 0:
+            continue
+        trace = responses[:, :, int(where[0])]
+        rest = trace[:, rest_frame]
+        own = trace[intensity == POLARITY[cell_type[:2]]]
+        peaks = np.nanmax(own, axis=1)
+        result[cell_type] = {
+            "resting_voltage": round(float(np.median(rest)), 4),
+            "peak_voltage": round(float(np.nanmax(peaks)), 4),
+            "largest_change_from_rest": round(float(np.nanmax(np.abs(trace - rest[:, None]))), 4),
+            "share_of_stimuli_driving_above_zero": round(float(np.mean(peaks > 0)), 4),
+        }
+    return result
+
+
 def tuning_of(network, dataset, batch_size: int = 4) -> dict:
     import torch
 
@@ -194,10 +231,20 @@ def characterize(spec_path: Path, seeds: tuple[int, ...] = (0, 1, 2, 3, 4), log=
         torch.cuda.empty_cache()
         return entry
 
+    def activity(init: str) -> dict:
+        network = build_network(spec_path, "R0", transfer_from=transfer_from if init == "transfer" else None)
+        result = motion_activity(network, dataset)
+        del network
+        torch.cuda.empty_cache()
+        return result
+
     log("[1/3] the frozen network (R0) from both starting points")
     report["frozen"] = {}
     for init in ("default", "transfer"):
-        entry = runs.step(f"frozen/{init}", lambda init=init: frozen(init))
+        entry = dict(runs.step(f"frozen/{init}", lambda init=init: frozen(init)))
+        entry["motion_activity"] = runs.step(
+            f"frozen/{init}/motion_activity", lambda init=init: activity(init)
+        )
         report["frozen"][init] = entry
         log(f"      {init}: stable {entry['stability']['finite']}, "
             f"{entry['simulation']['simulated_seconds_per_wall_second_per_sample']} sim s per s per sample")

@@ -279,7 +279,10 @@ def published_available() -> bool:
 def test_the_published_model_rebuilt_here_matches_the_engine_voltage_for_voltage() -> None:
     from conectoma.network.parity import VOLTAGE_TOLERANCE, voltage_parity
 
+    # a fast stimulus: most of its recording is NaN padding, which must sit at the same places in both paths
     result = voltage_parity("000", samples=(17,))
+    assert result["same_padding"]
+    assert result["padding_values"] > 0
     assert result["max_abs_difference"] <= VOLTAGE_TOLERANCE
     assert result["cells"] == 45669
 

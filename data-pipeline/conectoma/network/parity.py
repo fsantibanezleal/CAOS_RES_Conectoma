@@ -66,19 +66,24 @@ def product_network(model_dir: Path):
 
 
 def voltage_parity(model: str = "000", samples: tuple[int, ...] = (0, 17, 71, 143), runs=None) -> dict:
-    """Every voltage of every cell, both paths, the same stimuli: the largest absolute difference."""
-    key = f"voltage/{model}/{'-'.join(str(s) for s in samples)}"
+    """Every voltage of every cell, both paths, the same stimuli: the largest absolute difference.
+
+    Stimuli at faster speeds are shorter and are padded with NaN to the longest one, so part of every
+    recording is NaN in both paths. The comparison requires the NaN positions to be identical and takes the
+    largest difference over every finite value; a plain maximum would let one NaN hide or poison the rest.
+    """
+    key = f"voltage/v2/{model}/{'-'.join(str(s) for s in samples)}"
     if runs is not None:
         return runs.step(key, lambda: voltage_parity(model, samples))
     import torch
 
     model_dir = published_model_dir(model)
     dataset = moving_edges()
-    everything = None  # all cells, not only the central ones
+    cells = 0
     results = {}
     for name, factory in (("engine", reference_network), ("product", product_network)):
         network = factory(model_dir)
-        everything = np.arange(network.n_nodes)
+        cells = int(network.n_nodes)
         with torch.no_grad():
             parts = [
                 responses
@@ -90,19 +95,26 @@ def voltage_parity(model: str = "000", samples: tuple[int, ...] = (0, 17, 71, 14
         del network
         torch.cuda.empty_cache()
 
-    differences = [
-        float(np.abs(a - b).max()) for a, b in zip(results["engine"], results["product"], strict=True)
-    ]
-    scale = max(float(np.abs(a).max()) for a in results["engine"])
+    pairs = list(zip(results["engine"], results["product"], strict=True))
+    same_gaps = all(np.array_equal(np.isnan(a), np.isnan(b)) for a, b in pairs)
+    finite = [(a[np.isfinite(a)], b[np.isfinite(a)]) for a, b in pairs]
+    compared = int(sum(a.size for a, _ in finite))
+    difference = max(float(np.max(np.abs(a - b))) for a, b in finite if a.size)
+    if not np.isfinite(difference):
+        raise ValueError("a finite recording of one path is not finite in the other")
+    scale = max(float(np.max(np.abs(a))) for a, _ in finite if a.size)
     return {
         "model": f"{PUBLISHED_ENSEMBLE}/{model}",
         "stimuli": list(samples),
-        "cells": int(everything.size),
+        "cells": cells,
         "frames": [int(a.shape[1]) for a in results["engine"]],
-        "max_abs_difference": max(differences),
+        "values_compared": compared,
+        "padding_values": int(sum(int(np.isnan(a).sum()) for a in results["engine"])),
+        "same_padding": bool(same_gaps),
+        "max_abs_difference": difference,
         "largest_voltage": round(scale, 4),
         "tolerance": VOLTAGE_TOLERANCE,
-        "passed": max(differences) <= VOLTAGE_TOLERANCE,
+        "passed": bool(same_gaps and difference <= VOLTAGE_TOLERANCE),
     }
 
 
