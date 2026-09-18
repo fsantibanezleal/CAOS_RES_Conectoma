@@ -130,6 +130,12 @@ def test_the_committed_connectome_agrees_with_the_published_consensus() -> None:
     assert report["connections"]["recovered_fraction"] >= 0.70
     assert report["signs"]["agreement_fraction"] >= 0.95
     assert report["central_synapse_counts"]["spearman"] >= 0.70
+    # the filters must point the way the reference's do: the identity is the best of the twelve lattice
+    # symmetries, by a margin (0.37 against 0.26 for the runner-up at the time of writing)
+    orientation = report["orientation"]
+    assert orientation["best"] == "+(u,v)"
+    assert orientation["identity"] >= 0.30
+    assert orientation["filters_compared"] >= 80
 
 
 @requires_comparison

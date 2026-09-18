@@ -79,9 +79,8 @@ def hex_distance(u: np.ndarray, v: np.ndarray) -> np.ndarray:
 
 def test_compiler_matches_the_engine_on_the_published_connectome() -> None:
     flyvis = engine()
-    from flyvis.connectome.connectome import ConnectomeFromAvgFilters
-
     from conectoma.network.lattice import LatticeConnectome
+    from flyvis.connectome.connectome import ConnectomeFromAvgFilters
 
     reference = ConnectomeFromAvgFilters(file=str(flyvis.connectome_file), extent=6, n_syn_fill=1)
     ours = LatticeConnectome(file=str(flyvis.connectome_file), extent=6, n_syn_fill=1)
@@ -160,9 +159,8 @@ def test_vectorised_grouping_equals_the_engine() -> None:
     engine()
     import pandas as pd
     import torch
-    from flyvis.network import initialization
-
     from conectoma.network.engine import vectorised_scatter_indices
+    from flyvis.network import initialization
 
     rng = np.random.default_rng(0)
     frame = pd.DataFrame({
@@ -227,7 +225,6 @@ def test_all_regimes_start_from_the_same_values(networks) -> None:
 def test_a_coarser_target_is_refused(networks) -> None:
     """Copying per-neuron values into per-type groups would lose them once neurons of a type differ."""
     import torch
-
     from conectoma.network.regimes import broadcast_parameters
 
     bias = networks["R2"].node_params["bias"].raw_values

@@ -13,7 +13,9 @@ Two conventions matter and both are taken from the consuming engine rather than 
   therefore computes `du = u_post - u_pre`;
 - the per-connection certainty the engine reads as `lambda_mult` is recorded as the fraction of eligible
   column pairs that actually carry the connection, so a filter built from one lucky pair is not presented
-  with the same weight as one seen across the whole eye.
+  with the same weight as one seen across the whole eye;
+- offsets are written in the engine's lattice frame, which is the release's column frame turned half a
+  turn (`RELEASE_TO_ENGINE`, measured, not assumed).
 
 The output is the JSON the engine consumes directly, which is why this product needs no library of its own.
 """
@@ -90,6 +92,15 @@ DEFAULT_OUTPUT_TYPES = ("T4a", "T4b", "T4c", "T4d", "T5a", "T5b", "T5c", "T5d")
 MAX_STRIDE = 4
 POPULATION_BELOW = 1.0 / (MAX_STRIDE + 0.5) ** 2
 
+# The release's column axes (assignedOlHex1, assignedOlHex2) point the opposite way from the lattice axes of
+# the network engine, whose stimulus renderer and published tuning are defined in its own frame. Measured by
+# comparing the direction of every spatially extended filter shared with the published consensus under all
+# twelve symmetries of the hexagonal lattice (`compare.orientation`): as built from the release the identity
+# scores -0.42 and the half-turn +0.42 over 98 filters, and the direction-defining inputs of T4 and T5 (Mi9,
+# Mi4, Tm9) are each turned by 120 to 170 degrees. Offsets are therefore written in the engine's frame by
+# turning them half a turn, (du, dv) -> (-du, -dv); the comparison report re-measures it on every build.
+RELEASE_TO_ENGINE = -1
+
 
 def placement(density: float) -> list:
     """The lattice pattern of a cell type with the given measured cells per column."""
@@ -106,9 +117,9 @@ class BuildConfig:
 
     side: str = "R"
     # Chosen by the threshold sweep recorded in docs/architecture/02_connectome-construction.md: at 0.5 and
-    # 0.02 the build recovers 75.8 percent of the published consensus connections with the highest sign
-    # agreement of the three settings tried, where 1.0 and 0.05 recovered only 66.2 percent and 0.2 and 0.01
-    # recovered 84.8 percent at a lower rank correlation and 12 MB of artifact.
+    # 0.02 the build recovers 76.0 percent of the published consensus connections with the highest sign
+    # agreement of the three settings tried, where 1.0 and 0.05 recovered only 66.6 percent and 0.2 and 0.01
+    # recovered 84.8 percent at a lower rank correlation and 11.5 MB of artifact.
     min_mean_synapses: float = 0.5
     min_certainty: float = 0.02
     max_offset: int = 8
@@ -543,7 +554,10 @@ def to_flyvis_spec(built: dict, selection: Selection, config: BuildConfig) -> di
         if not offsets:
             continue
         certainty = float(np.mean([c for _, _, c in offsets]))
-        edges.append(edge(source, target, [[list(o), value] for o, value, _ in sorted(offsets)], certainty))
+        turned = sorted(
+            ((RELEASE_TO_ENGINE * du, RELEASE_TO_ENGINE * dv), value) for (du, dv), value, _ in offsets
+        )
+        edges.append(edge(source, target, [[list(o), value] for o, value in turned], certainty))
 
     present = set(selection.types)
     receptors = sorted(t for t in present if is_photoreceptor(t))
@@ -574,6 +588,10 @@ def to_flyvis_spec(built: dict, selection: Selection, config: BuildConfig) -> di
                         "Drosophila male central nervous system",
             "sign_source": "Eckstein et al., Cell, 2024, doi:10.1016/j.cell.2024.03.016",
             "config": config.as_dict(),
+            "frame": {
+                "offsets": "engine lattice axes; the release's column offsets turned half a turn",
+                "release_to_engine": RELEASE_TO_ENGINE,
+            },
             "placement": {
                 "columns": columns,
                 "max_stride": MAX_STRIDE,

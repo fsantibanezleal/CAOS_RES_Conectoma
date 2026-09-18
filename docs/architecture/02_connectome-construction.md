@@ -67,6 +67,34 @@ connection. Their values were chosen by measurement rather than taste, see the s
 The certainty the engine reads as a per-connection multiplier is the fraction of eligible column pairs that
 actually carry the connection, so a filter seen across the whole eye is not presented like one seen twice.
 
+## Orientation: the release's frame and the engine's
+
+A filter is a pattern in space: Mi9 sits on one side of a T4 dendrite and Mi4 on the other, and that
+asymmetry is what makes each T4 subtype prefer one direction. The pattern only means something in the frame
+of the lattice the network runs on, where the engine's stimulus renderer and the published tuning are
+defined. The release's column axes are not that frame, and nothing in a count comparison would notice: a
+rotated or mirrored filter has the same central count.
+
+So the frame is measured. For every connection shared with the published consensus whose filters both have
+at least three entries, the synapse-weighted mean offset (the centre entry excluded) gives the direction the
+inputs sit in. Each of the twelve symmetries of the hexagonal lattice (six permutations of the axial
+coordinates u, v and w = -u - v, each with and without a point reflection) is applied to the release's
+filters, and the directions are compared with the reference by the cosine of the angle between them,
+weighted by the reference's displacement length:
+
+$$A(g) = \frac{\sum_k \lVert d^{\mathrm{ref}}_k \rVert \cos\angle\big(d^{\mathrm{ref}}_k,\; g \cdot d^{\mathrm{here}}_k\big)}{\sum_k \lVert d^{\mathrm{ref}}_k \rVert}$$
+
+As first built, the identity scored -0.42 over 98 filters, the lowest of the twelve, and the half-turn
+$(u, v) \to (-u, -v)$ scored +0.42, the highest. The inputs that define direction selectivity agreed: Mi9
+onto T4a to T4d was turned by -160, -170, -141 and -166 degrees, Mi4 onto T4 by -121 to -164, Tm9 onto T5 by
+-148 to +167. The release's axes point the opposite way from the engine's, so the build writes every offset
+half-turned into the engine's frame (`RELEASE_TO_ENGINE`). After that the identity is the best of the
+twelve (+0.37 over 108 filters, runner-up +0.26); the comparison report recomputes it on every build and the
+acceptance test requires it.
+
+Without this step the network would have been built in a frame where T4a looks like T4b and T4c like T4d,
+and every direction the characterisation reads from it would have been reversed.
+
 ## Placement, and what a sparse type sends
 
 Each cell type is placed at its measured density, the number of placed cells divided by the number of

@@ -150,13 +150,18 @@ def test_spec_places_types_by_density_and_routes_population_edges() -> None:
     spec = to_flyvis_spec(built, selection, BuildConfig())
     patterns = {n["name"]: n["pattern"] for n in spec["nodes"]}
     assert patterns == {
-        "Mi": ["stride", [2, 2]], "Pop": ["single", None], "R1-R6": ["stride", [1, 1]], "T4a": ["stride", [1, 1]],
+        "Mi": ["stride", [2, 2]],
+        "Pop": ["single", None],
+        "R1-R6": ["stride", [1, 1]],
+        "T4a": ["stride", [1, 1]],
     }
     edges = {(e["src"], e["tar"]): e for e in spec["edges"]}
     assert edges[("Pop", "T4a")]["offsets"] == [[[0, 0], 12.5]]
     assert edges[("Pop", "T4a")]["alpha"] == -1
     assert ("Pop", "Mi") not in edges
-    assert edges[("R1-R6", "Mi")]["offsets"] == [[[0, 0], 4.0], [[1, 0], 1.0]]
+    # written in the engine's frame: the release's offset (1, 0) turned half a turn
+    assert edges[("R1-R6", "Mi")]["offsets"] == [[[-1, 0], 1.0], [[0, 0], 4.0]]
+    assert spec["provenance"]["frame"]["release_to_engine"] == -1
     assert spec["compile"] == {"population_broadcast": True, "target_centric": True}
     assert spec["provenance"]["placement"]["columns"] == 100
 
