@@ -340,10 +340,10 @@ def cmd_fetch_vision(args: argparse.Namespace) -> int:
 
 def cmd_render_vision(args: argparse.Namespace) -> int:
     """Render the fetched clips onto the lattice and check them against contract 1."""
-    from conectoma.stages.vision_render import render_tartanair
+    from conectoma.stages.vision_render import render_source
 
-    summary = render_tartanair(data_root(args.data_root), args.workers)
-    print(f"tartanair: {summary['accepted']} of {summary['clips']} clips rendered and accepted, "
+    summary = render_source(data_root(args.data_root), args.source, args.workers)
+    print(f"{args.source}: {summary['accepted']} of {summary['clips']} clips rendered and accepted, "
           f"{summary['rejected']} rejected, {summary['failed']} failed")
     return 1 if summary["rejected"] or summary["failed"] else 0
 
@@ -416,6 +416,7 @@ def main(argv: list[str] | None = None) -> int:
     fetch.set_defaults(func=cmd_fetch_vision)
 
     render = sub.add_parser("render-vision", help="render fetched clips onto the lattice (contract 1)")
+    render.add_argument("--source", default="tartanair", choices=["tartanair", "spring", "hypersim"])
     render.add_argument("--data-root", default=None, help="directory of the local data cache")
     render.add_argument("--workers", type=int, default=4, help="parallel rendering processes")
     render.set_defaults(func=cmd_render_vision)
