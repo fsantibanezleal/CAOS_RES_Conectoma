@@ -25,86 +25,87 @@
     .rg-svg .tr { fill: var(--color-good, var(--rg-good)); font-size: 11px; font-weight: 700; }
     .rg-svg .n { fill: var(--color-fg, var(--rg-fg)); font-size: 14px; font-weight: 700; }
     .rg-svg .line { stroke: var(--color-border, var(--rg-grid)); }
+    svg .l-es { display: none; }
   </style>
 <rect class="bg" x="0" y="0" width="900" height="486" rx="12"/>
-<text class="ttl" x="22" y="32">What "frozen weights" means here: one network, three regimes</text>
+<text class="ttl l-en" x="22" y="32">What "frozen weights" means here: one network, three regimes</text><text class="ttl l-es" x="22" y="32">Qué significa aquí "pesos congelados": una red, tres regímenes</text>
 <text class="eq" x="22" y="58">τᵢ dVᵢ/dt = −Vᵢ + Σⱼ α σ N · ReLU(Vⱼ) + Vᵣₑₛₜ + eᵢ</text>
-<text class="hs" x="22" y="76">the wiring, the counts and the signs are the measured connectome in every regime; the regimes differ only in what else a task may adjust</text>
+<text class="hs l-en" x="22" y="76">the wiring, the counts and the signs are the measured connectome in every regime; the regimes differ only in what else a task may adjust</text><text class="hs l-es" x="22" y="76">el cableado, los conteos y los signos son el conectoma medido en todo régimen; los regímenes difieren solo en qué más puede ajustar una tarea</text>
 <rect class="panel" x="22" y="92" width="856" height="374" rx="10"/>
 <text class="h" x="415.0" y="118" text-anchor="middle">R0</text>
-<text class="hs" x="415.0" y="134" text-anchor="middle">reservoir</text>
+<text class="hs l-en" x="415.0" y="134" text-anchor="middle">reservoir</text><text class="hs l-es" x="415.0" y="134" text-anchor="middle">reservorio</text>
 <text class="h" x="601.0" y="118" text-anchor="middle">R1</text>
-<text class="hs" x="601.0" y="134" text-anchor="middle">biophysical</text>
+<text class="hs l-en" x="601.0" y="134" text-anchor="middle">biophysical</text><text class="hs l-es" x="601.0" y="134" text-anchor="middle">biofísico</text>
 <text class="h" x="787.0" y="118" text-anchor="middle">R2</text>
-<text class="hs" x="787.0" y="134" text-anchor="middle">edge gain</text>
+<text class="hs l-en" x="787.0" y="134" text-anchor="middle">edge gain</text><text class="hs l-es" x="787.0" y="134" text-anchor="middle">ganancia de arista</text>
 <line class="line" x1="34" y1="144" x2="866" y2="144"/>
-<text class="q" x="36" y="162">Wiring</text>
-<text class="qs" x="36" y="176">which types connect, at which column offsets</text>
+<text class="q l-en" x="36" y="162">Wiring</text><text class="q l-es" x="36" y="162">Cableado</text>
+<text class="qs l-en" x="36" y="176">which types connect, at which column offsets</text><text class="qs l-es" x="36" y="176">qué tipos se conectan, en qué desplazamientos de columna</text>
 <rect class="frz" x="336" y="150" width="158" height="26" rx="6"/>
-<text class="tf" x="415.0" y="167" text-anchor="middle">frozen</text>
+<text class="tf l-en" x="415.0" y="167" text-anchor="middle">frozen</text><text class="tf l-es" x="415.0" y="167" text-anchor="middle">congelado</text>
 <rect class="frz" x="522" y="150" width="158" height="26" rx="6"/>
-<text class="tf" x="601.0" y="167" text-anchor="middle">frozen</text>
+<text class="tf l-en" x="601.0" y="167" text-anchor="middle">frozen</text><text class="tf l-es" x="601.0" y="167" text-anchor="middle">congelado</text>
 <rect class="frz" x="708" y="150" width="158" height="26" rx="6"/>
-<text class="tf" x="787.0" y="167" text-anchor="middle">frozen</text>
+<text class="tf l-en" x="787.0" y="167" text-anchor="middle">frozen</text><text class="tf l-es" x="787.0" y="167" text-anchor="middle">congelado</text>
 <line class="line" x1="34" y1="182" x2="866" y2="182"/>
-<text class="q" x="36" y="200">Synapse counts N</text>
-<text class="qs" x="36" y="214">per connection, from the release</text>
+<text class="q l-en" x="36" y="200">Synapse counts N</text><text class="q l-es" x="36" y="200">Conteos de sinapsis N</text>
+<text class="qs l-en" x="36" y="214">per connection, from the release</text><text class="qs l-es" x="36" y="214">por conexión, desde la liberación</text>
 <rect class="frz" x="336" y="188" width="158" height="26" rx="6"/>
-<text class="tf" x="415.0" y="205" text-anchor="middle">frozen</text>
+<text class="tf l-en" x="415.0" y="205" text-anchor="middle">frozen</text><text class="tf l-es" x="415.0" y="205" text-anchor="middle">congelado</text>
 <rect class="frz" x="522" y="188" width="158" height="26" rx="6"/>
-<text class="tf" x="601.0" y="205" text-anchor="middle">frozen</text>
+<text class="tf l-en" x="601.0" y="205" text-anchor="middle">frozen</text><text class="tf l-es" x="601.0" y="205" text-anchor="middle">congelado</text>
 <rect class="frz" x="708" y="188" width="158" height="26" rx="6"/>
-<text class="tf" x="787.0" y="205" text-anchor="middle">frozen</text>
+<text class="tf l-en" x="787.0" y="205" text-anchor="middle">frozen</text><text class="tf l-es" x="787.0" y="205" text-anchor="middle">congelado</text>
 <line class="line" x1="34" y1="220" x2="866" y2="220"/>
-<text class="q" x="36" y="238">Signs σ</text>
-<text class="qs" x="36" y="252">from the neurotransmitter predictions</text>
+<text class="q l-en" x="36" y="238">Signs σ</text><text class="q l-es" x="36" y="238">Signos σ</text>
+<text class="qs l-en" x="36" y="252">from the neurotransmitter predictions</text><text class="qs l-es" x="36" y="252">desde las predicciones de neurotransmisor</text>
 <rect class="frz" x="336" y="226" width="158" height="26" rx="6"/>
-<text class="tf" x="415.0" y="243" text-anchor="middle">frozen</text>
+<text class="tf l-en" x="415.0" y="243" text-anchor="middle">frozen</text><text class="tf l-es" x="415.0" y="243" text-anchor="middle">congelado</text>
 <rect class="frz" x="522" y="226" width="158" height="26" rx="6"/>
-<text class="tf" x="601.0" y="243" text-anchor="middle">frozen</text>
+<text class="tf l-en" x="601.0" y="243" text-anchor="middle">frozen</text><text class="tf l-es" x="601.0" y="243" text-anchor="middle">congelado</text>
 <rect class="frz" x="708" y="226" width="158" height="26" rx="6"/>
-<text class="tf" x="787.0" y="243" text-anchor="middle">frozen</text>
+<text class="tf l-en" x="787.0" y="243" text-anchor="middle">frozen</text><text class="tf l-es" x="787.0" y="243" text-anchor="middle">congelado</text>
 <line class="line" x1="34" y1="258" x2="866" y2="258"/>
-<text class="q" x="36" y="276">Synaptic strength α</text>
-<text class="qs" x="36" y="290">scale on the synapse count, non-negative</text>
+<text class="q l-en" x="36" y="276">Synaptic strength α</text><text class="q l-es" x="36" y="276">Intensidad sináptica α</text>
+<text class="qs l-en" x="36" y="290">scale on the synapse count, non-negative</text><text class="qs l-es" x="36" y="290">escala sobre el conteo de sinapsis, no negativa</text>
 <rect class="frz" x="336" y="264" width="158" height="26" rx="6"/>
-<text class="tf" x="415.0" y="281" text-anchor="middle">frozen</text>
+<text class="tf l-en" x="415.0" y="281" text-anchor="middle">frozen</text><text class="tf l-es" x="415.0" y="281" text-anchor="middle">congelado</text>
 <rect class="trn" x="522" y="264" width="158" height="26" rx="6"/>
-<text class="tt" x="601.0" y="281" text-anchor="middle">trained, per type pair</text>
+<text class="tt l-en" x="601.0" y="281" text-anchor="middle">trained, per type pair</text><text class="tt l-es" x="601.0" y="281" text-anchor="middle">entrenado, por par de tipos</text>
 <rect class="trn" x="708" y="264" width="158" height="26" rx="6"/>
-<text class="tt" x="787.0" y="281" text-anchor="middle">trained, per connection</text>
+<text class="tt l-en" x="787.0" y="281" text-anchor="middle">trained, per connection</text><text class="tt l-es" x="787.0" y="281" text-anchor="middle">entrenado, por conexión</text>
 <line class="line" x1="34" y1="296" x2="866" y2="296"/>
-<text class="q" x="36" y="314">Time constant τ</text>
-<text class="qs" x="36" y="328">how fast a cell integrates</text>
+<text class="q l-en" x="36" y="314">Time constant τ</text><text class="q l-es" x="36" y="314">Constante de tiempo τ</text>
+<text class="qs l-en" x="36" y="328">how fast a cell integrates</text><text class="qs l-es" x="36" y="328">qué tan rápido integra una célula</text>
 <rect class="frz" x="336" y="302" width="158" height="26" rx="6"/>
-<text class="tf" x="415.0" y="319" text-anchor="middle">frozen</text>
+<text class="tf l-en" x="415.0" y="319" text-anchor="middle">frozen</text><text class="tf l-es" x="415.0" y="319" text-anchor="middle">congelado</text>
 <rect class="trn" x="522" y="302" width="158" height="26" rx="6"/>
-<text class="tt" x="601.0" y="319" text-anchor="middle">trained, per cell type</text>
+<text class="tt l-en" x="601.0" y="319" text-anchor="middle">trained, per cell type</text><text class="tt l-es" x="601.0" y="319" text-anchor="middle">entrenado, por tipo celular</text>
 <rect class="trn" x="708" y="302" width="158" height="26" rx="6"/>
-<text class="tt" x="787.0" y="319" text-anchor="middle">trained, per neuron</text>
+<text class="tt l-en" x="787.0" y="319" text-anchor="middle">trained, per neuron</text><text class="tt l-es" x="787.0" y="319" text-anchor="middle">entrenado, por neurona</text>
 <line class="line" x1="34" y1="334" x2="866" y2="334"/>
-<text class="q" x="36" y="352">Resting potential Vᵣₑₛₜ</text>
-<text class="qs" x="36" y="366">the cell's voltage at rest</text>
+<text class="q l-en" x="36" y="352">Resting potential Vᵣₑₛₜ</text><text class="q l-es" x="36" y="352">Potencial de reposo Vᵣₑₛₜ</text>
+<text class="qs l-en" x="36" y="366">the cell's voltage at rest</text><text class="qs l-es" x="36" y="366">el voltaje de la célula en reposo</text>
 <rect class="frz" x="336" y="340" width="158" height="26" rx="6"/>
-<text class="tf" x="415.0" y="357" text-anchor="middle">frozen</text>
+<text class="tf l-en" x="415.0" y="357" text-anchor="middle">frozen</text><text class="tf l-es" x="415.0" y="357" text-anchor="middle">congelado</text>
 <rect class="trn" x="522" y="340" width="158" height="26" rx="6"/>
-<text class="tt" x="601.0" y="357" text-anchor="middle">trained, per cell type</text>
+<text class="tt l-en" x="601.0" y="357" text-anchor="middle">trained, per cell type</text><text class="tt l-es" x="601.0" y="357" text-anchor="middle">entrenado, por tipo celular</text>
 <rect class="trn" x="708" y="340" width="158" height="26" rx="6"/>
-<text class="tt" x="787.0" y="357" text-anchor="middle">trained, per neuron</text>
+<text class="tt l-en" x="787.0" y="357" text-anchor="middle">trained, per neuron</text><text class="tt l-es" x="787.0" y="357" text-anchor="middle">entrenado, por neurona</text>
 <line class="line" x1="34" y1="372" x2="866" y2="372"/>
-<text class="q" x="36" y="390">Readout</text>
-<text class="qs" x="36" y="404">outside the network: depth, masks</text>
+<text class="q l-en" x="36" y="390">Readout</text><text class="q l-es" x="36" y="390">Lectura</text>
+<text class="qs l-en" x="36" y="404">outside the network: depth, masks</text><text class="qs l-es" x="36" y="404">fuera de la red: profundidad, máscaras</text>
 <rect class="ro" x="336" y="378" width="158" height="26" rx="6"/>
-<text class="tr" x="415.0" y="395" text-anchor="middle">trained</text>
+<text class="tr l-en" x="415.0" y="395" text-anchor="middle">trained</text><text class="tr l-es" x="415.0" y="395" text-anchor="middle">entrenado</text>
 <rect class="ro" x="522" y="378" width="158" height="26" rx="6"/>
-<text class="tr" x="601.0" y="395" text-anchor="middle">trained</text>
+<text class="tr l-en" x="601.0" y="395" text-anchor="middle">trained</text><text class="tr l-es" x="601.0" y="395" text-anchor="middle">entrenado</text>
 <rect class="ro" x="708" y="378" width="158" height="26" rx="6"/>
-<text class="tr" x="787.0" y="395" text-anchor="middle">trained</text>
+<text class="tr l-en" x="787.0" y="395" text-anchor="middle">trained</text><text class="tr l-es" x="787.0" y="395" text-anchor="middle">entrenado</text>
 <line class="line" x1="34" y1="410" x2="866" y2="410"/>
-<text class="q" x="36" y="430">Trainable inside the network</text>
-<text class="qs" x="36" y="444">right optic lobe, 253 types, 40,051 cells, 2,922,900 connections</text>
+<text class="q l-en" x="36" y="430">Trainable inside the network</text><text class="q l-es" x="36" y="430">Entrenable dentro de la red</text>
+<text class="qs l-en" x="36" y="444">right optic lobe, 253 types, 40,051 cells, 2,922,900 connections</text><text class="qs l-es" x="36" y="444">lóbulo óptico derecho, 253 tipos, 40.051 células, 2.922.900 conexiones</text>
 <text class="n" x="415.0" y="436" text-anchor="middle">0</text>
-<text class="n" x="601.0" y="436" text-anchor="middle">8,409</text>
-<text class="n" x="787.0" y="436" text-anchor="middle">3,003,002</text>
-<text class="qs" x="601.0" y="452" text-anchor="middle">the published model: 734</text>
+<text class="n l-en" x="601.0" y="436" text-anchor="middle">8,409</text><text class="n l-es" x="601.0" y="436" text-anchor="middle">8.409</text>
+<text class="n l-en" x="787.0" y="436" text-anchor="middle">3,003,002</text><text class="n l-es" x="787.0" y="436" text-anchor="middle">3.003.002</text>
+<text class="qs l-en" x="601.0" y="452" text-anchor="middle">the published model: 734</text><text class="qs l-es" x="601.0" y="452" text-anchor="middle">el modelo publicado: 734</text>
 </svg>

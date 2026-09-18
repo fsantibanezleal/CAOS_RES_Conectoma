@@ -34,7 +34,7 @@ every network, so its format is fixed and checked (`tests/test_connectome_integr
 | `edges[].src`, `tar` | string | presynaptic and postsynaptic cell type |
 | `edges[].offsets` | list of `[[du, dv], synapses]` | the average filter: synapses a target cell receives from source cells at column offset `(du, dv)`; for a population source, one entry at `[0, 0]` holding the whole-pair average per target cell |
 | `edges[].alpha` | -1 or 1 | sign of the presynaptic type |
-| `edges[].lambda_mult` | float in [0, 1] | certainty: the fraction of eligible column pairs (or, for a population source, of target cells) that carry the connection |
+| `edges[].lambda_mult` | positive float | support: connected source-target cell pairs per placed target cell, averaged over the filter entries (for a population source, the share of target cells reached); above 1 where two source cells share a column; stored by the engine, not used in the dynamics |
 | `input_units`, `output_units` | lists of types | photoreceptor inputs (each must be placed on every column) and the readout types |
 | `compile.target_centric` | boolean | expand each filter from its targets, so every target cell receives its full filter |
 | `compile.population_broadcast` | boolean | a population node drives every cell of each target type |
@@ -50,11 +50,36 @@ appears: an entry below the threshold is dropped, not written as zero.
 
 ## Contract 2, artifact (pipeline to web)
 
-Every canonical run writes a compact artifact plus a manifest recording: the case and variant, the method,
-the seeds, the engine and its version, the license of any checkpoint used, the measured lane verdict with
-its numbers, the contract-1 flags, the evaluation metrics, and the byte size of the artifact. A flat index
-inventories every case. The web loads only these files, and a TypeScript mirror of the manifest schema
-makes any drift fail the web build.
+The web loads only artifacts with a manifest, and every field it reads is checked three times: by the
+pipeline's tests, which rebuild the artifact from its committed inputs and require the same bytes; by the
+web build, which validates the committed files against a TypeScript mirror (`frontend/src/lib/contract.ts`)
+and fails on the first field that drifted; and by the page, which validates what it received before showing
+it and compares its SHA-256 with the manifest's.
+
+### The explorer artifact (today)
+
+Written by `run.py export-web` (`data-pipeline/conectoma/stages/export_web.py`), version 1.
+
+| Field | Type | Meaning |
+|---|---|---|
+| `types[]` | object | `name` (unique), `pattern` (as in the specification), `group` (input, output, stride1 to stride4, population), `density`, `cells`, `cells_placed`, `sign` (+1, -1, or 0 for a type that sends nothing here), `photoreceptor` |
+| `connection_fields` | list | exactly `source, target, sign, certainty, du, dv, synapses`, the order of each row below |
+| `connections[]` | 7-field row | type indices of source and target, the sign, the support (`lambda_mult` of the specification: positive, above 1 where two source cells share a column), and the filter as three parallel arrays of equal length: integer offsets `du`, `dv` in the engine frame and positive synapses per target cell |
+| `published[]` | object | a filter of the published consensus whose pair exists here after the cross-release renames: `src`, `tar`, `matches` (the MaleCNS pairs it corresponds to), `sign`, `du`, `dv`, `n` |
+| `frame`, `placement`, `compile` | object or null | copied from the specification: the offset frame (`release_to_engine`), the placement summary, the compile rules |
+
+The manifest (`data/derived/manifests/explorer.json`) records the artifact's relative path, byte size and
+SHA-256; the file name and SHA-256 of the specification it came from, with the dataset, license and
+citation; the file, SHA-256 and license of the published reference; and four counts (types, connections,
+filter entries, published connections), which the web compares with what it received. It has no timestamp,
+so the same inputs give the same bytes.
+
+### The per-case artifacts (with the method units)
+
+Every canonical run of a vision method will write a compact artifact plus a manifest recording: the case
+and variant, the method, the seeds, the engine and its version, the license of any checkpoint used, the
+measured lane verdict with its numbers, the contract-1 flags, the evaluation metrics, and the byte size of
+the artifact. A flat index will inventory every case, under the same three checks.
 
 ## Why the sign is part of the contract
 

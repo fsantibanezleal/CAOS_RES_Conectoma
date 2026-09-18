@@ -25,6 +25,7 @@
     .fx-svg .ok { fill: var(--color-good, var(--fx-good)); font-size: 10.5px; font-weight: 700; }
     .fx-svg .no { fill: var(--color-bad, var(--fx-bad)); font-size: 10.5px; font-weight: 700; }
     .fx-svg .mono { font-family: var(--font-mono, ui-monospace, Consolas, monospace); fill: var(--color-fg, var(--fx-fg)); font-size: 10.5px; }
+    svg .l-es { display: none; }
   </style>
   <defs>
     <marker id="fx-arrow-kept" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -35,15 +36,15 @@
     </marker>
   </defs>
 <rect class="bg" x="0" y="0" width="900" height="540" rx="12"/>
-<text class="ttl" x="22" y="32">How a measured filter reaches its target cells on sublattices</text>
-<text class="sub" x="22" y="50">Mi sits on every second column (2x2 sublattice), Dm on every third (3x3). The measured filter from Mi onto a Dm cell has two entries, 3 synapses at offset (0,0) and 2 at (1,-1): 5 in total.</text>
-<circle class="mi" cx="28" cy="72" r="5.2"/><text class="sub" x="38" y="76">Mi cell (source)</text>
-<rect class="dm" x="146" y="65.5" width="13" height="13" rx="2" transform="rotate(45 152.5 72)"/><text class="sub" x="166" y="76">Dm cell (target)</text>
-<path class="kept" d="M284,72 L314,72" marker-end="url(#fx-arrow-kept)"/><text class="sub" x="322" y="76">filter entry realised</text>
-<path class="lost" d="M442,72 L472,72" marker-end="url(#fx-arrow-lost)"/><text class="sub" x="480" y="76">entry that lands on no cell</text>
+<text class="ttl l-en" x="22" y="32">How a measured filter reaches its target cells on sublattices</text><text class="ttl l-es" x="22" y="32">Cómo un filtro medido llega a sus células destino en subretículas</text>
+<text class="sub l-en" x="22" y="50">Mi sits on every second column (2x2 sublattice), Dm on every third (3x3). The measured filter from Mi onto a Dm cell has two entries, 3 synapses at offset (0,0) and 2 at (1,-1): 5 in total.</text><text class="sub l-es" x="22" y="50">Mi ocupa cada dos columnas (2x2), Dm cada tres (3x3). El filtro medido de Mi sobre una Dm tiene dos entradas: 3 sinapsis en (0,0) y 2 en (1,-1), 5 en total.</text>
+<circle class="mi" cx="28" cy="72" r="5.2"/><text class="sub l-en" x="38" y="76">Mi cell (source)</text><text class="sub l-es" x="38" y="76">célula Mi (fuente)</text>
+<rect class="dm" x="146" y="65.5" width="13" height="13" rx="2" transform="rotate(45 152.5 72)"/><text class="sub l-en" x="166" y="76">Dm cell (target)</text><text class="sub l-es" x="166" y="76">célula Dm (destino)</text>
+<path class="kept" d="M284,72 L314,72" marker-end="url(#fx-arrow-kept)"/><text class="sub l-en" x="322" y="76">filter entry realised</text><text class="sub l-es" x="322" y="76">entrada de filtro realizada</text>
+<path class="lost" d="M442,72 L472,72" marker-end="url(#fx-arrow-lost)"/><text class="sub l-en" x="480" y="76">entry that lands on no cell</text><text class="sub l-es" x="480" y="76">entrada que no cae en ninguna célula</text>
 <rect class="panel" x="22" y="92" width="418" height="316" rx="10"/>
-<text class="h" x="36" y="114">Expanded from the sources (the engine's rule)</text>
-<text class="sub" x="36" y="130">each Mi cell sends each entry to the column at its offset, if a Dm cell is there</text>
+<text class="h l-en" x="36" y="114">Expanded from the sources (the engine's rule)</text><text class="h l-es" x="36" y="114">Expandido desde las fuentes (la regla del motor)</text>
+<text class="sub l-en" x="36" y="130">each Mi cell sends each entry to the column at its offset, if a Dm cell is there</text><text class="sub l-es" x="36" y="130">cada Mi envía cada entrada a la columna de su desplazamiento, si hay una Dm allí</text>
 <g transform="translate(0,0)">
 <polygon class="hx" points="152.4,251.4 152.4,268.6 137.5,277.3 122.5,268.6 122.5,251.4 137.5,242.7"/>
 <polygon class="hx" points="168.0,278.4 168.0,295.6 153.1,304.3 138.1,295.6 138.1,278.4 153.1,269.7"/>
@@ -113,11 +114,11 @@
 <text class="no" x="277.8" y="363.0" text-anchor="middle">0/5</text>
 <text class="no" x="277.8" y="201.0" text-anchor="middle">2/5</text>
 <text class="no" x="324.5" y="282.0" text-anchor="middle">0/5</text>
-<text class="no" x="36" y="380">Offsets that are not multiples of both strides fall between</text>
-<text class="no" x="36" y="395">Dm cells: 5 of the 7 Dm cells receive nothing.</text>
+<text class="no l-en" x="36" y="380">Offsets that are not multiples of both strides fall between</text><text class="no l-es" x="36" y="380">Los desplazamientos que no son múltiplos de ambos pasos caen entre</text>
+<text class="no l-en" x="36" y="395">Dm cells: 5 of the 7 Dm cells receive nothing.</text><text class="no l-es" x="36" y="395">células Dm: 5 de las 7 células Dm no reciben nada.</text>
 <rect class="panel" x="460" y="92" width="418" height="316" rx="10"/>
-<text class="h" x="474" y="114">Expanded from the targets (this product's rule)</text>
-<text class="sub" x="474" y="130">each Dm cell takes every entry, from the Mi cell nearest to where the entry points</text>
+<text class="h l-en" x="474" y="114">Expanded from the targets (this product's rule)</text><text class="h l-es" x="474" y="114">Expandido desde los destinos (la regla de este producto)</text>
+<text class="sub l-en" x="474" y="130">each Dm cell takes every entry, from the Mi cell nearest to where the entry points</text><text class="sub l-es" x="474" y="130">cada Dm toma cada entrada desde la Mi más cercana a donde apunta la entrada</text>
 <g transform="translate(0,0)">
 <polygon class="hx" points="590.4,251.4 590.4,268.6 575.5,277.3 560.5,268.6 560.5,251.4 575.5,242.7"/>
 <polygon class="hx" points="606.0,278.4 606.0,295.6 591.1,304.3 576.1,295.6 576.1,278.4 591.1,269.7"/>
@@ -183,15 +184,15 @@
 <text class="ok" x="715.8" y="363.0" text-anchor="middle">5/5</text>
 <text class="ok" x="715.8" y="201.0" text-anchor="middle">5/5</text>
 <text class="ok" x="762.5" y="282.0" text-anchor="middle">5/5</text>
-<text class="ok" x="474" y="380">Every Dm cell receives its full measured input;</text>
-<text class="ok" x="474" y="395">entries that meet at one Mi cell are summed.</text>
+<text class="ok l-en" x="474" y="380">Every Dm cell receives its full measured input;</text><text class="ok l-es" x="474" y="380">Cada célula Dm recibe toda su entrada medida;</text>
+<text class="ok l-en" x="474" y="395">entries that meet at one Mi cell are summed.</text><text class="ok l-es" x="474" y="395">las entradas que coinciden en una célula Mi se suman.</text>
 <rect class="panel" x="22" y="424" width="856" height="100" rx="10"/>
-<text class="h" x="36" y="446">A population node</text>
-<text class="sub" x="36" y="464">A type with fewer than one cell per 20 columns is one node standing for the mean activity of its cells.</text>
-<text class="sub" x="36" y="480">It receives through its filter like a cell at the centre, and it drives every cell of each target type</text>
-<text class="sub" x="36" y="496">with the measured average synapses per target cell over the whole pair, because each cell is reached by some member.</text>
+<text class="h l-en" x="36" y="446">A population node</text><text class="h l-es" x="36" y="446">Un nodo de población</text>
+<text class="sub l-en" x="36" y="464">A type with fewer than one cell per 20 columns is one node standing for the mean activity of its cells.</text><text class="sub l-es" x="36" y="464">Un tipo con menos de una célula cada 20 columnas es un nodo que representa la actividad media de sus células.</text>
+<text class="sub l-en" x="36" y="480">It receives through its filter like a cell at the centre, and it drives every cell of each target type</text><text class="sub l-es" x="36" y="480">Recibe a través de su filtro como una célula en el centro, y excita o inhibe a cada célula de cada tipo destino</text>
+<text class="sub l-en" x="36" y="496">with the measured average synapses per target cell over the whole pair, because each cell is reached by some member.</text><text class="sub l-es" x="36" y="496">con el promedio medido de sinapsis por célula destino sobre todo el par, porque a cada célula la alcanza algún miembro.</text>
 <circle class="pop" cx="640" cy="482" r="9"/>
-<text class="al" x="640" y="508" text-anchor="middle">population</text>
+<text class="al l-en" x="640" y="508" text-anchor="middle">population</text><text class="al l-es" x="640" y="508" text-anchor="middle">población</text>
 <rect class="dm" x="715" y="453" width="10" height="10" rx="2" transform="rotate(45 720 458)"/>
 <path class="kept" d="M651,482 L711,458" marker-end="url(#fx-arrow-kept)"/>
 <rect class="dm" x="735" y="475" width="10" height="10" rx="2" transform="rotate(45 740 480)"/>
