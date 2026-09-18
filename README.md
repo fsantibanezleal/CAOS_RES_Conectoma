@@ -69,6 +69,11 @@ graph, a sign shuffle), and the construction is checked against the published co
 model, voltage for voltage. The equations, their symbols and their sources are in
 [docs/architecture/03](docs/architecture/03_network-and-regimes.md).
 
+Next to the lattice, the whole visual system runs neuron by neuron: both optic lobes and their projections
+to the central brain, 105,011 neurons and 12,450,379 measured connections, with the photoreceptors as input
+and the LC and LPLC projection neurons as readouts. It is one recurrent component whose loop gain has to be
+bounded before it is stable as a frozen network ([docs/architecture/04](docs/architecture/04_the-whole-visual-system.md)).
+
 ## Data and engines
 
 - Connectome: Janelia **MaleCNS v1.0** (`male-cns:v1.0`), CC-BY. 166,691 neurons, 11,691 cell types.

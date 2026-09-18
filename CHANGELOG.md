@@ -3,6 +3,30 @@
 All notable changes to this project are documented here. Format: Keep a Changelog, newest on top.
 Versions use the `X.XX.XXX` display form; the semver form (zeros dropped) appears in manifests.
 
+## [0.03.000] - 2026-09-18
+
+### Added
+
+- The whole visual system as a neuron-level network (method M08): both optic lobes plus the visual projection
+  and visual centrifugal neurons, 105,011 neurons in 695 cell types, 12,450,379 connections, every measured
+  connection kept (a synapse cut is a recorded option). Signs per presynaptic neuron; column coordinates
+  inferred per eye (holdout 99.89 percent exact on the right, 99.83 on the left). Written outside git (41 MB)
+  with a committed summary and SHA-256.
+- `NeuronConnectome` and `PhotoreceptorStimulus`, registered with the engine: the input is one value per
+  placed photoreceptor, with its eye, column and type exported for the fly-eye renderer.
+- The three regimes at neuron granularity (signs and counts per connection in every regime), sharing one
+  starting point, with transfer from the published model.
+- Loop gain: the spectral radius of the absolute weight matrix, computed per strongly connected component
+  (dense for small components, implicitly restarted Arnoldi for large ones). The visual system is one
+  recurrent component of 104,058 cells whose gain is 3.07 from the engine's initialisation (4.89 with
+  published values); as built it runs away. Neuron-level networks are built with every strength scaled by
+  one factor to a gain of 0.9, after which they settle and a flash reaches 92 to 99.7 percent of the LC and
+  LPLC readouts, weakly. An R1 training step fits: 0.25 s and 2.8 GB at a batch of one.
+- A settled criterion for stability (drift of at most one percent of the voltage scale in the last half
+  second), because a finite but runaway network had passed the earlier check; the lattice report now records
+  it and its loop gain (1.48, and 2.33 with published values: above one, and stable nonetheless).
+- Documentation: the whole visual system page, the guide section for its commands.
+
 ## [0.02.000] - 2026-09-18
 
 ### Added

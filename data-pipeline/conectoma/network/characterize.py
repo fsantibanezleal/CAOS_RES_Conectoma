@@ -28,6 +28,7 @@ import numpy as np
 
 from conectoma.connectome.nulls import CONTROLS, NULLS_VERSION
 from conectoma.network.engine import engine_root, load_engine, published_model_dir, run_log
+from conectoma.network.gain import settled
 from conectoma.network.lattice import spec_digest
 from conectoma.network.regimes import build_network, trainable_report
 from conectoma.network.tuning import (
@@ -231,6 +232,15 @@ def characterize(spec_path: Path, seeds: tuple[int, ...] = (0, 1, 2, 3, 4), log=
         torch.cuda.empty_cache()
         return entry
 
+    def loop_gain(init: str) -> dict:
+        from conectoma.network.gain import spectral_radius
+
+        network = build_network(spec_path, "R0", transfer_from=transfer_from if init == "transfer" else None)
+        result = spectral_radius(network)
+        del network
+        torch.cuda.empty_cache()
+        return result
+
     def activity(init: str) -> dict:
         network = build_network(spec_path, "R0", transfer_from=transfer_from if init == "transfer" else None)
         result = motion_activity(network, dataset)
@@ -245,6 +255,8 @@ def characterize(spec_path: Path, seeds: tuple[int, ...] = (0, 1, 2, 3, 4), log=
         entry["motion_activity"] = runs.step(
             f"frozen/{init}/motion_activity", lambda init=init: activity(init)
         )
+        entry["loop_gain"] = runs.step(f"frozen/{init}/loop_gain", lambda init=init: loop_gain(init))
+        entry["settled"] = settled(entry["stability"])
         report["frozen"][init] = entry
         log(f"      {init}: stable {entry['stability']['finite']}, "
             f"{entry['simulation']['simulated_seconds_per_wall_second_per_sample']} sim s per s per sample")
@@ -288,6 +300,7 @@ def characterize(spec_path: Path, seeds: tuple[int, ...] = (0, 1, 2, 3, 4), log=
         report["controls"][kind] = {
             "seeds": list(seeds),
             "stability": [row["stability"] for row in rows],
+            "settled": [settled(row["stability"]) for row in rows],
             "tuning": tuning,
             "tuning_summary": summarise_tuning(tuning),
         }

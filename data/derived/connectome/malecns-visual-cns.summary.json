@@ -1,0 +1,98 @@
+{
+ "neurons": 105011,
+ "cell_types": 695,
+ "by_superclass": {
+  "ol_intrinsic": 89270,
+  "ol_sensory": 6013,
+  "visual_projection": 9169,
+  "visual_centrifugal": 559
+ },
+ "by_side": {
+  "L": 51724,
+  "R": 53287,
+  "unresolved": 0
+ },
+ "connections": 12450379,
+ "connections_scanned_inside": 12450379,
+ "synapses_kept_fraction": 1.0,
+ "synapses": 49664904,
+ "photoreceptors": {
+  "L": {
+   "cells": 2345,
+   "placed": 2337
+  },
+  "R": {
+   "cells": 3661,
+   "placed": 3586
+  }
+ },
+ "readout_types": 50,
+ "signs": {
+  "sources": {
+   "body": 104448,
+   "cell_type": 20,
+   "default": 541,
+   "missing": 2
+  },
+  "low_confidence": 541,
+  "inhibitory_neurons": 38767
+ },
+ "columns": {
+  "L": {
+   "optic_lobe_neurons": 46868,
+   "annotated": 10453,
+   "inferred": 36403,
+   "unplaced": 12,
+   "holdout": {
+    "types_tested": 12,
+    "types_recovered": 12,
+    "median_exact_fraction": 0.9983,
+    "median_within_one_fraction": 1.0,
+    "worst_p95_error_columns": 0.0
+   }
+  },
+  "R": {
+   "optic_lobe_neurons": 48415,
+   "annotated": 13267,
+   "inferred": 35071,
+   "unplaced": 77,
+   "holdout": {
+    "types_tested": 15,
+    "types_recovered": 15,
+    "median_exact_fraction": 0.9989,
+    "median_within_one_fraction": 1.0,
+    "worst_p95_error_columns": 2.0
+   }
+  }
+ },
+ "ingest": {
+  "table": "annotations",
+  "rows_in": 211577,
+  "rows_out": 105011,
+  "rows_rejected": 106566,
+  "rejected": {
+   "other_superclass": 106312,
+   "ambiguous_type": 207,
+   "no_cell_type": 47
+  },
+  "flagged": {
+   "annotated_column": 23720,
+   "pooled_spectral_subtype": 2629
+  }
+ },
+ "config": {
+  "min_weight": 1,
+  "confidence_threshold": 0.5,
+  "assignment_rounds": 4,
+  "assignment_min_partners": 3
+ },
+ "graph": "malecns-visual-cns-w1.npz",
+ "graph_bytes": 40872398,
+ "digest": "804303791299b977c753f3a7cea944fae82a96b0419a363125f9bb0745ade26e",
+ "elapsed_seconds": 59.3,
+ "provenance": {
+  "dataset": "male-cns:v1.0",
+  "license": "CC-BY",
+  "sign_source": "Eckstein et al., Cell, 2024, doi:10.1016/j.cell.2024.03.016"
+ }
+}
