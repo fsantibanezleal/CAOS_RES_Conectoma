@@ -13,6 +13,7 @@ import json
 import os
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures.process import BrokenProcessPool
 from pathlib import Path
 
 import numpy as np
@@ -23,6 +24,7 @@ from conectoma.vision.contract import clip_problems, clip_statistics
 from conectoma.vision.render import RENDER_VERSION
 
 SOURCES = ("tartanair", "spring", "hypersim")
+POOL_ATTEMPTS = 3   # a worker that dies (not a clip's own error) breaks the pool; its clips go to a fresh one
 
 
 def _sha256(path: Path) -> str:
@@ -95,18 +97,34 @@ def render_source(root: Path, source: str, workers: int = 4) -> dict:
     archives = _logged_archives(base)
     started = time.time()
     rows, rejected, failed = [], [], {}
-    with ProcessPoolExecutor(max_workers=workers) as pool:
-        futures = {pool.submit(_render_one, source, str(base), str(path)): path for path in archives}
-        for i, future in enumerate(as_completed(futures), 1):
-            path = futures[future]
-            try:
-                result = future.result()
-            except Exception as error:  # one unreadable clip does not stop the others; it is listed
-                failed[str(path.relative_to(base / "data"))] = str(error)
-                continue
-            (rejected if result["problems"] else rows).append(result)
-            if i % 100 == 0:
-                print(f"  {i}/{len(archives)} clips, {(time.time() - started) / 60:.1f} min", flush=True)
+    pending, done = list(archives), 0
+    for attempt in range(1, POOL_ATTEMPTS + 1):
+        broken = []
+        with ProcessPoolExecutor(max_workers=workers) as pool:
+            futures = {pool.submit(_render_one, source, str(base), str(path)): path for path in pending}
+            for future in as_completed(futures):
+                path = futures[future]
+                try:
+                    result = future.result()
+                except BrokenProcessPool:
+                    broken.append(path)
+                    continue
+                except Exception as error:  # one unreadable clip does not stop the others; it is listed
+                    failed[str(path.relative_to(base / "data"))] = str(error)
+                    continue
+                (rejected if result["problems"] else rows).append(result)
+                done += 1
+                if done % 100 == 0:
+                    minutes = (time.time() - started) / 60
+                    print(f"  {done}/{len(archives)} clips, {minutes:.1f} min", flush=True)
+        if not broken:
+            break
+        print(f"  the process pool broke; {len(broken)} clips again (attempt {attempt + 1})", flush=True)
+        pending = broken
+    else:
+        for path in pending:
+            name = str(path.relative_to(base / "data"))
+            failed[name] = f"BrokenProcessPool: a worker died {POOL_ATTEMPTS} times"
     rows.sort(key=lambda r: r["clip"])
     summary = {"source": source, "render_version": RENDER_VERSION, "clips": len(archives),
                "accepted": len(rows), "rejected": len(rejected), "failed": len(failed),

@@ -339,7 +339,7 @@ def cmd_fetch_vision(args: argparse.Namespace) -> int:
         print(f"panorama: {summary['clips']} panoramas for C13, {summary['written']} written, "
               f"{summary['skipped']} already present; failed {summary['failed']}, "
               f"missing {summary['missing']}")
-        return 1 if summary["failed"] or summary["missing"] else 0
+        return 1 if summary["failed"] or summary["missing"] or not summary["clips"] else 0
     summary = fetch_tartanair(root, args.environments, args.workers)
     print(f"tartanair: {summary['clips']} clips from {summary['pairs']} environment-difficulty pairs, "
           f"{summary['bytes'] / 1e9:.1f} GB; failed {summary['failed']}, missing {summary['missing']}")
@@ -353,7 +353,8 @@ def cmd_render_vision(args: argparse.Namespace) -> int:
     summary = render_source(data_root(args.data_root), args.source, args.workers)
     print(f"{args.source}: {summary['accepted']} of {summary['clips']} clips rendered and accepted, "
           f"{summary['rejected']} rejected, {summary['failed']} failed")
-    return 1 if summary["rejected"] or summary["failed"] else 0
+    # a rejection is contract 1 doing its job (listed with its reasons in the manifest); a failure is not
+    return 1 if summary["failed"] else 0
 
 
 def cmd_build_splits(args: argparse.Namespace) -> int:

@@ -52,7 +52,9 @@ python data-pipeline/run.py render-vision --source hypersim
 ```
 
 Each clip is rendered once and checked against contract 1; a rendering whose stamp (render version and
-source size) is current is kept on a rerun. The command exits non-zero if any clip is rejected or fails,
+source size) is current is kept on a rerun, and checked again against the current contract. A worker that
+dies breaks its process pool; its clips are rendered again in a fresh pool, up to three times. The command
+exits non-zero if any clip fails to render (a rejection is contract 1 doing its job, not a failure),
 and `rendered/manifest.json` lists every clip with its statistics, its SHA-256, and the reasons for any
 rejection. Sintel is rendered by the engine itself during its fetch; the product's own renderer is checked
 against that rendering by `tests/test_vision_cases.py` wherever both are on the machine.
@@ -64,9 +66,10 @@ python data-pipeline/run.py build-splits
 ```
 
 It assigns every rendered TartanAir clip to train, validation, calibration or test by its geometry family
-and writes the two committed files. It exits non-zero on any leakage: a family or environment in two splits,
-or two identical frames (equal lattice luminance) in two splits. The families the cases draw from are always
-in test. CI re-checks the family and environment conditions from the committed table.
+and writes the two committed files. It refuses a rendering in which any clip failed, and exits non-zero on
+any leakage: a family or environment in two splits, or two identical frames (equal lattice luminance) in two
+splits. The families the cases draw from are always in test. CI re-checks the family and environment
+conditions from the committed table.
 
 ## 5. The cases
 

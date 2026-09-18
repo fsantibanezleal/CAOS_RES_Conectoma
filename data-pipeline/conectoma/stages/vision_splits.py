@@ -39,6 +39,11 @@ def build_splits(root: Path, derived: Path = DERIVED) -> dict:
 
     base = root / "vision" / "tartanair"
     manifest = json.loads((base / "rendered" / "manifest.json").read_text(encoding="utf-8"))
+    if manifest["summary"]["failed"]:
+        # a rendering with failed clips is incomplete: splitting it would silently drop them
+        failed = manifest["summary"]["failed"]
+        raise ValueError(f"the TartanAir rendering is incomplete: {failed} clips failed to render; "
+                         "render again before splitting")
     rows, frame_hashes = [], {}
     for entry in manifest["clips"]:
         environment, difficulty, trajectory, name = Path(entry["clip"]).parts
