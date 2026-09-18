@@ -306,6 +306,46 @@ def cmd_export_web(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_fetch_vision(args: argparse.Namespace) -> int:
+    """Fetch a vision source into the data root (resumable; see docs/guides/05_vision-data.md)."""
+    from conectoma.stages.vision_data import fetch_tartanair
+
+    if args.source == "sintel":
+        from conectoma.stages.vision_data import fetch_sintel
+
+        summary = fetch_sintel()
+        print(f"sintel: {summary['rendered_sequences']} rendered sequences at {summary['rendered_dir']}")
+        return 0
+    root = data_root(args.data_root)
+    summary = fetch_tartanair(root, args.environments, args.workers)
+    print(f"tartanair: {summary['clips']} clips from {summary['pairs']} environment-difficulty pairs, "
+          f"{summary['bytes'] / 1e9:.1f} GB; failed {summary['failed']}, missing {summary['missing']}")
+    return 1 if summary["failed"] else 0
+
+
+def cmd_render_vision(args: argparse.Namespace) -> int:
+    """Render the fetched clips onto the lattice and check them against contract 1."""
+    from conectoma.stages.vision_render import render_tartanair
+
+    summary = render_tartanair(data_root(args.data_root), args.workers)
+    print(f"tartanair: {summary['accepted']} of {summary['clips']} clips rendered and accepted, "
+          f"{summary['rejected']} rejected, {summary['failed']} failed")
+    return 1 if summary["rejected"] or summary["failed"] else 0
+
+
+def cmd_build_splits(args: argparse.Namespace) -> int:
+    """Assign rendered clips to splits by geometry family and run the leakage test (the U4 gate)."""
+    from conectoma.stages.vision_splits import build_splits
+
+    summary = build_splits(data_root(args.data_root))
+    for name, counts in summary["counts"].items():
+        print(f"{name:12s} {counts['families']:3d} families {counts['environments']:3d} environments "
+              f"{counts['clips']:5d} clips {counts['frames']:6d} frames")
+    problems = summary["leakage"]["problems"]
+    print("leakage: none" if not problems else "LEAKAGE: " + "; ".join(problems))
+    return 1 if problems else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="run.py", description="Conectoma offline pipeline")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -352,6 +392,22 @@ def main(argv: list[str] | None = None) -> int:
     web.add_argument("--spec", default=None, help="connectome JSON (default: the right optic lobe)")
     web.add_argument("--reference", default=None, help="published consensus JSON (default: the engine's)")
     web.set_defaults(func=cmd_export_web)
+
+    fetch = sub.add_parser("fetch-vision", help="fetch a vision source's selected members into the data root")
+    fetch.add_argument("--source", default="tartanair", choices=["tartanair", "sintel"])
+    fetch.add_argument("--data-root", default=None, help="directory of the local data cache")
+    fetch.add_argument("--environments", nargs="*", default=None, help="restrict to these environments")
+    fetch.add_argument("--workers", type=int, default=12, help="parallel member requests")
+    fetch.set_defaults(func=cmd_fetch_vision)
+
+    render = sub.add_parser("render-vision", help="render fetched clips onto the lattice (contract 1)")
+    render.add_argument("--data-root", default=None, help="directory of the local data cache")
+    render.add_argument("--workers", type=int, default=4, help="parallel rendering processes")
+    render.set_defaults(func=cmd_render_vision)
+
+    split = sub.add_parser("build-splits", help="assign clips to splits by geometry family; leakage test")
+    split.add_argument("--data-root", default=None, help="directory of the local data cache")
+    split.set_defaults(func=cmd_build_splits)
 
     visual = sub.add_parser("build-visual-cns", help="the whole visual system as a neuron-level graph")
     visual.add_argument("--data-root", default=None, help="directory holding the MaleCNS tables")
