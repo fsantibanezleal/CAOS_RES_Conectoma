@@ -306,7 +306,12 @@ Two seconds of grey input from each starting point, and the same for five seeds 
 | N2 random, 5 seeds | yes | -8.35 to 18.58 | 4e-02 |
 | N3 sign-shuffled, 5 seeds | yes | -27.12 to 26.68 | 4e-03 |
 
-Every network settles. The transferred values push some populations to large voltages (the published
+Every network settles (by the criterion of [04](04_the-whole-visual-system.md): still moving by at most one
+percent of its voltage scale in the last half second). That holds although the loop gain, the spectral radius
+of the absolute weight matrix, is above one: 1.48 from the engine's initialisation and 2.33 with the
+published values. A radius below one guarantees stability and is not required for it; the neuron-level network
+of [04](04_the-whole-visual-system.md) is where it becomes necessary. The transferred values push some
+populations to large voltages (the published
 model's resting potentials and strengths were trained for a 65-type graph, and most of the 253 types here
 keep the engine's initialisation next to them), and the sign-shuffled controls swing widest, as expected when
 inhibition lands on the wrong connections; none diverges.

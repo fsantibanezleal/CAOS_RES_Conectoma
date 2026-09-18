@@ -41,9 +41,10 @@ def load_engine():
             "before anything imports it"
         )
 
-    from conectoma.network import lattice
+    from conectoma.network import lattice, neurons
 
     lattice.register()
+    neurons.register()
     install_vectorised_grouping()
     return flyvis
 

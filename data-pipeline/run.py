@@ -235,6 +235,62 @@ def cmd_characterize_connectome(args: argparse.Namespace) -> int:
     return 0
 
 
+def models_root() -> Path:
+    root = os.environ.get("CONECTOMA_MODELS_ROOT")
+    if not root:
+        raise SystemExit("set CONECTOMA_MODELS_ROOT (see docs/guides/03_network-engine.md)")
+    return Path(root)
+
+
+VISUAL_CNS_SUMMARY = REPO_ROOT / "data/derived/connectome/malecns-visual-cns.summary.json"
+
+
+def cmd_build_visual_cns(args: argparse.Namespace) -> int:
+    """The whole visual system as a neuron-level graph, written outside git with a committed summary."""
+    from conectoma.connectome.visual_cns import VisualCNSConfig, build_visual_system, write_graph
+
+    started = time.time()
+    config = VisualCNSConfig(min_weight=args.min_weight)
+    arrays, summary = build_visual_system(
+        data_root(args.data_root) / "malecns", config, ANNOTATIONS, NEUROTRANSMITTERS, WEIGHTS,
+    )
+    default_out = models_root() / "specs" / f"malecns-visual-cns-w{args.min_weight}.npz"
+    out = Path(args.out) if args.out else default_out
+    digest = write_graph(arrays, out)
+    summary.update({
+        "graph": out.name,
+        "graph_bytes": out.stat().st_size,
+        "digest": digest,
+        "elapsed_seconds": round(time.time() - started, 1),
+        "provenance": {
+            "dataset": "male-cns:v1.0",
+            "license": "CC-BY",
+            "sign_source": "Eckstein et al., Cell, 2024, doi:10.1016/j.cell.2024.03.016",
+        },
+    })
+    summary_path = Path(args.summary) if args.summary else VISUAL_CNS_SUMMARY
+    write_json(summary_path, summary)
+    print(f"wrote {out} ({summary['neurons']} neurons, {summary['connections']} connections, "
+          f"{summary['graph_bytes'] / 1e6:.0f} MB) and {summary_path.name} in {summary['elapsed_seconds']}s")
+    return 0
+
+
+def cmd_characterize_visual_cns(args: argparse.Namespace) -> int:
+    """Stability, simulation cost and memory of the neuron-level network, and the cost of R1."""
+    from conectoma.network.visual_cns_character import characterize_visual_cns
+
+    graph = Path(args.graph) if args.graph else models_root() / "specs" / "malecns-visual-cns-w1.npz"
+    started = time.time()
+    report = characterize_visual_cns(graph)
+    report["elapsed_seconds"] = round(time.time() - started, 1)
+    out = Path(args.out) if args.out else (
+        REPO_ROOT / "data/derived/connectome/malecns-visual-cns.characterization.json"
+    )
+    write_json(out, report)
+    print(f"wrote {out} in {report['elapsed_seconds']}s")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="run.py", description="Conectoma offline pipeline")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -276,6 +332,20 @@ def main(argv: list[str] | None = None) -> int:
     character.add_argument("--seeds", type=int, default=5, help="seeds per null control")
     character.add_argument("--out", default=None, help="where to write the characterisation report")
     character.set_defaults(func=cmd_characterize_connectome)
+
+    visual = sub.add_parser("build-visual-cns", help="the whole visual system as a neuron-level graph")
+    visual.add_argument("--data-root", default=None, help="directory holding the MaleCNS tables")
+    visual.add_argument("--min-weight", type=int, default=1, help="minimum synapses per kept connection")
+    visual.add_argument("--out", default=None, help="graph path (default: under CONECTOMA_MODELS_ROOT/specs)")
+    visual.add_argument("--summary", default=None, help="where to write the committed summary")
+    visual.set_defaults(func=cmd_build_visual_cns)
+
+    visual_character = sub.add_parser(
+        "characterize-visual-cns", help="stability, cost and memory of the neuron-level network"
+    )
+    visual_character.add_argument("--graph", default=None, help="graph written by build-visual-cns")
+    visual_character.add_argument("--out", default=None, help="where to write the report")
+    visual_character.set_defaults(func=cmd_characterize_visual_cns)
 
     args = parser.parse_args(argv)
     return args.func(args)
