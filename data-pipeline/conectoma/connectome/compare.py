@@ -28,7 +28,9 @@ from pathlib import Path
 # the left name exists only in the reference, the right names are what this release calls the same cells.
 #
 # - the outer photoreceptors are one type here ("R1-R6") where the reference lists six;
-# - the inner photoreceptors are split by spectral subtype here, with an explicit unclear variant;
+# - the inner photoreceptors are split by spectral subtype in the release, with an explicit unclear
+#   variant; the build pools them back into R7 and R8, and the subtype names stay listed so a build that
+#   keeps the split still compares;
 # - the reference counts the wide-field CT1 twice, once per neuropil compartment, because its compartments
 #   are electrically separate; this release carries it as one cell;
 # - "Am" is "Am1" here.
@@ -43,8 +45,8 @@ REFERENCE_ALIASES: dict[str, tuple[str, ...]] = {
     "R4": ("R1-R6",),
     "R5": ("R1-R6",),
     "R6": ("R1-R6",),
-    "R7": ("R7p", "R7y", "R7d", "R7_unclear"),
-    "R8": ("R8p", "R8y", "R8d", "R8_unclear"),
+    "R7": ("R7", "R7p", "R7y", "R7d", "R7_unclear"),
+    "R8": ("R8", "R8p", "R8y", "R8d", "R8_unclear"),
     "CT1(M10)": ("CT1",),
     "CT1(Lo1)": ("CT1",),
     "Am": ("Am1",),

@@ -1,37 +1,37 @@
 {
-  "elapsed_seconds": 35.2,
-  "neurons": 48523,
-  "cell_types": 274,
-  "nodes": 274,
-  "edges": 6140,
-  "offsets": 107232,
+  "elapsed_seconds": 18.4,
+  "neurons": 48415,
+  "cell_types": 253,
+  "nodes": 253,
+  "edges": 7907,
+  "offsets": 97016,
   "rows_scanned": 151856684,
-  "rows_kept": 4651262,
-  "edges_placed": 4356240,
+  "rows_kept": 4643285,
+  "edges_placed": 4349657,
   "column_assignment": 13267,
   "column_inference": {
-    "inferred": 35131,
-    "unplaced": 125,
+    "inferred": 35071,
+    "unplaced": 77,
     "rounds": [
       {
         "round": 1,
-        "placed": 33471,
-        "skipped_few_partners": 1785
+        "placed": 33432,
+        "skipped_few_partners": 1716
       },
       {
         "round": 2,
-        "placed": 1657,
-        "skipped_few_partners": 128
+        "placed": 1636,
+        "skipped_few_partners": 80
       },
       {
         "round": 3,
         "placed": 3,
-        "skipped_few_partners": 125
+        "skipped_few_partners": 77
       },
       {
         "round": 4,
         "placed": 0,
-        "skipped_few_partners": 125
+        "skipped_few_partners": 77
       }
     ],
     "holdout": {
@@ -169,21 +169,23 @@
   "ingest": {
     "table": "annotations",
     "rows_in": 211577,
-    "rows_out": 48523,
-    "rows_rejected": 163054,
+    "rows_out": 48415,
+    "rows_rejected": 163162,
     "rejected": {
       "other_superclass": 116076,
       "other_side": 46932,
-      "no_cell_type": 46
+      "no_cell_type": 46,
+      "ambiguous_type": 108
     },
     "flagged": {
-      "missing_column_coordinate": 35256,
-      "annotated_column": 13267
+      "missing_column_coordinate": 35148,
+      "annotated_column": 13267,
+      "pooled_spectral_subtype": 1396
     }
   },
   "dropped_filters": {
-    "below_min_mean_synapses": 665512,
-    "below_min_certainty": 360
+    "below_min_mean_synapses": 660789,
+    "below_min_certainty": 357
   },
   "sign_disagreement_types": 0,
   "config": {
