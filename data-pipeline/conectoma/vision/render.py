@@ -40,7 +40,7 @@ TARTANAIR_DEPTH_SATURATED = 65504.0   # float16's largest value: depth beyond Ta
 # the frame; everything else in a source clip is carried through to the rendering unchanged.
 IMAGE_KEYS = ("lum", "depth", "flow_px", "flow_ok", "labels", "sky", "moving", "figure", "labelled",
               "semantic")
-CARRIED = ("frames", "poses", "intrinsics")
+CARRIED = ("frames", "poses", "intrinsics", "strip")
 
 
 def _luminance(bgr: np.ndarray) -> np.ndarray:

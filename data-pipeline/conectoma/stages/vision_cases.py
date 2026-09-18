@@ -19,6 +19,7 @@ import json
 import os
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures.process import BrokenProcessPool
 from pathlib import Path
 
 import numpy as np
@@ -31,6 +32,18 @@ from conectoma.vision.render import RENDER_VERSION
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DERIVED = REPO_ROOT / "data" / "derived" / "vision"
 HEAVY = ("flygym", "panorama", "tartanair")       # started first, so the long ones do not trail
+POOL_ATTEMPTS = 3
+# the code a case rendering depends on: a change to any of it renders every case again (the stamp keys on
+# content, not only on a version someone must remember to bump)
+CODE = ("cases", "variants", "render", "eye", "decode", "panorama", "synthetic", "sintel", "hypersim",
+        "flygym_scenes", "flygym_eye", "contract")
+
+
+def code_digest() -> str:
+    digest = hashlib.sha256()
+    for name in CODE:
+        digest.update((Path(cases.__file__).parent / f"{name}.py").read_bytes())
+    return digest.hexdigest()
 
 
 def _sha256(path: Path) -> str:
@@ -60,6 +73,7 @@ def _build_one(case_id: str, index: int, item: str, root: str, models_root: str 
     case = registry["cases"][case_id]
     root_path = Path(root)
     levels = len(case["variant"]["levels"])
+    code = code_digest()
     paths = [_out(root_path, case_id, level, index) for level in range(levels)]
     kept = []
     for level, path in enumerate(paths):
@@ -67,8 +81,8 @@ def _build_one(case_id: str, index: int, item: str, root: str, models_root: str 
             break
         with np.load(path) as existing:
             stamp = json.loads(str(existing["stamp"]))
-            if (stamp.get("cases_sha256"), stamp.get("render_version"), stamp.get("item")) != (
-                    digest, RENDER_VERSION, item):
+            if (stamp.get("cases_sha256"), stamp.get("render_version"), stamp.get("code_sha256"),
+                    stamp.get("item")) != (digest, RENDER_VERSION, code, item):
                 break
             clip = {k: existing[k] for k in existing.files if k != "stamp"}
         kept.append(_row(case_id, case, level, index, item, path, clip, stamp))
@@ -79,7 +93,8 @@ def _build_one(case_id: str, index: int, item: str, root: str, models_root: str 
     rendered = cases.render_clip(case_id, case, item, root_path, models, seed)
     rows = []
     for level, (path, result) in enumerate(zip(paths, rendered, strict=True)):
-        stamp = {"cases_sha256": digest, "render_version": RENDER_VERSION, "case": case_id, "level": level,
+        stamp = {"cases_sha256": digest, "render_version": RENDER_VERSION, "code_sha256": code,
+                 "case": case_id, "level": level,
                  "value": case["variant"]["levels"][level], "item": item, "seed": seed,
                  "interval_s": result["interval_s"], "measured": result["measured"]}
         clip = result["clip"]
@@ -103,7 +118,8 @@ def _median(values: list) -> float | list | None:
 
 
 def _summary(registry: dict, digest: str, selections: dict, rows: list[dict], failed: dict) -> dict:
-    out = {"cases_sha256": digest, "render_version": RENDER_VERSION, "seed": registry["seed"],
+    out = {"cases_sha256": digest, "render_version": RENDER_VERSION, "code_sha256": code_digest(),
+           "seed": registry["seed"],
            "clips_per_case": registry["clips"], "cases": {}}
     for case_id, case in registry["cases"].items():
         levels = []
@@ -138,16 +154,32 @@ def build_cases(root: Path, models_root: Path | None, workers: int = 4, only: li
     tasks.sort(key=lambda t: registry["cases"][t[0]]["source"] not in HEAVY)
     started = time.time()
     rows, failed = [], {}
-    with ProcessPoolExecutor(max_workers=workers) as pool:
-        futures = {pool.submit(_build_one, c, i, item, str(root), str(models_root) if models_root else None,
-                               digest): (c, i, item) for c, i, item in tasks}
-        for n, future in enumerate(as_completed(futures), 1):
-            c, i, item = futures[future]
-            try:
-                rows.extend(future.result())
-            except Exception as error:  # one clip that cannot render is listed, and the stage fails
-                failed[f"{c}/{i:02d}/{item}"] = f"{type(error).__name__}: {error}"
-            print(f"  {n}/{len(tasks)} clips, {(time.time() - started) / 60:.1f} min", flush=True)
+    pending, done = list(tasks), 0
+    for attempt in range(1, POOL_ATTEMPTS + 1):
+        broken = []
+        with ProcessPoolExecutor(max_workers=workers) as pool:
+            futures = {pool.submit(_build_one, c, i, item, str(root),
+                                   str(models_root) if models_root else None, digest): (c, i, item)
+                       for c, i, item in pending}
+            for future in as_completed(futures):
+                c, i, item = futures[future]
+                try:
+                    rows.extend(future.result())
+                except BrokenProcessPool:
+                    # a worker died (not this clip's error): the clip is rendered again in a fresh pool
+                    broken.append((c, i, item))
+                    continue
+                except Exception as error:  # one clip that cannot render is listed, and the stage fails
+                    failed[f"{c}/{i:02d}/{item}"] = f"{type(error).__name__}: {error}"
+                done += 1
+                print(f"  {done}/{len(tasks)} clips, {(time.time() - started) / 60:.1f} min", flush=True)
+        if not broken:
+            break
+        print(f"  the process pool broke; {len(broken)} clips again (attempt {attempt + 1})", flush=True)
+        pending = broken
+    else:
+        for c, i, item in pending:
+            failed[f"{c}/{i:02d}/{item}"] = f"BrokenProcessPool: a worker died {POOL_ATTEMPTS} times"
     rows.sort(key=lambda r: (r["case"], r["level"], r["clip"]))
     base = root / "vision" / "cases"
     previous = {}

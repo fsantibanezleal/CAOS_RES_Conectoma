@@ -64,8 +64,28 @@ def read_camera(path: Path) -> np.ndarray:
     return np.frombuffer(raw[4:76], "<f8").reshape(3, 3).copy()
 
 
-def load_sintel_clip(root: Path, sequence: str, length: int = 32, render_pass: str = "final") -> dict:
-    """The central `length` frames of a training sequence (all of them when it is shorter)."""
+def engine_strips(width: int, crop_fraction: float = 0.7, strip_width: int = 391 + 2 * 13,
+                  count: int = 3) -> list[tuple[int, int]]:
+    """The column ranges of the engine's vertical strips of a frame `width` wide, as `RenderedSintel` cuts
+    them: a central crop of `crop_fraction`, then `count` overlapping strips of `strip_width` (the lattice
+    window plus a kernel either side). The same integer arithmetic as `flyvis.datasets.rendering.utils`.
+    """
+    kept = int(crop_fraction * width)
+    left, right = (width - kept) // 2, (width + kept) // 2
+    actual = right - left
+    size = max(strip_width, int(actual / count))
+    overlap = int(np.ceil((size * count - actual) / (count - 1)))
+    return [(left + i * size - i * overlap, left + (i + 1) * size - i * overlap) for i in range(count)]
+
+
+def load_sintel_clip(root: Path, sequence: str, length: int = 32, render_pass: str = "final",
+                     strip: int | None = 1) -> dict:
+    """The central `length` frames of a training sequence (all of them when it is shorter).
+
+    `strip` cuts the frames to one of the engine's three vertical strips (1, the middle, by default), so a
+    rendering of it is exactly what the engine renders; None keeps the whole frame. Flow is our convention,
+    `flow[t]` the motion from frame t to t + 1; the engine labels frame t + 1 with that same flow.
+    """
     base = root / "training"
     images = sorted((base / render_pass / sequence).glob("frame_*.png"))
     start = max(0, (len(images) - length) // 2)
@@ -83,6 +103,11 @@ def load_sintel_clip(root: Path, sequence: str, length: int = 32, render_pass: s
 
     ok = np.stack([~mask("occlusions", p) & ~mask("invalid", p) for p in images[:-1]])
     intrinsics = np.stack([read_camera(base / "camdata_left" / sequence / f"{p.stem}.cam") for p in images])
-    return {"lum": lum, "depth": depth, "flow_px": np.stack(flows), "flow_ok": ok,
-            "frames": np.array(numbers, dtype=np.int32),
-            "intrinsics": intrinsics[:, [0, 1, 0, 1], [0, 1, 2, 2]]}           # fx, fy, cx, cy per frame
+    intrinsics = intrinsics[:, [0, 1, 0, 1], [0, 1, 2, 2]]                   # fx, fy, cx, cy per frame
+    clip = {"lum": lum, "depth": depth, "flow_px": np.stack(flows), "flow_ok": ok}
+    if strip is not None:
+        start, stop = engine_strips(lum.shape[-1])[strip]
+        clip = {k: v[..., start:stop] for k, v in clip.items()}
+        intrinsics[:, 2] -= start                                             # the principal point moves
+    return {**clip, "frames": np.array(numbers, dtype=np.int32), "intrinsics": intrinsics,
+            "strip": np.array([start, stop] if strip is not None else [0, lum.shape[-1]], dtype=np.int32)}

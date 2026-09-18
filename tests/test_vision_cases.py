@@ -349,3 +349,31 @@ def test_a_case_family_outside_the_test_split_is_refused(tmp_path):
     table.write_text("key,family,split\nA/easy/P000/000000,Fam,train\n", encoding="utf-8")
     with pytest.raises(ValueError, match="test split"):
         cases.tartanair_test_clips("Fam", table)
+
+
+def test_sintel_renders_exactly_as_the_engine_renders_it():
+    """Our loader and lattice against the engine's own Sintel rendering, where both are on this machine."""
+    import os
+
+    import h5py
+    from conectoma.vision import sintel
+
+    models = Path(os.environ.get("CONECTOMA_MODELS_ROOT", ""))
+    rendered = models / "flyvis" / "renderings" / "RenderedSintel_0000"
+    root = sintel.sintel_dir(models)
+    if not (rendered / "_meta.yaml").exists() or not (root / "training").exists():
+        pytest.skip("the engine's Sintel rendering is not on this machine")
+    names = sorted(p.name for p in (root / "training" / "final").iterdir())
+    for name in ("ambush_2", "market_2"):
+        clip = sintel.load_sintel_clip(root, name, length=12)
+        ours = render.lattice_clip(clip)
+        base = rendered / f"sequence_{names.index(name):02d}_{name}_split_01"
+        engine = {}
+        for key in ("lum", "flow", "depth"):
+            with h5py.File(base / f"{key}.h5") as handle:
+                engine[key] = handle["data"][()]
+        # the engine starts at frame 2 and labels frame n with the flow from n - 1 to n
+        index = clip["frames"] - 2
+        assert np.abs(ours["lum"] - engine["lum"][index, 0]).max() < 1e-6
+        assert np.abs(ours["depth"] - engine["depth"][index, 0]).max() <= 1e-6 * np.abs(ours["depth"]).max()
+        assert np.abs(ours["flow"] - engine["flow"][index[1:]]).max() < 1e-4
