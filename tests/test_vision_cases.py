@@ -377,3 +377,32 @@ def test_sintel_renders_exactly_as_the_engine_renders_it():
         assert np.abs(ours["lum"] - engine["lum"][index, 0]).max() < 1e-6
         assert np.abs(ours["depth"] - engine["depth"][index, 0]).max() <= 1e-6 * np.abs(ours["depth"]).max()
         assert np.abs(ours["flow"] - engine["flow"][index[1:]]).max() < 1e-4
+
+
+# ------------------------------------------------------------------------------------------ committed summary
+
+
+def _summary() -> dict:
+    import json
+
+    return json.loads((ROOT / "data/derived/vision/cases.json").read_text(encoding="utf-8"))
+
+
+def test_the_case_pages_carry_the_committed_measurements():
+    from conectoma.vision import case_docs
+
+    assert case_docs.update(_summary(), ROOT / "docs", write=False) == []
+
+
+def test_the_committed_summary_is_the_registry_rendered_in_full():
+    summary = _summary()
+    registry, digest = cases.load_cases()
+    assert summary["cases_sha256"] == digest, "cases.yaml changed after the cases were built"
+    assert sorted(summary["cases"]) == sorted(registry["cases"])
+    for case_id, case in summary["cases"].items():
+        assert case["failed"] == {}, case_id
+        assert len(case["levels"]) == 6, case_id
+        for level in case["levels"]:
+            assert level["accepted"] == level["clips"] == len(case["items"]), (case_id, level["value"])
+        if case["source"] in ("tartanair", "panorama"):
+            assert case["family"] in registry["cases"][case_id]["family"]

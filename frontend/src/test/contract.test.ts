@@ -150,6 +150,29 @@ const FIELDS: Record<keyof typeof REPORTS, Record<string, 'number' | 'string' | 
     ['neurons', 'number'], ['cell_types', 'number'], ['connections', 'number'],
     ['columns.L.holdout.median_exact_fraction', 'number'], ['columns.R.holdout.median_exact_fraction', 'number'],
   ]),
+  vision: Object.fromEntries([
+    ...['tartanair', 'spring', 'hypersim'].flatMap((s) => [
+      [`sources.${s}.clips`, 'number'], [`sources.${s}.frames`, 'number'], [`sources.${s}.accepted`, 'number'],
+      [`sources.${s}.rejected`, 'number'], [`sources.${s}.failed`, 'number'], [`sources.${s}.depth_masked_share`, 'number'],
+      [`sources.${s}.bytes`, 'number'], [`sources.${s}.license`, 'string'],
+    ]),
+    ['sources.tartanair.column_spacing_deg', 'number'], ['sources.flygym.column_spacing_deg', 'number'],
+    ...['sintel', 'spring', 'hypersim'].flatMap((s) => ['min', 'median', 'max'].map((k) => [`sources.${s}.column_spacing_deg.${k}`, 'number'])),
+    ['sources.sintel.sequences', 'number'], ['sources.sintel.frames', 'number'], ['sources.sintel.engine_rendering.strips', 'number'],
+    ['sources.sintel.license', 'string'], ['sources.panorama.clips', 'number'], ['sources.panorama.bytes', 'number'],
+    ['sources.panorama.license', 'string'],
+    ['splits.families', 'number'], ['splits.leakage.frames_hashed', 'number'], ['splits.leakage.problems', 'object'],
+    ...['train', 'validation', 'calibration', 'test'].flatMap((s) => ['families', 'environments', 'clips', 'frames'].map((k) => [`splits.counts.${s}.${k}`, 'number'])),
+    ['cases.count', 'number'], ['cases.renderings', 'number'], ['cases.accepted', 'number'],
+  ]),
+  cases: Object.fromEntries([
+    ['cases_sha256', 'string'], ['render_version', 'number'], ['code_sha256', 'string'], ['cases', 'object'],
+    ...Array.from({ length: 16 }, (_, i) => `C${String(i + 1).padStart(2, '0')}`).flatMap((c) => [
+      [`cases.${c}.name`, 'string'], [`cases.${c}.category`, 'string'], [`cases.${c}.source`, 'string'],
+      [`cases.${c}.grades`, 'object'], [`cases.${c}.items`, 'object'], [`cases.${c}.levels`, 'object'],
+      [`cases.${c}.variant.quantity`, 'string'], [`cases.${c}.variant.unit`, 'string'],
+    ]),
+  ]),
 };
 
 function at(value: unknown, path: string): unknown {

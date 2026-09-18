@@ -384,6 +384,38 @@ def cmd_build_cases(args: argparse.Namespace) -> int:
     return 1 if summary["rejected"] or summary["failed"] else 0
 
 
+def cmd_export_eyeclips(args: argparse.Namespace) -> int:
+    """The eye's input for the web: one compact file per case and their manifest (contract 2)."""
+    from conectoma.stages.export_eyeclips import export_eyeclips
+
+    manifest = export_eyeclips(data_root(args.data_root), REPO_ROOT / "data/derived/vision/cases.json",
+                               REPO_ROOT / "data/derived/eyeclips", REPO_ROOT / "data/derived/manifests")
+    total = sum(f["bytes"] for f in manifest["cases"].values())
+    print(f"eyeclips: {len(manifest['cases'])} case files, {total / 1e6:.1f} MB")
+    return 0
+
+
+def cmd_summarize_vision(args: argparse.Namespace) -> int:
+    """One committed summary of the vision lane: sources, renderings, splits and cases."""
+    from conectoma.stages.vision_summary import summarize_vision
+
+    summary = summarize_vision(data_root(args.data_root), models_root())
+    for name, source in summary["sources"].items():
+        print(f"{name:10s} " + ", ".join(f"{k} {v}" for k, v in source.items()
+                                         if k in ("clips", "accepted", "rejected", "sequences", "ommatidia")))
+    return 0
+
+
+def cmd_case_docs(args: argparse.Namespace) -> int:
+    """Write the generated tables of the case pages from the committed case summary."""
+    from conectoma.vision import case_docs
+
+    summary = json.loads((REPO_ROOT / "data/derived/vision/cases.json").read_text(encoding="utf-8"))
+    changed = case_docs.update(summary, REPO_ROOT / "docs", write=not args.check)
+    print(("out of date: " if args.check else "rewrote: ") + (", ".join(changed) or "nothing"))
+    return 1 if args.check and changed else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="run.py", description="Conectoma offline pipeline")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -454,6 +486,18 @@ def main(argv: list[str] | None = None) -> int:
     case.add_argument("--cases", nargs="*", default=None, help="only these cases (C01 ... C16)")
     case.add_argument("--workers", type=int, default=4, help="parallel rendering processes")
     case.set_defaults(func=cmd_build_cases)
+
+    eyeclips = sub.add_parser("export-eyeclips", help="the eye's input per case for the web (contract 2)")
+    eyeclips.add_argument("--data-root", default=None, help="directory of the local data cache")
+    eyeclips.set_defaults(func=cmd_export_eyeclips)
+
+    vsummary = sub.add_parser("summarize-vision", help="the committed summary of the vision lane")
+    vsummary.add_argument("--data-root", default=None, help="directory of the local data cache")
+    vsummary.set_defaults(func=cmd_summarize_vision)
+
+    docs = sub.add_parser("case-docs", help="the generated tables of the case pages, from cases.json")
+    docs.add_argument("--check", action="store_true", help="only report pages that are out of date")
+    docs.set_defaults(func=cmd_case_docs)
 
     visual = sub.add_parser("build-visual-cns", help="the whole visual system as a neuron-level graph")
     visual.add_argument("--data-root", default=None, help="directory holding the MaleCNS tables")

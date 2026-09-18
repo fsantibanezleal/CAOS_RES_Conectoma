@@ -130,11 +130,13 @@ export default function Introduction() {
           <li>{t('Parity with the published model, voltage for voltage, and a reproduction of its ensemble’s motion tuning.', 'Paridad con el modelo publicado, voltaje por voltaje, y una reproducción del ajuste al movimiento de su ensamble.')}</li>
           <li>{t('The frozen networks characterised: stability, cost, and what they do with moving edges before any training.', 'Las redes congeladas caracterizadas: estabilidad, costo, y lo que hacen con bordes en movimiento antes de cualquier entrenamiento.')}</li>
           <li>{t('The whole visual system, neuron by neuron: both optic lobes and their projections to the central brain.', 'El sistema visual completo, neurona por neurona: ambos lóbulos ópticos y sus proyecciones al cerebro central.')}</li>
+          <li>{t('The vision data: TartanAir, Sintel, Spring, Hypersim and scenes rendered through the fly’s own compound eye, all on the engine’s 721-column lattice, checked by contract, and split by geometry so that no scene is seen in training and in test.', 'Los datos de visión: TartanAir, Sintel, Spring, Hypersim y escenas renderizadas a través del propio ojo compuesto de la mosca, todo sobre la retícula de 721 columnas del motor, verificado por contrato, y particionado por geometría para que ninguna escena se vea en entrenamiento y en prueba.')}</li>
+          <li>{t('Sixteen validation cases, each one physical quantity over six levels, from ego speed and fog to a looming disk and a camera that only turns.', 'Dieciséis casos de validación, cada uno una cantidad física en seis niveles, desde la velocidad propia y la niebla hasta un disco que se aproxima y una cámara que solo gira.')}</li>
         </ol>
         <p>
           {t(
-            'Vision data, the method ladder for depth and segmentation, and the benchmark against learned and foundation models arrive in the next units; the explorer on the App page shows the connectome that all of them are built on.',
-            'Los datos de visión, la escalera de métodos para profundidad y segmentación, y el benchmark contra modelos aprendidos y fundacionales llegan en las próximas unidades; el explorador de la página App muestra el conectoma sobre el que todos se construyen.',
+            'The method ladder for depth and segmentation, and the benchmark against learned and foundation models, arrive in the next units. The App shows the connectome they are built on, and what its eye receives in every case.',
+            'La escalera de métodos para profundidad y segmentación, y el benchmark contra modelos aprendidos y fundacionales, llegan en las próximas unidades. La App muestra el conectoma sobre el que se construyen, y lo que recibe su ojo en cada caso.',
           )}
         </p>
         <SectionRefs ids={['takemura2015', 'takemura2017', 'flyvis']} />
