@@ -13,12 +13,41 @@ outlier policy:
    connection table, and synapse positions in 8 nm voxel units. Rejected rows are rejected with a reason,
    never silently coerced; low-confidence neurotransmitter calls are flagged and the flag travels into the
    manifest, because the sign of a connection is itself a prediction.
-2. **Vision sequences**: frames with camera intrinsics and poses, plus the ground truth a case declares
-   (depth in metres, optical flow in pixels, segmentation labels). A sequence is accepted only if the
-   declared ground truth is present and finite, and if its units match the declared ones.
+2. **Vision clips** (`data-pipeline/conectoma/vision/contract.py`, design in
+   [05](05_vision-data.md)): every clip rendered onto the 721-column lattice is checked before anything
+   reads it, and a clip that fails is rejected with its reasons, never repaired.
 
-The contract lives with the pipeline and is documented in `data/README.md`. It is what lets a third party
-run this on their own footage instead of only replaying the baked cases.
+### Vision clips, as enforced
+
+Every source must carry luminance, depth and frame numbers; each declares what else it must carry:
+
+| Source | Required beyond luminance, depth and frames |
+|---|---|
+| TartanAir | flow, flow validity, segment boundaries, camera poses |
+| Spring | sky share, independent-motion share |
+| Hypersim | segment boundaries, figure share, labelled share, NYU40 label |
+| Sintel | flow |
+| FlyGym | figure share |
+| synthetic (and the panorama and still-camera cases) | flow, flow validity |
+
+| Array | Shape | Rule |
+|---|---|---|
+| `lum` | (frames, 721) | finite, in [0, 1] |
+| `depth` | (frames, 721) | positive where known; NaN where masked (counted, never dropped); never zero, negative or infinite |
+| `flow` | (frames - 1, 2, 721) | finite; the engine's unit (per image height, y up, summed over the box); row t is the motion from frame t to t + 1 |
+| `flow_valid`, `moving` | (frames - 1, 721) | shares in [0, 1] |
+| `sky`, `figure`, `labelled` | (frames, 721) | shares in [0, 1] |
+| `boundary` | (frames, 721) | 0 or 1 |
+| `semantic` | (frames, 721) | NYU40 ids, 0 for unlabelled |
+| `poses` | (frames, 7) | finite; rotations are unit quaternions |
+| `frames` | (frames,) | consecutive for video sources, never repeated |
+
+Optional arrays that are present are checked all the same. Each rendering is listed in its source's
+manifest with its statistics and SHA-256, and each rejection with its reasons; `tests/test_vision_data.py`
+builds clips that break each rule.
+
+The connectome part of the contract is documented in `data/README.md`. The whole contract is what lets a
+third party run this on their own footage instead of only replaying the baked cases.
 
 ## Between the two: the connectome specification
 

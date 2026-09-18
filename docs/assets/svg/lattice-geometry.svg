@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 372" width="900" class="lg-svg" role="img" aria-label="The angle between neighbouring columns, per source">
+  <!-- Hand-designed. Every colour is a shell variable with a fallback that follows the reader's colour
+       scheme, so the diagram reads correctly both inlined in the app (ADR-0058) and as an image.
+       Values measured: docs/architecture/05_vision-data.md, section 4. Scale: x = 230 + 124 per degree. -->
+  <style>
+    .lg-svg { --lg-bg:#ffffff; --lg-fg:#1f2328; --lg-sub:#57606a; --lg-grid:#d8dee4; --lg-acc:#0969da;
+              --lg-accbg:#b6e3ff; --lg-good:#1a7f37; }
+    @media (prefers-color-scheme: dark) {
+      .lg-svg { --lg-bg:#0d1117; --lg-fg:#e6edf3; --lg-sub:#8b949e; --lg-grid:#30363d; --lg-acc:#58a6ff;
+                --lg-accbg:#1f4a8a; --lg-good:#3fb950; }
+    }
+    .lg-svg text { font-family: var(--font-sans, Inter, "Segoe UI", system-ui, sans-serif); }
+    .lg-svg .bg { fill: var(--color-surface, var(--lg-bg)); }
+    .lg-svg .ttl { fill: var(--color-fg, var(--lg-fg)); font-size: 15px; font-weight: 700; }
+    .lg-svg .h { fill: var(--color-fg, var(--lg-fg)); font-size: 12px; font-weight: 700; }
+    .lg-svg .s { fill: var(--color-fg-subtle, var(--lg-sub)); font-size: 10.5px; }
+    .lg-svg .v { fill: var(--color-fg, var(--lg-fg)); font-size: 11px; }
+    .lg-svg .grid { stroke: var(--color-border, var(--lg-grid)); }
+    .lg-svg .axis { stroke: var(--color-fg-subtle, var(--lg-sub)); }
+    .lg-svg .range { fill: var(--lg-accbg); stroke: var(--color-accent, var(--lg-acc)); }
+    .lg-svg .dot { fill: var(--color-accent, var(--lg-acc)); }
+    .lg-svg .fly { fill: var(--color-good, var(--lg-good)); }
+    .lg-svg .flyline { stroke: var(--color-good, var(--lg-good)); stroke-dasharray: 4 3; }
+    svg .l-es { display: none; }
+  </style>
+<rect class="bg" x="0" y="0" width="900" height="372" rx="12"/>
+<text class="ttl l-en" x="22" y="32">What one column sees depends on the lens: degrees between neighbouring columns</text><text class="ttl l-es" x="22" y="32">Lo que ve una columna depende del lente: grados entre columnas vecinas</text>
+<text class="s l-en" x="22" y="52">at the centre of the lattice, 2 atan(6.5 / f) with f the focal length at 436 rows; bars are the levels a case spans</text><text class="s l-es" x="22" y="52">en el centro de la retícula, 2 atan(6,5 / f) con f la focal a 436 filas; las barras son los niveles que recorre un caso</text>
+<!-- grid -->
+<line class="grid" x1="230" y1="72" x2="230" y2="300"/><line class="grid" x1="354" y1="72" x2="354" y2="300"/><line class="grid" x1="478" y1="72" x2="478" y2="300"/><line class="grid" x1="602" y1="72" x2="602" y2="300"/><line class="grid" x1="726" y1="72" x2="726" y2="300"/><line class="grid" x1="850" y1="72" x2="850" y2="300"/>
+<line class="axis" x1="230" y1="300" x2="850" y2="300"/>
+<text class="s" x="230" y="316" text-anchor="middle">0</text><text class="s" x="354" y="316" text-anchor="middle">1</text><text class="s" x="478" y="316" text-anchor="middle">2</text><text class="s" x="602" y="316" text-anchor="middle">3</text><text class="s" x="726" y="316" text-anchor="middle">4</text><text class="s" x="850" y="316" text-anchor="middle">5</text>
+<text class="s l-en" x="540" y="336" text-anchor="middle">degrees between neighbouring columns</text><text class="s l-es" x="540" y="336" text-anchor="middle">grados entre columnas vecinas</text>
+<!-- the fly's own spacing, across all rows -->
+<line class="flyline" x1="755.8" y1="72" x2="755.8" y2="300"/>
+<!-- Sintel -->
+<text class="h" x="22" y="98">Sintel</text><text class="s l-en" x="22" y="112">six held-out sequences (C08)</text><text class="s l-es" x="22" y="112">seis secuencias reservadas (C08)</text>
+<rect class="range" x="258.5" y="92" width="115.3" height="14" rx="4"/><text class="v l-en" x="382" y="103">0.23 to 1.16</text><text class="v l-es" x="382" y="103">0,23 a 1,16</text>
+<!-- Spring -->
+<text class="h" x="22" y="142">Spring</text><text class="s l-en" x="22" y="156">all shots, 436 to 1080 rows (C09)</text><text class="s l-es" x="22" y="156">todas las tomas, 436 a 1080 filas (C09)</text>
+<rect class="range" x="244.9" y="136" width="162.4" height="14" rx="4"/><circle class="dot" cx="335.4" cy="143" r="5"/><text class="v l-en" x="416" y="147">0.12 to 1.43, median 0.85</text><text class="v l-es" x="416" y="147">0,12 a 1,43, mediana 0,85</text>
+<!-- Hypersim -->
+<text class="h" x="22" y="186">Hypersim</text><text class="s l-en" x="22" y="200">C04: 12 degrees to the full field</text><text class="s l-es" x="22" y="200">C04: de 12 grados al campo completo</text>
+<rect class="range" x="274.6" y="180" width="132.7" height="14" rx="4"/><circle class="dot" cx="407.3" cy="187" r="5"/><text class="v l-en" x="416" y="191">0.36 to 1.43</text><text class="v l-es" x="416" y="191">0,36 a 1,43</text>
+<!-- TartanAir -->
+<text class="h" x="22" y="230">TartanAir</text><text class="s l-en" x="22" y="244">and the synthetic cases (90 degree lens)</text><text class="s l-es" x="22" y="244">y los casos sintéticos (lente de 90 grados)</text>
+<circle class="dot" cx="654.1" cy="231" r="6"/><text class="v l-en" x="640" y="235" text-anchor="end">3.42</text><text class="v l-es" x="640" y="235" text-anchor="end">3,42</text>
+<!-- FlyGym -->
+<text class="h" x="22" y="274">FlyGym</text><text class="s l-en" x="22" y="288">the fly's own compound eye (C10 to C12)</text><text class="s l-es" x="22" y="288">el propio ojo compuesto de la mosca (C10 a C12)</text>
+<circle class="fly" cx="755.8" cy="275" r="7"/><text class="v l-en" x="768" y="279">4.24</text><text class="v l-es" x="768" y="279">4,24</text>
+<text class="s l-en" x="22" y="358">the published model learned on Sintel at 0.23 to 1.29 degrees per column (median 0.83): 3 to 18 times finer than the fly's own eye</text><text class="s l-es" x="22" y="358">el modelo publicado aprendió en Sintel a 0,23 a 1,29 grados por columna (mediana 0,83): de 3 a 18 veces más fino que el propio ojo de la mosca</text>
+</svg>

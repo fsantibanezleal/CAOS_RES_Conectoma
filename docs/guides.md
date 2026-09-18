@@ -8,6 +8,7 @@
   published ensemble, building a network in any regime, and reproducing the parity and characterisation
 - [04, the web](guides/04_the-web.md): from the pipeline's explorer artifact to the published site, the
   contract tests, the fit gate and the deploy
+- [05, the vision data](guides/05_vision-data.md): fetching every source, rendering it onto the lattice,
+  the splits and their leakage gate, the cases, and running the long jobs on Windows
 
-Guides for the vision data, the GPU lane and the dormant API are written by the units that make those paths
-real.
+Guides for the GPU lane and the dormant API are written by the units that make those paths real.

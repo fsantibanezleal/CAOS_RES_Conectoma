@@ -34,8 +34,8 @@ that seeks over HTTP can list an archive and pull exactly the members a clip nee
 its own CRC32 and written atomically (`remote_zip.py`). The selection is therefore a rule over members, not
 a choice of archives: for TartanAir, every environment, both difficulties, every trajectory, and per
 trajectory two clips of 32 consecutive frames centred at a quarter and three quarters of its length. That
-is about 97 GB instead of 1.87 TB for the front camera alone, and it keeps every environment, which the
-splits need, and consecutive motion, which the tasks need.
+is 2,244 clips and 114.5 GB (measured) instead of 1.87 TB for the front camera alone, and it keeps every
+environment, which the splits need, and consecutive motion, which the tasks need.
 
 Each clip is stored as one uncompressed ZIP of its members, byte for byte as fetched, and recorded in an
 append-only log that a rerun reads to skip what is done (`clipstore.py`). Four clips are in flight at a
@@ -83,7 +83,13 @@ the box median. The window the lattice covers is 391 x 391 pixels. Every planar 
 this same geometry: each frame is resized to 436 rows (Sintel's own height; area averaging for images,
 nearest neighbour for depth and labels), and the lattice takes its central 391 x 391 pixels. The renderer is
 a NumPy reimplementation checked against `BoxEye` (centres and order identical, sum and median identical,
-mean within $6 \times 10^{-8}$) and against the engine's own Sintel rendering.
+mean within $6 \times 10^{-8}$) and against the engine's own Sintel rendering. The engine cuts Sintel's 1024
+pixel width into a central crop of 0.7 and three overlapping strips of 417 pixels; on that even width its
+middle strip is centred one pixel left of the frame's centre, so the Sintel loader cuts the same strip with
+the same integer arithmetic. On two held-out sequences the product's rendering then matches the engine's to
+$10^{-6}$ in luminance, $10^{-6}$ relative in depth and $10^{-4}$ in flow (a test, wherever both are
+present). The engine labels frame $n$ with the flow from $n - 1$ to $n$; the product's flow row $t$ is the
+motion from frame $t$ to $t + 1$, the same values one index apart.
 
 Flow on the lattice is in the engine's unit: per image height, $y$ up, summed over the column's box. Other
 targets per column: the share of the box whose flow is valid, a boundary flag (the box holds more than one
@@ -99,12 +105,14 @@ in pixels at 436 rows. Measured per source:
 | TartanAir (90 degree field) | 218 px | 83.8 degrees | 3.42 degrees |
 | Sintel, the six held-out sequences | 640 to 3200 px (per shot) | 7.0 to 34.0 degrees | 0.23 to 1.16 degrees |
 | Hypersim (45 to 47 degree vertical field) | about 519 px | about 41 degrees | 1.43 degrees |
-| Spring (film lenses) | about 1468 px | about 15 degrees | 0.51 degrees |
+| Spring (film lenses, per shot) | 522 to 2447 px (median 881) | 9.1 to 41 degrees | 0.30 to 1.43 degrees (median 0.85) |
 | FlyGym's compound eye | (fisheye, 157 degree camera) | the eye's own field | 4.24 degrees |
 
 The last row is the fly's own optics: the median angle between each ommatidium's viewing direction and its
-nearest neighbour's. The published model's training domain samples the world 4 to 18 times more finely per
-column than that eye does; TartanAir's wide lens is the planar source closest to it. Case C04 and C09 vary
+nearest neighbour's. The published model's training domain samples the world far more finely: over all 1,064
+frames of Sintel's 23 training sequences the spacing is 0.23 to 1.29 degrees per column (median 0.83), 3 to
+18 times finer than the fly's eye (5 times at the median). TartanAir's wide lens is the planar source closest
+to it. Case C04 and C09 vary
 this spacing, and only the FlyGym cases see the world at the fly's own spacing.
 
 ![Column spacing per source](../assets/svg/lattice-geometry.svg)
