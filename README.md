@@ -9,9 +9,14 @@ wiring diagram of the *Drosophila melanogaster* male central nervous system, fre
 network built from measured biology can compute: depth from a moving camera, and figure-ground
 segmentation. Everything the connectome measures stays fixed. Only what it cannot measure is learned.
 
-> Status: **building**. This repository is at version 0.00.000; the units listed in *Build order* below land
+> Status: **building**. This repository is at version 0.04.000; the units listed in *Build order* below land
 > one at a time, each with its code, tests and documentation in the same commit. Nothing here is a
 > placeholder for work that is not done: what is absent is absent.
+>
+> Site: **[conectoma.fasl-work.com](https://conectoma.fasl-work.com)**. Today it holds the connectome
+> explorer (every cell type's filters on the hexagonal lattice, side by side with the published consensus,
+> and the rule that placed each type) and the six pages, with every number read from the committed reports.
+> The vision methods and their benchmark arrive with the units that build them.
 
 ## Motivation and problem
 
@@ -97,6 +102,7 @@ bounded before it is stable as a frozen network ([docs/architecture/04](docs/arc
 | `data/` | `raw/` git-ignored source cache, `derived/` committed compact artifacts |
 | `models/` | small exported models; heavy checkpoints stay outside git |
 | `manifests/` | per-case artifact manifests (contract 2) |
+| `frontend/` | the static site: the connectome explorer, the six pages, the contract tests and the fit gate ([guide](docs/guides/04_the-web.md)) |
 | `app/` | dormant FastAPI module (this product is static replay) |
 | `deploy/` | deployment notes for the chosen target |
 | `docs/` | the wiki: architecture, frameworks, cases, guides |

@@ -3,6 +3,39 @@
 All notable changes to this project are documented here. Format: Keep a Changelog, newest on top.
 Versions use the `X.XX.XXX` display form; the semver form (zeros dropped) appears in manifests.
 
+## [0.04.000] - 2026-09-18
+
+### Added
+
+- The web base on the shared shell: six routes (App, Introduction, Methodology, Implementation, Experiments,
+  Benchmark), English and Spanish, light and dark, the architecture modal with five bilingual diagrams that
+  follow the theme, per-section references, and a document per route so deep links answer 200.
+- The connectome explorer (App): every cell type of the right optic lobe, what it receives or sends through
+  each partner drawn on the hexagonal lattice in the engine's frame, side by side with the published
+  consensus where the pair exists, with the filters' cosine similarity and the angle between their
+  directions; and the placement view, the network lattice beside a chart of every type's measured density
+  against the placement rule. State lives in the URL.
+- Contract 2 for the explorer: `run.py export-web` writes the compact artifact (1.2 MB) and a manifest with
+  its size, SHA-256, the digests of its inputs and four counts, deterministic to the byte. A runtime
+  validator in the web checks it in the build and again in the page; the pipeline's tests rebuild it and
+  require the committed bytes.
+- Experiments and Benchmark pages whose every number is read from the committed reports: the column
+  holdout, the consensus comparison and its orientation, parity with the published model, the published
+  ensemble's tuning by task rank, the frozen lattice and its controls, the whole visual system, the
+  training cost; the task benchmark's protocol and metric definitions, stated as not yet run.
+- The ADR-0071 fit gate on the built site: three sizes, both themes, both languages, the painted area of
+  the instrument rather than its box, the rail, the tab rows, every documentation route and every
+  architecture diagram. CI runs it, and the Pages deploy runs it before it uploads anything.
+- Documentation: the web guide, contract 2 as built.
+
+### Fixed
+
+- The per-connection certainty was documented as a fraction of column pairs in [0, 1]. It is the number
+  of connected cell pairs per placed target cell, averaged over the filter's entries, and exceeds 1 where
+  two source cells share a column (118 of 7,907 connections, at most 2.4); the engine stores it and does
+  not use it in the dynamics. The pipeline, the data contract, the construction and framework pages, the
+  Methodology page and the explorer's readout now say that; no number changed.
+
 ## [0.03.000] - 2026-09-18
 
 ### Added

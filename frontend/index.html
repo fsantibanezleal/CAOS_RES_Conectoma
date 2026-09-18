@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Conectoma: the Drosophila male connectome (MaleCNS v1.0) used as a frozen architecture for computer vision, with every claim tested against null controls."
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>Conectoma</title>
+    <script>
+      // Set the theme before the first paint so a dark reader never sees a light flash.
+      try {
+        var stored = localStorage.getItem('caos.theme');
+        // the same rule as the shell's readTheme(): light only when stored or preferred, dark otherwise
+        var theme = stored === 'light' || stored === 'dark'
+          ? stored
+          : (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

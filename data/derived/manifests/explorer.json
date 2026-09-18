@@ -1,0 +1,25 @@
+{
+ "artifact": "explorer",
+ "version": 1,
+ "path": "explorer/malecns-optic-lobe-r.json",
+ "bytes": 1235481,
+ "sha256": "ca519cbdffc2cfd5abe99dae51eb02d6faa6b1ab73277734abc8e9a2712fcee2",
+ "source": {
+  "specification": "malecns-optic-lobe-r.json",
+  "specification_sha256": "f39676603faa4885e17e5833ef1a1474e5cf539f9e3db950baf666ef96143448",
+  "dataset": "male-cns:v1.0",
+  "license": "CC-BY",
+  "citation": "Berg et al., Cell, 2026, sexual dimorphism in the complete connectome of the Drosophila male central nervous system"
+ },
+ "reference": {
+  "file": "fib25-fib19_v2.2.json",
+  "sha256": "bfbb0766251ff09e22723d0ebbf7b14793e70b3ae8ad0eea64eac9d28223351a",
+  "license": "MIT (flyvis, published consensus connectome)"
+ },
+ "counts": {
+  "types": 253,
+  "connections": 7907,
+  "filter_entries": 97016,
+  "published_connections": 414
+ }
+}

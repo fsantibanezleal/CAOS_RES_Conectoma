@@ -1,0 +1,53 @@
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      # The committed artifacts under data/derived are canonical: the site reads them as they are. Nothing
+      # is regenerated here (the network runs need the local GPU); ci.yml rebuilds the explorer artifact
+      # byte for byte and fails on drift.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - name: Build (copy-data.mjs brings data/derived into the site; contract tests run first)
+        run: npm run build
+      - name: Browser for the fit gate
+        run: npx playwright install --with-deps chromium
+      # the site that fails the ADR-0071 gate is never uploaded
+      - name: Fit gate on the built site
+        run: npm run gate
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

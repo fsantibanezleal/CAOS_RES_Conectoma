@@ -6,6 +6,8 @@
   building the consensus connectome from them
 - [03, the network engine](guides/03_network-engine.md): the GPU and CPU installs, the models root, the
   published ensemble, building a network in any regime, and reproducing the parity and characterisation
+- [04, the web](guides/04_the-web.md): from the pipeline's explorer artifact to the published site, the
+  contract tests, the fit gate and the deploy
 
 Guides for the vision data, the GPU lane and the dormant API are written by the units that make those paths
 real.

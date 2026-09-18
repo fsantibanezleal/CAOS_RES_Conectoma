@@ -52,3 +52,5 @@ models/*.pth
 .DS_Store
 Thumbs.db
 *.log
+frontend/public/svg/docs/
+frontend/e2e-shots/

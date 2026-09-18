@@ -1,0 +1,218 @@
+/* Conectoma: product widgets only. The shell owns the page primitives (.page-body, .prose, .lede, .measure,
+   .two-col, .equation, tabs); nothing here redefines them or sets a page width (ADR-0017, ADR-0071). */
+
+:root,
+[data-theme='light'] {
+  --cx-exc: #c2410c; /* excitatory: warm */
+  --cx-inh: #1d4ed8; /* inhibitory: cool */
+}
+[data-theme='dark'] {
+  --cx-exc: #fb923c;
+  --cx-inh: #60a5fa;
+  /* native controls (buttons, checkboxes, ranges, scrollbars) follow the theme instead of staying light */
+  color-scheme: dark;
+}
+[data-theme='light'] { color-scheme: light; }
+
+.cx-muted { color: var(--color-fg-subtle); }
+
+/* ---- App: a sized rail and a stage that owns the rest (ADR-0071 rules 1, 6, 8) ----
+   The height flows from the shell's fixed app surface down to the drawing: every link of the chain is a
+   flex item with min-height 0, so the stage gets what the viewport leaves and the drawings size to it. */
+.cx-app {
+  display: grid;
+  grid-template-columns: 264px minmax(0, 1fr);
+  gap: 1rem;
+  min-height: 0;
+  height: 100%;
+}
+.cx-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-height: 0;
+  overflow: hidden; /* sized to show every control; only the partner list inside it scrolls */
+}
+.cx-rail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+}
+.cx-label { font-size: 0.8rem; color: var(--color-fg-subtle); }
+.cx-select {
+  width: 100%;
+  padding: 0.3rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+  color: var(--color-fg);
+  font: inherit;
+}
+.cx-segmented { display: flex; border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden; }
+.cx-segmented button {
+  flex: 1 1 0;
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  background: var(--color-surface-2);
+  color: var(--color-fg-subtle);
+  font: inherit;
+  font-size: 0.82rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.cx-segmented button.active { background: var(--color-accent-soft); color: var(--color-fg); font-weight: 600; }
+.cx-check { display: flex; gap: 0.5rem; align-items: flex-start; font-size: 0.8rem; }
+.cx-readout { gap: 0.2rem; font-size: 0.8rem; }
+.cx-readout-row { display: flex; justify-content: space-between; gap: 0.5rem; }
+.cx-readout-row span { color: var(--color-fg-subtle); }
+.cx-readout-row strong { text-align: right; font-variant-numeric: tabular-nums; }
+.cx-provenance { font-size: 0.72rem; color: var(--color-fg-faint); margin: 0; flex: 0 0 auto; }
+
+.cx-main { min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.cx-main > .tabs { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.cx-main .tablist { margin-bottom: 0.6rem; flex: 0 0 auto; }
+/* only the active panel takes the space: the shell keeps the others in the DOM with `hidden` */
+.cx-main .tabpanel:not([hidden]) { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+
+/* ---- the filter view: the lattice stage and, under it, the comparison of the chosen partner ---- */
+.cx-filter-stage { position: relative; flex: 1 1 auto; min-width: 0; min-height: 0; }
+.cx-hex { position: absolute; inset: 0; }
+.cx-hex-panel { position: absolute; top: 0; bottom: 0; }
+.cx-hex-panel svg { display: block; }
+.cx-hex-title,
+.cx-hex-readout {
+  position: absolute;
+  left: 0.5rem;
+  max-width: calc(100% - 1rem);
+  padding: 0.1rem 0.45rem;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--color-bg) 82%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+.cx-hex-title { top: 0.35rem; font-size: 0.85rem; font-weight: 600; }
+.cx-hex-readout { bottom: 0.35rem; font-size: 0.78rem; color: var(--color-fg-subtle); font-variant-numeric: tabular-nums; }
+.cx-hex-cell { stroke: var(--color-border); stroke-width: 0.6; }
+.cx-hex-cell.far { stroke-opacity: 0.45; }
+.cx-hex-cell:hover { stroke: var(--color-fg); stroke-width: 1.4; stroke-opacity: 1; }
+.cx-hex-centre { stroke: var(--color-fg); stroke-width: 1.6; }
+.cx-hex-axes line { stroke: var(--color-fg-subtle); stroke-width: 1.2; }
+.cx-hex-axes text { fill: var(--color-fg-subtle); font-size: 11px; }
+.cx-strip {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 1.1rem;
+  padding: 0.35rem 0.1rem 0;
+  font-size: 0.8rem;
+  color: var(--color-fg-subtle);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+.cx-strip strong { color: var(--color-fg); font-weight: 600; }
+
+/* ---- the partner list, in the rail: its own scroll region, the rail itself never scrolls ---- */
+.cx-partners { flex: 1 1 auto; min-height: 0; padding: 0; gap: 0; overflow: hidden; }
+.cx-partners-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.76rem;
+  border-bottom: 1px solid var(--color-border);
+}
+.cx-partners-list { list-style: none; margin: 0; padding: 0.25rem; overflow-y: auto; min-height: 0; flex: 1 1 auto; }
+.cx-partner {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 5rem minmax(0, 1fr) 2.8rem;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.16rem 0.35rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-fg);
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  text-align: left;
+}
+.cx-partner:hover { background: var(--color-surface-2); }
+.cx-partner.active { background: var(--color-accent-soft); font-weight: 600; }
+.cx-partner-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cx-partner-bar { height: 0.55rem; background: var(--color-surface-2); border-radius: 3px; overflow: hidden; }
+.cx-bar { display: block; height: 100%; }
+.cx-bar.exc { background: var(--cx-exc); }
+.cx-bar.inh { background: var(--cx-inh); }
+.cx-partner-value { text-align: right; font-variant-numeric: tabular-nums; color: var(--color-fg-subtle); }
+
+/* ---- the placement view: the network's lattice beside the rule that placed every type ---- */
+.cx-placement { flex: 1 1 auto; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.cx-placement-stage { flex: 1 1 auto; min-height: 0; position: relative; }
+.cx-place { fill: transparent; stroke: var(--color-border); stroke-width: 0.5; }
+.cx-place.filled { fill: color-mix(in srgb, var(--cx-exc) 75%, var(--color-surface-2)); }
+.cx-place.filled.inh { fill: color-mix(in srgb, var(--cx-inh) 75%, var(--color-surface-2)); }
+.cx-place.filled.none { fill: color-mix(in srgb, var(--color-fg-subtle) 60%, var(--color-surface-2)); }
+.cx-density { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+.cx-density-head { flex: 0 0 auto; padding: 0 0 0.4rem 0.2rem; }
+.cx-density-title { font-size: 0.85rem; font-weight: 600; color: var(--color-fg); }
+.cx-density-readout { margin: 0.2rem 0 0; font-size: 0.8rem; color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.cx-density-hint { margin: 0.2rem 0 0; font-size: 0.74rem; color: var(--color-fg-subtle); }
+.cx-density-body { flex: 1 1 auto; min-height: 0; }
+.cx-density-body svg { display: block; }
+.cx-density-plot { fill: var(--color-surface); stroke: var(--color-border); stroke-width: 1; }
+.cx-density-band { fill: var(--color-surface-2); }
+.cx-density-band.alt { fill: var(--color-surface); }
+.cx-density-band-label { fill: var(--color-fg-subtle); font-size: 11px; }
+.cx-density-threshold { stroke: var(--color-fg-faint); stroke-width: 1; stroke-dasharray: 3 3; }
+.cx-density-rule { stroke: var(--color-accent); stroke-width: 1.5; }
+.cx-density-identity { stroke: var(--color-fg-faint); stroke-width: 1; stroke-dasharray: 6 4; fill: none; }
+.cx-density-axis line { stroke: var(--color-border); }
+.cx-density-axis text { fill: var(--color-fg-subtle); font-size: 11px; font-variant-numeric: tabular-nums; }
+.cx-density-dot { stroke: var(--color-surface); stroke-width: 1; cursor: pointer; }
+.cx-density-dot.exc { fill: var(--cx-exc); }
+.cx-density-dot.inh { fill: var(--cx-inh); }
+.cx-density-dot.none { fill: var(--color-fg-subtle); }
+.cx-density-dot:hover { stroke: var(--color-fg); stroke-width: 1.5; }
+.cx-density-selected { fill: none; stroke: var(--color-fg); stroke-width: 2; pointer-events: none; }
+.cx-density-label { fill: var(--color-fg); font-size: 12px; font-weight: 600; pointer-events: none; }
+
+/* ---- documentation figures, inlined so they follow the site theme ---- */
+.cx-figure { margin: 1.25rem auto; max-width: 900px; }
+.cx-figure svg { width: 100%; height: auto; display: block; }
+.cx-figure-placeholder { height: 240px; }
+.cx-table-wrap { overflow-x: auto; }
+.cx-table { border-collapse: collapse; font-size: 0.88rem; font-variant-numeric: tabular-nums; }
+.cx-table th,
+.cx-table td { padding: 0.3rem 0.65rem; border-bottom: 1px solid var(--color-border); text-align: left; }
+.cx-table td.num,
+.cx-table th.num { text-align: right; }
+.cx-table th { color: var(--color-fg-subtle); font-weight: 600; }
+
+/* ---- commands on the Implementation page ---- */
+.cx-code {
+  margin: 0.75rem 0 1rem;
+  padding: 0.7rem 0.9rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+.cx-code code { white-space: pre; }
+
+@media (max-width: 900px) {
+  .cx-app { grid-template-columns: minmax(0, 1fr); height: auto; }
+  .cx-filter-stage { height: 60vh; flex: 0 0 auto; }
+  .cx-placement-stage { height: 70vh; flex: 0 0 auto; }
+  .cx-partners { max-height: 40vh; }
+}
