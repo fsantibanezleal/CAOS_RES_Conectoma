@@ -3,7 +3,9 @@
 Every rendered clip is checked here, and a clip that fails is rejected with its reasons rather than repaired:
 shapes that disagree, luminance outside [0, 1], depth that is not positive (masked depth is NaN, never zero or
 negative), non-finite flow, shares outside [0, 1], a boundary map that is not binary, poses that are not
-finite or whose rotation is not a unit quaternion, frames that are not consecutive. Every source requires
+finite or whose rotation is not a unit quaternion, frames that are not consecutive, and a blank frame from a
+real source (every column the same luminance: in TartanAir a black render, found by the leakage gate because
+two black frames are identical wherever they come from). Every source requires
 luminance, depth and frames; each declares what else it must carry (`REQUIRED`), and any optional array that
 is present is checked all the same. The tests build clips that break each rule.
 """
@@ -28,6 +30,10 @@ PER_STEP = ("flow_valid", "moving")
 SHARES = ("flow_valid", "sky", "moving", "figure", "labelled")
 # single images (Hypersim) are not a video: their frames are ids, not consecutive
 VIDEO = ("tartanair", "spring", "synthetic", "flygym", "sintel")
+# A frame of a real source in which every column has the same luminance shows nothing: in TartanAir it is a
+# black render (the camera inside geometry or unlit), and two such frames are identical wherever they come
+# from. Only a synthetic scene may be blank on purpose (C16 at zero texture contrast is uniform grey).
+BLANK_ALLOWED = ("synthetic",)
 
 
 def clip_problems(clip: dict, source: str = "tartanair", columns: int = COLUMNS) -> list[str]:
@@ -53,6 +59,10 @@ def clip_problems(clip: dict, source: str = "tartanair", columns: int = COLUMNS)
     lum = clip["lum"]
     if not np.isfinite(lum).all() or lum.min() < 0 or lum.max() > 1:
         problems.append("luminance is not finite within [0, 1]")
+    elif source not in BLANK_ALLOWED:
+        blank = int((lum.max(axis=-1) == lum.min(axis=-1)).sum())
+        if blank:
+            problems.append(f"{blank} blank frames (every column the same luminance): the camera saw nothing")
     depth = clip["depth"]
     finite = np.isfinite(depth)
     if (depth[finite] <= 0).any():

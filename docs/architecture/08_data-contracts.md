@@ -32,7 +32,7 @@ Every source must carry luminance, depth and frame numbers; each declares what e
 
 | Array | Shape | Rule |
 |---|---|---|
-| `lum` | (frames, 721) | finite, in [0, 1] |
+| `lum` | (frames, 721) | finite, in [0, 1]; for a real source no frame blank (every column the same luminance) |
 | `depth` | (frames, 721) | positive where known; NaN where masked (counted, never dropped); never zero, negative or infinite |
 | `flow` | (frames - 1, 2, 721) | finite; the engine's unit (per image height, y up, summed over the box); row t is the motion from frame t to t + 1 |
 | `flow_valid`, `moving` | (frames - 1, 721) | shares in [0, 1] |
@@ -102,6 +102,27 @@ SHA-256; the file name and SHA-256 of the specification it came from, with the d
 citation; the file, SHA-256 and license of the published reference; and four counts (types, connections,
 filter entries, published connections), which the web compares with what it received. It has no timestamp,
 so the same inputs give the same bytes.
+
+### The eye input artifact (today)
+
+Written by `run.py export-eyeclips` (`data-pipeline/conectoma/stages/export_eyeclips.py`), version 1: one file
+per case, `data/derived/eyeclips/<case>.json`, holding the case's first drawn clip at its six levels.
+
+| Field | Type | Meaning |
+|---|---|---|
+| `case`, `name`, `category`, `source`, `family`, `grades`, `variant`, `item` | strings, lists | the registry entry and the source item the clip was drawn from |
+| `columns`, `frames` | integers | 721, and the clip's length |
+| `depth` | object | `near_m`, `far_m` of the case (every level), `encoding: log`, `masked: 255`, and whether depth is in metres or relative |
+| `flow` | object or null | the scale the int8 flow is divided by, and its unit (the engine's) |
+| `shared` | object | layers identical at every level, stored once |
+| `levels[]` | object | per level: `value`, `interval_s` (null for single images), `measured` (what the level means in the image), `frames`, and `arrays`: base64 bytes in the engine's column order (`lum` uint8, `depth` log uint8 with 255 masked, `figure`/`sky`/`labelled`/`flow_valid` uint8 shares, `boundary` 0 or 1, `flow` int8 x then y per step) |
+| `license` | string | what the source may be shown under (Hypersim's derived clips are ShareAlike) |
+
+The manifest (`data/derived/manifests/eyeclips.json`) records the SHA-256 of the case summary the files came
+from, the render version, each file's path, size and SHA-256, and the lattice: every column's (u, v) and the
+pixel offset the engine samples it at, from the frame centre. The web checks each file's size of every
+array against its frame count, its digest against the manifest, and its case id against the one requested,
+before drawing anything.
 
 ### The per-case artifacts (with the method units)
 

@@ -248,11 +248,20 @@ def test_a_valid_clip_holds_the_contract():
     (lambda c: c["boundary"].__setitem__((0, 0), 3), "binary"),
     (lambda c: c["poses"].__setitem__((0, 6), 2.0), "unit quaternions"),
     (lambda c: c["frames"].__setitem__(2, 99), "consecutive"),
+    (lambda c: c["lum"].__setitem__(1, 0.0), "blank frames"),
 ])
 def test_each_breakage_is_rejected_with_its_reason(breakage, expected):
     clip = _clip()
     breakage(clip)
     assert any(expected in problem for problem in contract.clip_problems(clip))
+
+
+def test_only_a_synthetic_scene_may_be_blank():
+    clip = _clip()
+    clip["lum"][:] = 0.5                       # uniform grey, as C16 at zero texture contrast
+    del clip["boundary"], clip["poses"]
+    assert contract.clip_problems(clip, "synthetic") == []
+    assert any("blank" in p for p in contract.clip_problems({**_clip(), "lum": clip["lum"]}, "tartanair"))
 
 
 def test_masked_depth_is_allowed():

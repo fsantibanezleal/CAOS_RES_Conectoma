@@ -156,7 +156,13 @@ independent motion; Hypersim: boundaries, figure, labelled share, semantic label
 flow; synthetic: flow and flow validity). The rules: shapes agree (one row per frame, or per consecutive
 pair for flow), luminance is finite in [0, 1], depth is positive or NaN (masked, counted, never dropped),
 flow is finite, shares are in [0, 1], boundaries are binary, semantic labels are NYU40 ids, poses are finite
-with unit quaternions, and video frames are consecutive. The tests build clips that break each rule.
+with unit quaternions, video frames are consecutive, and no frame of a real source is blank (every column
+the same luminance). That last rule was added when the leakage gate failed on one frame found in two
+splits: it was black, the same zero in all 721 columns, in 5 of the 2,244 TartanAir clips (two of them
+black for 31 and 32 of their 32 frames), a render in which the camera saw nothing. Those clips are
+rejected; frames that are nearly uniform but not blank (a camera in heavy weather) are content and stay.
+A synthetic scene may be blank on purpose (C16 at zero texture contrast). The tests build clips that
+break each rule.
 
 ## 7. Splits by geometry, not by name
 
