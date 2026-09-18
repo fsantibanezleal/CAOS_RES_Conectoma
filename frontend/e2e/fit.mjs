@@ -214,6 +214,23 @@ try {
     }
   }
 
+  // ---- the artifact check without WebCrypto. A page served over plain HTTP is not a secure context and has no
+  // crypto.subtle (the published site before its certificate); localhost is secure, so without this the gate
+  // would never see that case. The explorer must still verify its artifact against the manifest.
+  {
+    const { ctx, page, errors } = await open(browser, { width: 1600, height: 900 }, 'light', 'en');
+    await ctx.addInitScript(() => Object.defineProperty(window.crypto, 'subtle', { get: () => undefined }));
+    await page.goto(`${base}/`, { waitUntil: 'networkidle' });
+    await page.waitForSelector('.cx-provenance', { timeout: 30000 });
+    const state = await page.evaluate(() => ({
+      subtle: Boolean(window.crypto.subtle),
+      verified: document.querySelector('.cx-provenance')?.getAttribute('data-verified'),
+    }));
+    pass(!state.subtle && state.verified === 'true', `without WebCrypto the artifact still verifies (${JSON.stringify(state)})`);
+    pass(errors.length === 0, `without WebCrypto: no page errors ${JSON.stringify(errors.slice(0, 3))}`);
+    await ctx.close();
+  }
+
   // ---- the architecture modal, at one size, both themes and languages
   for (const theme of THEMES) {
     for (const lang of LANGS) {

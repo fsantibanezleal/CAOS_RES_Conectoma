@@ -3,6 +3,17 @@
 All notable changes to this project are documented here. Format: Keep a Changelog, newest on top.
 Versions use the `X.XX.XXX` display form; the semver form (zeros dropped) appears in manifests.
 
+## [0.04.001] - 2026-09-18
+
+### Fixed
+
+- The published site reported its explorer artifact as not verified. Served over plain HTTP (before the
+  domain's certificate exists) the page is not a secure context, so WebCrypto is absent and the digest was
+  never computed; a check that could not run was shown as a failure. The explorer now falls back to a plain
+  SHA-256 (FIPS 180-4, tested against Node's on the standard vectors, every padding length up to 200 bytes
+  and the committed artifact), so the check runs in every context. The fit gate removes WebCrypto in one
+  run and requires the artifact to verify, because localhost is a secure context and could never show it.
+
 ## [0.04.000] - 2026-09-18
 
 ### Added
