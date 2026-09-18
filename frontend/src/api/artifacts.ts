@@ -1,4 +1,5 @@
 import { countProblems, explorerProblems, manifestProblems } from '../lib/contract';
+import { sha256Hex } from '../lib/sha256';
 import type { Explorer, ExplorerManifest } from '../lib/contract.types';
 
 // Every artifact is read from the site root (the build copies data/derived into public/data), with an
@@ -14,9 +15,13 @@ async function getJson<T>(path: string): Promise<T> {
   return (await response.json()) as T;
 }
 
+/** SHA-256 of the bytes: WebCrypto where the page is a secure context, the plain implementation elsewhere. */
 async function sha256(buffer: ArrayBuffer): Promise<string> {
-  const digest = await crypto.subtle.digest('SHA-256', buffer);
-  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+  if (globalThis.crypto?.subtle) {
+    const digest = await globalThis.crypto.subtle.digest('SHA-256', buffer);
+    return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+  }
+  return sha256Hex(new Uint8Array(buffer));
 }
 
 export interface Verified<T> {
@@ -39,9 +44,7 @@ export async function loadExplorer(): Promise<Verified<Explorer>> {
   const response = await fetch(DATA + manifest.path, { cache: 'no-cache' });
   if (!response.ok) throw new Error(`${manifest.path}: HTTP ${response.status}`);
   const buffer = await response.arrayBuffer();
-  const verified = typeof crypto !== 'undefined' && crypto.subtle
-    ? (await sha256(buffer)) === manifest.sha256
-    : false;
+  const verified = (await sha256(buffer)) === manifest.sha256;
   const parsed: unknown = JSON.parse(new TextDecoder().decode(buffer));
   const ep = explorerProblems(parsed);
   if (ep.length) refuse('The explorer artifact', ep);
