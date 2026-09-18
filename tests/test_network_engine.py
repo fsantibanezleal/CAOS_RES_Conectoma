@@ -176,6 +176,23 @@ def test_vectorised_grouping_equals_the_engine() -> None:
         assert torch.equal(expected.cpu(), vectorised_scatter_indices(frame, grouped, groupby).cpu())
 
 
+def test_controls_have_the_cell_level_size_and_synapses_of_the_measured_connectome(tmp_path: Path) -> None:
+    engine()
+    from conectoma.connectome.nulls import CONTROLS
+    from conectoma.network.lattice import LatticeConnectome
+
+    path = synthetic_spec(tmp_path / "s.json")
+    measured = LatticeConnectome(file=str(path), extent=6)
+    spec = json.loads(path.read_text())
+    for kind, control in CONTROLS.items():
+        for seed in (0, 1):
+            control_path = tmp_path / f"{kind}-{seed}.json"
+            control_path.write_text(json.dumps(control(spec, seed=seed)))
+            built = LatticeConnectome(file=str(control_path), extent=6)
+            assert built.compile_report["edges"] == measured.compile_report["edges"], kind
+            assert float(built.edges.n_syn.sum()) == pytest.approx(float(measured.edges.n_syn.sum())), kind
+
+
 # --- regimes --------------------------------------------------------------------------------------
 
 

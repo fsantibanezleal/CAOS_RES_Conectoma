@@ -174,14 +174,20 @@ def write_report(report: dict, path: Path) -> Path:
 
 def cmd_parity_published(args: argparse.Namespace) -> int:
     """Rebuild the published model through this product's path and check it against the engine's."""
-    from conectoma.network.parity import ENSEMBLE_SIZE, ensemble_tuning, parity_log, voltage_parity
+    from conectoma.network.parity import (
+        ENSEMBLE_SIZE,
+        ensemble_tuning,
+        parity_log,
+        pipeline_crosscheck,
+        voltage_parity,
+    )
     from conectoma.network.tuning import moving_edges
 
     started = time.time()
     runs = parity_log(moving_edges())
     if runs.steps:
         print(f"      resuming: {len(runs.steps)} finished steps in {runs.path}")
-    print("[1/2] voltage parity, engine loader against this product's builder")
+    print("[1/3] voltage parity, engine loader against this product's builder")
     voltages = []
     for model in args.parity_models:
         result = voltage_parity(model, runs=runs)
@@ -189,13 +195,20 @@ def cmd_parity_published(args: argparse.Namespace) -> int:
         print(f"      {result['model']}: max |dV| {result['max_abs_difference']:.3g} over {result['cells']} "
               f"cells, passed {result['passed']}")
     count = args.ensemble_models or ENSEMBLE_SIZE
-    print(f"[2/2] motion tuning of {count} published models, built through this product's path")
+    print(f"[2/3] motion tuning of {count} published models, built through this product's path")
     tuning = ensemble_tuning([f"{i:03d}" for i in range(count)], log=print, runs=runs)
+    print("[3/3] the same models through the engine's own end-to-end pipeline")
+    per_model = {row["model"]: row["tuning"] for row in tuning["per_model"]}
+    checked = [model for model in args.crosscheck_models if model in per_model]
+    crosscheck = pipeline_crosscheck(per_model, checked, runs=runs)
+    print(f"      largest DSI difference {crosscheck['largest_dsi_difference']}, largest direction "
+          f"difference {crosscheck['largest_direction_difference_degrees']} degrees")
     report = {
         "elapsed_seconds": round(time.time() - started, 1),
         "reused_steps": len(runs.reused),
         "voltage_parity": voltages,
         "tuning": tuning,
+        "pipeline_crosscheck": crosscheck,
     }
     out = Path(args.out) if args.out else REPO_ROOT / "data/derived/network/parity-published.json"
     write_report(report, out)
@@ -204,7 +217,8 @@ def cmd_parity_published(args: argparse.Namespace) -> int:
               f"{row['median_distance_to_known_degrees']} deg, "
               f"within 45 deg {row['share_within_45_degrees']}")
     print(f"wrote {out}")
-    return 0 if all(v["passed"] for v in voltages) else 1
+    passed = all(v["passed"] for v in voltages) and crosscheck["largest_dsi_difference"] <= 1e-3
+    return 0 if passed else 1
 
 
 def cmd_characterize_connectome(args: argparse.Namespace) -> int:
@@ -248,6 +262,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     parity.add_argument("--parity-models", nargs="+", default=["000", "001", "002"],
                         help="models of the published ensemble for the voltage comparison")
+    parity.add_argument("--crosscheck-models", nargs="+", default=["004", "009", "022"],
+                        help="models also run through the engine's own end-to-end pipeline")
     parity.add_argument("--ensemble-models", type=int, default=None,
                         help="how many ensemble models to characterise (default: all fifty)")
     parity.add_argument("--out", default=None, help="where to write the parity report")

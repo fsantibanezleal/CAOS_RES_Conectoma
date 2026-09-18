@@ -140,6 +140,58 @@ def motion_tuning(data) -> dict:
     return result
 
 
+def ensemble_quality(per_model: list[dict], min_dsi: float = 0.2, within_degrees: float = 45.0,
+                     reversed_beyond: float = 135.0, group: int = 10) -> dict:
+    """How many subtypes each model tunes as known, and how that follows the model's task rank.
+
+    A subtype is tuned as known when its DSI is at least `min_dsi` and its preferred direction lies within
+    `within_degrees` of the known one; strongly reversed when as selective but beyond `reversed_beyond`;
+    weak when below `min_dsi`, where a preferred direction carries no meaning. The published ensemble is
+    ordered by task error, so the rank correlation tests the published observation that models that solve
+    the task better show more realistic motion tuning.
+    """
+    from conectoma.connectome.compare import spearman
+
+    def label(row: dict) -> str:
+        dsi, distance = row["dsi"][0], row["distance_to_known_degrees"][0]
+        if dsi < min_dsi:
+            return "weak"
+        if distance <= within_degrees:
+            return "as_known"
+        if distance >= reversed_beyond:
+            return "reversed"
+        return "other"
+
+    by_type: dict[str, dict[str, int]] = {}
+    counts = []
+    for model in per_model:
+        tuned = 0
+        for cell_type, row in model["tuning"].items():
+            kind = label(row)
+            by_type.setdefault(cell_type, {"as_known": 0, "reversed": 0, "weak": 0, "other": 0})[kind] += 1
+            tuned += kind == "as_known"
+        counts.append(tuned)
+    subtypes = len(per_model[0]["tuning"]) if per_model else 0
+    by_rank = [
+        {
+            "models": f"{start:03d}-{min(start + group, len(counts)) - 1:03d}",
+            "as_known": int(sum(counts[start:start + group])),
+            "of": subtypes * len(counts[start:start + group]),
+        }
+        for start in range(0, len(counts), group)
+    ]
+    rho = spearman([float(i) for i in range(len(counts))], [float(c) for c in counts])
+    return {
+        "criteria": {
+            "min_dsi": min_dsi, "within_degrees": within_degrees, "reversed_beyond": reversed_beyond,
+        },
+        "by_subtype": by_type,
+        "by_rank": by_rank,
+        "subtypes_as_known_per_model": counts,
+        "rank_correlation": round(rho, 4) if rho is not None else None,
+    }
+
+
 def summarise_tuning(tuning: dict, within_degrees: float = 45.0) -> dict:
     """Across networks: median DSI, median distance to the known direction, and the share within tolerance."""
     summary = {}

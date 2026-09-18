@@ -25,6 +25,7 @@ from conectoma.network.engine import PUBLISHED_ENSEMBLE, load_engine, published_
 from conectoma.network.regimes import PER_OFFSET, build_network
 from conectoma.network.tuning import (
     central_responses,
+    ensemble_quality,
     motion_tuning,
     moving_edges,
     response_dataset,
@@ -151,6 +152,70 @@ def ensemble_tuning(models: list[str] | None = None, batch_size: int = 4, log=pr
         "ensemble": PUBLISHED_ENSEMBLE,
         "models": models,
         "summary": summarise_tuning(tuning_rows),
+        "quality": ensemble_quality(per_model),
         "per_model": per_model,
         "stimulus": stimulus_description(dataset),
     }
+
+
+def engine_pipeline_tuning(model: str) -> dict:
+    """The same model characterised end to end by the engine's own pipeline (loader, responses, analysis)."""
+    flyvis = load_engine()
+    from flyvis.analysis.moving_bar_responses import direction_selectivity_index, preferred_direction
+    from flyvis.analysis.stimulus_responses import moving_edge_responses
+
+    from conectoma.network.tuning import KNOWN_PREFERRED, MOTION_TYPES, POLARITY, _angle_distance
+
+    data = moving_edge_responses(flyvis.NetworkView(published_model_dir(model)))
+    dsi = direction_selectivity_index(data)
+    theta = preferred_direction(data)
+    cell_types = data["cell_type"].values
+    result = {}
+    for cell_type in MOTION_TYPES:
+        neuron = int(np.nonzero(cell_types == cell_type)[0][0])
+        intensity = POLARITY[cell_type[:2]]
+        d = float(dsi.sel(intensity=intensity).isel(neuron=neuron).values.reshape(-1)[0])
+        t = float(theta.sel(intensity=intensity).isel(neuron=neuron).values.reshape(-1)[0])
+        result[cell_type] = {
+            "dsi": round(d, 4),
+            "preferred_direction_degrees": round(float(np.degrees(t)) % 360, 1),
+            "distance_to_known_degrees": round(
+                float(np.degrees(_angle_distance(t, KNOWN_PREFERRED[cell_type[-1]]))), 1
+            ),
+        }
+    return result
+
+
+def pipeline_crosscheck(product_tuning: dict, models: list[str], runs=None) -> dict:
+    """Does this product's tuning analysis equal the engine's end-to-end pipeline, model by model?
+
+    Voltage parity shows the networks are the same; this shows the way responses are gathered and analysed
+    is the same, so a tuning number here means what the engine's would.
+    """
+    rows = []
+    for model in models:
+        key = f"engine_pipeline/{model}"
+        engine = runs.step(key, lambda m=model: engine_pipeline_tuning(m)) if runs is not None else (
+            engine_pipeline_tuning(model)
+        )
+        ours = product_tuning[model]
+        dsi_gap = max(abs(engine[t]["dsi"] - ours[t]["dsi"][0]) for t in engine)
+        angle_gap = max(
+            float(np.degrees(_wrapped(engine[t]["preferred_direction_degrees"],
+                                      ours[t]["preferred_direction_degrees"][0])))
+            for t in engine
+        )
+        rows.append({"model": model, "largest_dsi_difference": round(dsi_gap, 6),
+                     "largest_direction_difference_degrees": round(angle_gap, 3), "engine": engine})
+    return {
+        "models": models,
+        "largest_dsi_difference": max(r["largest_dsi_difference"] for r in rows),
+        "largest_direction_difference_degrees": max(r["largest_direction_difference_degrees"] for r in rows),
+        "per_model": rows,
+    }
+
+
+def _wrapped(a_degrees: float, b_degrees: float) -> float:
+    """Angle between two directions given in degrees, in radians, in [0, pi]."""
+    difference = np.radians(a_degrees - b_degrees)
+    return float(np.abs((difference + np.pi) % (2 * np.pi) - np.pi))

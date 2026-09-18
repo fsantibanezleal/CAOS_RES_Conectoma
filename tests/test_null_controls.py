@@ -18,8 +18,10 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "data-pipeline"))
 
 from conectoma.connectome.nulls import (  # noqa: E402
+    NULLS_VERSION,
     degree_preserving_rewire,
     degree_sequences,
+    placement_signature,
     random_sparse,
     sign_shuffle,
     total_synapses,
@@ -114,6 +116,48 @@ def test_sign_shuffle_keeps_topology_filters_and_the_sign_ratio() -> None:
     assert [e["offsets"] for e in control["edges"]] == [e["offsets"] for e in spec["edges"]]
     assert Counter(e["alpha"] for e in control["edges"]) == Counter(e["alpha"] for e in spec["edges"])
     assert control["provenance"]["null_control"]["signs_changed"] > 0
+
+
+# --- size at the level of cells -------------------------------------------------------------------
+
+
+def mixed_spec(seed: int = 4) -> dict:
+    """Types on three placements, so a careless control would change the cell-level size."""
+    import random
+
+    rng = random.Random(seed)
+    patterns = {f"A{i}": ["stride", [1, 1]] for i in range(6)}
+    patterns.update({f"B{i}": ["stride", [2, 2]] for i in range(5)})
+    patterns.update({f"P{i}": ["single", None] for i in range(4)})
+    names = list(patterns)
+    edges = []
+    for source in names:
+        for target in rng.sample(names, 5):
+            n = round(rng.uniform(1, 20), 2)
+            offsets = [[[0, 0], n]] if patterns[source][0] == "single" else [[[0, 0], n], [[1, -1], 1.5]]
+            edges.append({
+                "src": source, "tar": target, "alpha": 1 if source < "B" else -1, "offsets": offsets,
+                "lambda_mult": 1.0, "edge_type": "chem",
+            })
+    return {"nodes": [{"name": n, "pattern": p, "activation": "relu"} for n, p in patterns.items()],
+            "edges": edges, "provenance": {}}
+
+
+@pytest.mark.parametrize("control", [degree_preserving_rewire, random_sparse, sign_shuffle])
+def test_every_control_keeps_the_placement_signature_that_decides_its_cell_level_size(control) -> None:
+    spec = mixed_spec()
+    result = control(spec, seed=3)
+    assert placement_signature(result) == placement_signature(spec)
+    assert result["provenance"]["null_control"]["version"] == NULLS_VERSION
+
+
+def test_rewiring_on_mixed_placements_still_rewires_and_keeps_degrees() -> None:
+    spec = mixed_spec()
+    control = degree_preserving_rewire(spec, seed=3)
+    assert degree_sequences(control) == degree_sequences(spec)
+    assert control["provenance"]["null_control"]["accepted_swaps"] > 0
+    overlap = len(pair_set(spec) & pair_set(control)) / len(pair_set(spec))
+    assert overlap < 0.7
 
 
 # --- determinism ----------------------------------------------------------------------------------

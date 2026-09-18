@@ -26,7 +26,7 @@ from pathlib import Path
 
 import numpy as np
 
-from conectoma.connectome.nulls import CONTROLS
+from conectoma.connectome.nulls import CONTROLS, NULLS_VERSION
 from conectoma.network.engine import engine_root, load_engine, published_model_dir, run_log
 from conectoma.network.lattice import spec_digest
 from conectoma.network.regimes import build_network, trainable_report
@@ -131,7 +131,7 @@ def control_spec_path(spec_path: Path, kind: str, seed: int) -> Path:
     root = engine_root() or Path(spec_path).parent
     folder = Path(root).parent / "controls"
     folder.mkdir(parents=True, exist_ok=True)
-    path = folder / f"{spec_digest(spec_path)[:12]}-{kind}-seed{seed}.json"
+    path = folder / f"{spec_digest(spec_path)[:12]}-{kind}-v{NULLS_VERSION}-seed{seed}.json"
     if not path.exists():
         path.write_text(json.dumps(control) + "\n", encoding="utf-8", newline="\n")
     return path
@@ -234,7 +234,8 @@ def characterize(spec_path: Path, seeds: tuple[int, ...] = (0, 1, 2, 3, 4), log=
     for kind in sorted(CONTROLS):
         rows = []
         for seed in seeds:
-            rows.append(runs.step(f"controls/{kind}/seed{seed}", lambda k=kind, s=seed: control(k, s)))
+            key = f"controls/v{NULLS_VERSION}/{kind}/seed{seed}"
+            rows.append(runs.step(key, lambda k=kind, s=seed: control(k, s)))
             log(f"      {kind} seed {seed}")
         tuning = merge([row["tuning"] for row in rows])
         report["controls"][kind] = {
