@@ -68,8 +68,9 @@ python data-pipeline/run.py build-splits
 It assigns every rendered TartanAir clip to train, validation, calibration or test by its geometry family
 and writes the two committed files. It refuses a rendering in which any clip failed, and exits non-zero on
 any leakage: a family or environment in two splits, or two identical frames (equal lattice luminance) in two
-splits. The families the cases draw from are always in test. CI re-checks the family and environment
-conditions from the committed table.
+splits. The families the cases draw from are always in test. `scripts/check_artifacts.py` re-derives the
+family and environment conditions from the committed table on every push: one split per family, one family
+per environment, and per-split clip, frame, environment and family counts that match the table row by row.
 
 ## 5. The cases
 

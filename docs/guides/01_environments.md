@@ -21,3 +21,11 @@ ruff check .
 ```
 
 The pipeline commands are documented by the units that add them, alongside the stages they run.
+
+## What runs where
+
+The test suite runs locally and is the validation of record: CI installs no offline lane, runs no test
+suite and regenerates no artifact (ADR-0074). Run `python -m pytest` before every push. CI then repeats
+only the cheap checks on what was committed: `ruff`, `scripts/check_artifacts.py` (the manifests, the
+digests and the split table), the base-integrity guards, and the web build with the ADR-0071 fit gate,
+which runs there and not again in the deploy.

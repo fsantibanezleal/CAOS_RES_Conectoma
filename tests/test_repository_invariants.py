@@ -1,13 +1,15 @@
 """Repository invariants that must hold at every version of this product.
 
-These are cheap, real checks: the archetype layout exists, nothing heavy or private is tracked, and the
-version sources agree. They run in CI on every push and they are the first gate a new unit must keep green.
+These are cheap, real checks: the archetype layout exists, nothing heavy or private is tracked, the
+version sources agree, and the guards the workflows run pass. Since ADR-0074 the suite runs locally
+before every push and is the validation of record, so the guards CI runs are exercised here too.
 """
 
 from __future__ import annotations
 
 import re
 import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -28,7 +30,9 @@ def tracked_files() -> list[str]:
 
 def test_archetype_layout_exists() -> None:
     """The uniform folder set of the product archetype is present."""
-    for relative in ("data-pipeline", "data", "app", "deploy", "docs", "scripts", "models", "manifests"):
+    for relative in (
+        "data-pipeline", "data", "app", "deploy", "docs", "scripts", "models", "data/derived/manifests",
+    ):
         assert (ROOT / relative).is_dir(), f"missing archetype directory: {relative}"
 
 
@@ -63,3 +67,12 @@ def test_raw_data_directory_is_not_tracked() -> None:
     """data/raw is a local cache for the connectome tables and datasets; only its placeholder is tracked."""
     tracked_raw = [p for p in tracked_files() if p.startswith("data/raw/") and not p.endswith(".gitkeep")]
     assert not tracked_raw, f"raw data is tracked: {tracked_raw}"
+
+
+def test_the_guards_the_workflows_run_pass() -> None:
+    """CI runs these three as its whole Python check; a push that breaks one must fail here first."""
+    for guard in ("check_ci_budget.py", "check_artifacts.py", "check_content_standards.py"):
+        done = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / guard)], cwd=ROOT, capture_output=True, text=True
+        )
+        assert done.returncode == 0, f"{guard} failed: {done.stdout}{done.stderr}"

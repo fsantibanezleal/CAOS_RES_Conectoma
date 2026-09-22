@@ -1,7 +1,10 @@
 # The two data contracts
 
-Both contracts are enforced in code and checked in CI. Without the first, the product cannot be pointed at
-new data and is a demo; without the second, the web can drift from what the pipeline produced.
+Both contracts are enforced in code. Contract 1 is enforced by the ingestion itself and by the test suite,
+which runs locally before every push and is the validation of record (ADR-0074); contract 2 is re-checked
+mechanically from the committed files by `scripts/check_artifacts.py`, in CI and again in the deploy, with
+no install beyond the standard library. Without the first, the product cannot be pointed at new data and is
+a demo; without the second, the web can drift from what the pipeline produced.
 
 ## Contract 1, ingestion (raw to pipeline)
 

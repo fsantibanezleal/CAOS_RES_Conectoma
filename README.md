@@ -105,14 +105,13 @@ bounded before it is stable as a frozen network ([docs/architecture/04](docs/arc
 | Path | What |
 |---|---|
 | `data-pipeline/` | the offline engine: connectome construction (`conectoma/connectome/`), the network compiler, regimes, null controls and parity checks (`conectoma/network/`), and the command line (`run.py`) |
-| `data/` | `raw/` git-ignored source cache, `derived/` committed compact artifacts |
+| `data/` | `raw/` git-ignored source cache, `derived/` committed compact artifacts, `derived/manifests/` the contract 2 manifests |
 | `models/` | small exported models; heavy checkpoints stay outside git |
-| `manifests/` | per-case artifact manifests (contract 2) |
 | `frontend/` | the static site: the connectome explorer, the six pages, the contract tests and the fit gate ([guide](docs/guides/04_the-web.md)) |
 | `app/` | dormant FastAPI module (this product is static replay) |
 | `deploy/` | deployment notes for the chosen target |
 | `docs/` | the wiki: architecture, frameworks, cases, guides |
-| `scripts/` | setup and the CI guards |
+| `scripts/` | setup, the local run scripts and the CI guards (artifacts, content standards, CI budget) |
 
 ## Quick start
 
