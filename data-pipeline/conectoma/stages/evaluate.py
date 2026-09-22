@@ -32,13 +32,14 @@ from pathlib import Path
 import numpy as np
 
 from conectoma.core.jsonio import write_json
-from conectoma.methods import m01, m02, m03, m04, metrics
+from conectoma.methods import m01, m02, m03, m04, m05, metrics
 from conectoma.vision import cases
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DERIVED = REPO_ROOT / "data" / "derived" / "evaluation"
 MANIFESTS = REPO_ROOT / "data" / "derived" / "manifests"
-CODE = ("readout", "flow_lattice", "sweep", "m01", "m02", "emd", "m03", "m04", "metrics")
+CODE = ("readout", "flow_lattice", "sweep", "m01", "m02", "emd", "m03", "m04", "m05",
+        "head", "metrics")
 
 # Each method is a callable (clip, column_spacing_deg, **thresholds) -> per-step arrays. `floor` is not a
 # method: it is the readout applied to the flow the corpus committed, and every flow-based row is reported
@@ -50,6 +51,10 @@ KINDS = {
     "M02": "upper bound: two cameras 0.25 m apart and a full pixel grid",
     "M03": "native",
     "M04": "native",
+    "M05": "native, trained: the measured connectome as a reservoir",
+    "M05-N1": "control for M05: the same wiring degree-preservingly rewired",
+    "M05-N2": "control for M05: a size-matched random sparse graph",
+    "M05-N3": "control for M05: the same wiring with its signs shuffled",
     "floor": "the committed flow through the same readout",
 }
 
@@ -58,6 +63,10 @@ METHODS = {
     "M02": {"call": None, "requires": (), "stereo": True},      # run from the raw pair, not the lattice clip
     "M03": {"call": m03.run, "requires": ("lum",), "calibrate": m03.choose},
     "M04": {"call": m04.run, "requires": ("lum",)},
+    "M05": {"call": None, "requires": ("lum",), "reservoir": "connectome"},
+    "M05-N1": {"call": None, "requires": ("lum",), "reservoir": "N1"},
+    "M05-N2": {"call": None, "requires": ("lum",), "reservoir": "N2"},
+    "M05-N3": {"call": None, "requires": ("lum",), "reservoir": "N3"},
     "floor": {"call": m01.floor, "requires": ("flow",)},
 }
 
@@ -145,7 +154,14 @@ def _run_one(method: str, case_id: str, level: int, index: int, root: str,
     if motion is None and "poses" not in clip:
         return row | {"skipped": "the clip carries no poses and its case declares no motion"}
     started = time.time()
-    if METHODS[method].get("stereo"):
+    if METHODS[method].get("reservoir"):
+        arm = METHODS[method]["reservoir"]
+        key = f"case_{case_id}_L{level}_{index:02d}"
+        try:
+            result = m05.run(clip, spacing, root=Path(root), arm=arm, key=key, **thresholds)
+        except FileNotFoundError as missing:
+            return row | {"skipped": str(missing)}
+    elif METHODS[method].get("stereo"):
         pair = _stereo_pair(Path(root), case, stamp, level)
         if isinstance(pair, str):
             return row | {"skipped": pair}
@@ -317,8 +333,18 @@ def write_summary() -> dict:
             paired[name] = compare(name, "floor", "abs_rel")
         except FileNotFoundError:
             continue
+    # A connectome row's claim is never its own number: it is the paired difference against the nulls
+    # built from the same wiring, with the same head, the same seeds and the same clips.
+    against_nulls = {}
+    for name in methods:
+        controls = [null for null in methods if null.startswith(f"{name}-N")]
+        for null in sorted(controls):
+            try:
+                against_nulls[f"{name} vs {null}"] = compare(name, null, "abs_rel")
+            except FileNotFoundError:
+                continue
     summary = {"artifact": "evaluation-summary", "version": 1, "methods": methods,
-               "against_floor": paired, "kind": KINDS}
+               "against_floor": paired, "against_nulls": against_nulls, "kind": KINDS}
     write_json(DERIVED / "summary.json", summary)
     return summary
 

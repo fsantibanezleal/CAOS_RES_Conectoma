@@ -74,22 +74,57 @@ def run_on_activity(model, activity: np.ndarray, record: dict, tolerance: float 
     }
 
 
-def run(clip: dict, column_spacing_deg: float, *, checkpoint: Path, root: Path, arm: str = "connectome",
-        key: str | None = None, tolerance: float = DEFAULT_TOLERANCE, motion: tuple | None = None,
+def seed_checkpoints(arm: str, window: int = 2, derived: Path | None = None) -> list[Path]:
+    """Every seed trained for this arm, sorted. A single seed is never the headline."""
+    from conectoma.stages.train_readout import DERIVED
+
+    return sorted((derived or DERIVED).glob(f"{arm}-seed*-w{window}.pt"))
+
+
+def run(clip: dict, column_spacing_deg: float, *, root: Path, arm: str = "connectome",
+        key: str | None = None, window: int = 2, tolerance: float = DEFAULT_TOLERANCE,
+        checkpoints: list[Path] | None = None, motion: tuple | None = None,
         device: str | None = None) -> dict[str, np.ndarray]:
     """Run M05 on a rendered clip, reading the activity this arm's network produced for it.
 
-    `motion` is accepted and ignored: this row needs no camera motion, which is itself a property worth
-    reporting, because it is also why it cannot know that a camera did not move.
+    Every seed trained for the arm is read and the answer is their MEDIAN, with the spread across them
+    reported: five seeds of the same head on the same cache disagree, and hiding that behind one seed
+    would make a comparison between arms unreadable. A column is refused when the seeds' own predicted
+    uncertainty exceeds the tolerance, which is chosen on the calibration split.
+
+    `motion` is accepted and ignored: this row needs no camera motion, which is itself worth reporting,
+    because it is also why it cannot know that a camera did not move.
     """
-    model, record = load_head(Path(checkpoint), device)
+    paths = list(checkpoints) if checkpoints else seed_checkpoints(arm, window)
+    if not paths:
+        raise FileNotFoundError(f"no trained head for arm {arm} at window {window}")
     activity = cached_activity(Path(root), arm, key) if key else None
     if activity is None:
         raise FileNotFoundError(
             f"no cached activity for {key} on arm {arm}: run cache-activity for the cases first")
     if len(activity) != len(np.asarray(clip["lum"])):
         raise ValueError(f"cached activity has {len(activity)} frames, the clip has {len(clip['lum'])}")
-    return run_on_activity(model, activity, record, tolerance, device)
+
+    per_seed = []
+    for path in paths:
+        model, record = load_head(Path(path), device)
+        per_seed.append(run_on_activity(model, activity, record, tolerance, device))
+    distance = np.stack([one["distance_m"] for one in per_seed])
+    spread = np.stack([one["uncertainty"] for one in per_seed])
+    with np.errstate(invalid="ignore"):
+        median = np.nanmedian(distance, axis=0)
+        disagreement = np.nanstd(distance, axis=0) / np.maximum(np.abs(median), 1e-6)
+    refused = np.stack([one["unknown"] for one in per_seed]).mean(axis=0) > 0.5
+    return {
+        "distance_m": np.where(refused, np.nan, median).astype(np.float32),
+        "unknown": refused | ~np.isfinite(median),
+        "moving": np.zeros_like(refused),
+        "uncertainty": np.median(spread, axis=0).astype(np.float32),
+        "match_uncertainty": np.nan_to_num(disagreement, nan=np.inf).astype(np.float32),
+        "deviation_deg": np.full(median.shape, np.nan, dtype=np.float32),
+        "boundary": np.stack([one["boundary"] for one in per_seed]).mean(axis=0) > 0.5,
+        "seeds": len(per_seed),
+    }
 
 
 def arm_checkpoint(arm: str, seed: int, window: int, derived: Path | None = None) -> Path:

@@ -112,6 +112,17 @@ class CachedClips:
                    self.boundary[index].astype(np.float32))
 
 
+_LOADED: dict[tuple, CachedClips] = {}
+
+
+def loaded(root: Path, arm: str, keys: list[str]) -> CachedClips:
+    """One in-memory copy of a split per arm, shared by every seed that trains on it."""
+    signature = (str(root), arm, len(keys), keys[0] if keys else "", keys[-1] if keys else "")
+    if signature not in _LOADED:
+        _LOADED[signature] = CachedClips(root, arm, keys)
+    return _LOADED[signature]
+
+
 def evaluate(model, clips: CachedClips, window: int, device: str, limit: int | None = 40) -> dict:
     """Depth and boundary numbers over a split, without touching the optimiser."""
     model.eval()
@@ -152,8 +163,8 @@ def train(root: Path, arm: str = "connectome", seed: int = 0, window: int = 2,
     device = device or ("cuda" if torch.cuda.is_available() else "cpu")
     keys = splits or {name: [p.stem for p in split_clips(root, name)]
                       for name in ("train", "validation")}
-    fitting = CachedClips(root, arm, keys["train"])
-    checking = CachedClips(root, arm, keys["validation"])
+    fitting = loaded(root, arm, keys["train"])
+    checking = loaded(root, arm, keys["validation"])
 
     torch.manual_seed(seed)
     rng = np.random.default_rng(seed)

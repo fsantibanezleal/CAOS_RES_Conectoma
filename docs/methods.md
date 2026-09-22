@@ -22,6 +22,12 @@ Biological, untrained:
   the flow head it was trained with, read through that same inversion, so it differs from M01 only in
   where the flow came from.
 
+Connectome backbone:
+
+- [M05, the connectome as a reservoir](methods/m05.md): the measured MaleCNS wiring, frozen, with a small
+  head trained on this product's own corpus, and three nulls built from the same wiring that get the same
+  head and the same seeds. The first row where the biology does the computing.
+
 Every row above these is added by the unit that builds it.
 
 ## What they share
