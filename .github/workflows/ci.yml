@@ -4,27 +4,32 @@ on:
   push:
     branches: [main, develop]
   workflow_dispatch:
+
+# ADR-0074: CI is a cheap check on committed files. The pytest suite, the renderings and the
+# network runs happen locally, on the machine that has the data and the GPU, and their results
+# are committed. Nothing here installs the offline lane, trains, renders or regenerates an
+# artifact. A superseded run is cancelled.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  test:
+  checks:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: pip
-      - name: Install the offline lane and the dev lane
-        run: pip install -r requirements-dev.txt
       - name: Lint
-        run: ruff check .
+        run: pip install ruff==0.15.18 && ruff check .
+      - name: CONTRACT 2, the manifests match the artifacts on disk (stdlib, no install)
+        run: python scripts/check_artifacts.py
+
   web:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: frontend
@@ -40,6 +45,7 @@ jobs:
         run: npm run build
       - name: Browser for the fit gate
         run: npx playwright install --with-deps chromium
+      # the one expensive verification of the repo, run here and not again in the deploy (ADR-0074 rule 6)
       - name: Fit gate on the built site (ADR-0071, both themes, both languages, three sizes)
         run: npm run gate
       - name: Keep the gate's screenshots when it fails
@@ -51,7 +57,7 @@ jobs:
 
   guards:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - name: Base-integrity guards (the regressions this archetype forbids)
@@ -74,5 +80,5 @@ jobs:
         run: python scripts/check_template_residue.py
       - name: No em-dash or emoji in product content (content standards)
         run: python scripts/check_content_standards.py
-      - name: CI budget, trunk-only triggers, no training (ADR-0074)
+      - name: CI budget, no training, trunk-only triggers (ADR-0074)
         run: python scripts/check_ci_budget.py

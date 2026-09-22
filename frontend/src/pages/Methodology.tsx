@@ -284,14 +284,134 @@ export default function Methodology() {
     </section>
   );
 
+  const visionData = (
+    <section>
+      <h2>{t("From a camera to the fly's eye", 'De una cámara al ojo de la mosca')}</h2>
+      <p>
+        {t(
+          'The network sees the world through 721 columns, one hexagonal lattice of radius 15. Six sources feed it, each used only for what it can grade: TartanAir V2 (74 environments, the training corpus and most cases), its 360 degree panoramas (pure rotation), MPI Sintel (the published model’s own domain), Spring (fine structure at a metric scale), Hypersim (indoor instances and NYU40 labels) and FlyGym (the fly’s own compound eye), plus synthetic scenes with exact ground truth. Only the members a clip needs are fetched, over HTTP ranges into the remote archives, each checked by its CRC32.',
+          'La red ve el mundo a través de 721 columnas, una retícula hexagonal de radio 15. Seis fuentes la alimentan, cada una usada solo para lo que puede evaluar: TartanAir V2 (74 entornos, el corpus de entrenamiento y la mayoría de los casos), sus panoramas de 360 grados (rotación pura), MPI Sintel (el dominio propio del modelo publicado), Spring (estructura fina a escala métrica), Hypersim (instancias interiores y etiquetas NYU40) y FlyGym (el propio ojo compuesto de la mosca), más escenas sintéticas con verdad de terreno exacta. Solo se descargan los miembros que un clip necesita, por rangos HTTP sobre los archivos remotos, cada uno verificado por su CRC32.',
+        )}
+      </p>
+      <InlineSvg src="svg/docs/vision-lane.svg" label={t('The vision lane', 'La línea de visión')} />
+
+      <h3>{t('One geometry for every planar source', 'Una geometría para toda fuente plana')}</h3>
+      <p>
+        {t(
+          'The published model learned on Sintel rendered by the engine’s box eye: column (u, v) is centred at a pixel of the frame, after a 13 x 13 box filter, luminance by the box mean, flow by the box sum, depth by the box median. Every planar frame is resized to 436 rows, Sintel’s own height, and the lattice takes the central 391 x 391 pixels, so every source reaches the network through the same geometry. The renderer is checked against the engine’s own box eye and its own rendering of Sintel.',
+          'El modelo publicado aprendió sobre Sintel renderizado por el ojo de caja del motor: la columna (u, v) se centra en un píxel del cuadro, tras un filtro de caja de 13 x 13, la luminancia por la media de la caja, el flujo por la suma de la caja, la profundidad por la mediana de la caja. Cada cuadro plano se redimensiona a 436 filas, la altura propia de Sintel, y la retícula toma los 391 x 391 píxeles centrales, así que toda fuente llega a la red por la misma geometría. El renderizador se verifica contra el propio ojo de caja del motor y contra su propio renderizado de Sintel.',
+        )}
+      </p>
+      <Equation
+        tex="y = \lfloor 13\,(u + v/2) \rfloor, \qquad x = \lfloor 13\,v \rfloor, \qquad \Delta\theta = 2 \arctan\frac{6.5}{f_{436}}"
+        caption={t(
+          'The pixel a column samples, from the frame centre, and the angle between neighbouring columns for a focal length f in pixels at 436 rows.',
+          'El píxel que muestrea una columna, desde el centro del cuadro, y el ángulo entre columnas vecinas para una focal f en píxeles a 436 filas.',
+        )}
+      />
+      <p>
+        {t(
+          'What a column subtends therefore depends on the source’s lens. Sintel, the published model’s domain, samples the world 3 to 18 times more finely per column than the fly’s own eye does; TartanAir’s wide lens is the planar source closest to the fly, and only FlyGym renders at the fly’s own spacing.',
+          'Lo que abarca una columna depende entonces del lente de la fuente. Sintel, el dominio del modelo publicado, muestrea el mundo entre 3 y 18 veces más fino por columna que el propio ojo de la mosca; el lente amplio de TartanAir es la fuente plana más cercana a la mosca, y solo FlyGym renderiza con la separación propia de la mosca.',
+        )}
+      </p>
+      <InlineSvg src="svg/docs/lattice-geometry.svg" label={t('Degrees between neighbouring columns, per source', 'Grados entre columnas vecinas, por fuente')} />
+
+      <h3>{t("The fly's own eye", 'El propio ojo de la mosca')}</h3>
+      <p>
+        {t(
+          'FlyGym renders each eye with a camera of 157 degrees, remaps it to a fisheye and averages each of its 721 ommatidia’s pixels. The same remap and pixels reduce MuJoCo’s depth and segmentation renders, so a column’s depth (the range along its rays) and its figure share come from exactly the pixels its luminance does. FlyGym numbers its ommatidia on its own grid; their centres were fitted to a hexagonal lattice, and which of the lattice’s twelve symmetries takes FlyGym’s axes to the engine’s was measured by where known directions land, against the preferred directions of T4a and T4c: a reflection scores 2.0 of 2, the identity 0.',
+          'FlyGym renderiza cada ojo con una cámara de 157 grados, la reasigna a ojo de pez y promedia los píxeles de cada uno de sus 721 omatidios. La misma reasignación y los mismos píxeles reducen los renderizados de profundidad y segmentación de MuJoCo, así que la profundidad de una columna (el rango a lo largo de sus rayos) y su fracción de figura vienen exactamente de los píxeles de su luminancia. FlyGym numera sus omatidios en su propia grilla; sus centros se ajustaron a una retícula hexagonal, y cuál de las doce simetrías de la retícula lleva los ejes de FlyGym a los del motor se midió por dónde caen direcciones conocidas, contra las direcciones preferidas de T4a y T4c: una reflexión obtiene 2,0 de 2, la identidad 0.',
+        )}
+      </p>
+
+      <h3>{t('What each source can grade', 'Lo que cada fuente puede evaluar')}</h3>
+      <div className="cx-table-wrap">
+        <table className="cx-table">
+          <thead>
+            <tr>
+              <th>{t('Target', 'Objetivo')}</th><th>TartanAir</th><th>Sintel</th><th>Spring</th><th>Hypersim</th><th>FlyGym</th><th>{t('synthetic', 'sintético')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>{t('metric depth', 'profundidad métrica')}</td><td>{t('yes', 'sí')}</td><td>{t('relative only', 'solo relativa')}</td><td>{t('yes', 'sí')}</td><td>{t('yes', 'sí')}</td><td>{t('yes (range)', 'sí (rango)')}</td><td>{t('yes', 'sí')}</td></tr>
+            <tr><td>{t('flow', 'flujo')}</td><td>{t('yes', 'sí')}</td><td>{t('yes', 'sí')}</td><td>{t('no', 'no')}</td><td>{t('no (not video)', 'no (no es video)')}</td><td>{t('no', 'no')}</td><td>{t('yes', 'sí')}</td></tr>
+            <tr><td>{t('segment boundaries', 'bordes de segmento')}</td><td>{t('yes', 'sí')}</td><td>{t('no', 'no')}</td><td>{t('no', 'no')}</td><td>{t('yes', 'sí')}</td><td>{t('no', 'no')}</td><td>{t('no', 'no')}</td></tr>
+            <tr><td>{t('figure-ground', 'figura-fondo')}</td><td>{t('no', 'no')}</td><td>{t('no', 'no')}</td><td>{t('motion, sky', 'movimiento, cielo')}</td><td>{t('object instances', 'instancias de objeto')}</td><td>{t('the figure', 'la figura')}</td><td>{t('nearer planes', 'planos cercanos')}</td></tr>
+            <tr><td>{t('semantic labels', 'etiquetas semánticas')}</td><td>{t('no', 'no')}</td><td>{t('no', 'no')}</td><td>{t('no', 'no')}</td><td>NYU40</td><td>{t('no', 'no')}</td><td>{t('no', 'no')}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        {t(
+          'TartanAir’s segments carry no names in the release and its scenes are static, so it never grades figure-ground: no label is invented where a dataset has none. Every rendering passes contract 1 before anything reads it (shapes, ranges, units, masked depth as NaN, never dropped), and clips are split by geometry family, not by name, with a leakage gate on families, environments and identical frames.',
+          'Los segmentos de TartanAir no tienen nombres en la liberación y sus escenas son estáticas, así que nunca evalúa figura-fondo: no se inventa ninguna etiqueta donde un conjunto de datos no la tiene. Cada renderizado pasa el contrato 1 antes de que algo lo lea (formas, rangos, unidades, profundidad enmascarada como NaN, nunca descartada), y los clips se particionan por familia geométrica, no por nombre, con una compuerta de fuga sobre familias, entornos y cuadros idénticos.',
+        )}
+      </p>
+      <SectionRefs ids={['wang2020', 'butler2012', 'mehl2023', 'roberts2021', 'wangchen2024', 'lappalainen2024']} />
+    </section>
+  );
+
+  const casesMethod = (
+    <section>
+      <h2>{t('Sixteen cases, one physical quantity each', 'Dieciséis casos, una cantidad física cada uno')}</h2>
+      <p>
+        {t(
+          'Each case varies one physical quantity over six levels with units, so a method is measured along an axis with a physical meaning, not a difficulty knob. A case draws its clips once, from test data only, and renders the same clips at every level, so the levels differ only in that quantity. Each variant acts where its physics happens: light and optics on the image before the lattice, photon noise on each column’s photoreceptor, speed on time.',
+          'Cada caso varía una cantidad física en seis niveles con unidades, así que un método se mide a lo largo de un eje con significado físico, no una perilla de dificultad. Un caso toma sus clips una vez, solo de datos de prueba, y renderiza los mismos clips en cada nivel, así que los niveles difieren solo en esa cantidad. Cada variante actúa donde ocurre su física: la luz y la óptica sobre la imagen antes de la retícula, el ruido de fotones sobre el fotorreceptor de cada columna, la velocidad sobre el tiempo.',
+        )}
+      </p>
+      <Equation
+        tex="\hat I = \frac{\operatorname{Poisson}(N I)}{N}, \qquad I' = I\,e^{-b d} + A\,(1 - e^{-b d}), \qquad V = \frac{3.912}{b}"
+        caption={t(
+          'Photon noise per column with N photons per frame at luminance 1 (C05, C14); fog with the source’s metric depth d and airlight A, and its visibility (C07).',
+          'Ruido de fotones por columna con N fotones por cuadro a luminancia 1 (C05, C14); niebla con la profundidad métrica d de la fuente y luz de aire A, y su visibilidad (C07).',
+        )}
+      />
+      <Equation
+        tex="\hat I(p) = \frac{1}{T_e}\int_{-T_e/2}^{T_e/2} I\Big(p + \frac{t}{\Delta t}\,\mathbf f(p)\Big)\,dt"
+        caption={t(
+          'Motion blur over an exposure T_e, each pixel along its own flow f (C06): near things blur more than far ones.',
+          'Desenfoque de movimiento en una exposición T_e, cada píxel a lo largo de su propio flujo f (C06): lo cercano se desenfoca más que lo lejano.',
+        )}
+      />
+      <Equation
+        tex="p' = K\,R\,K^{-1}p, \qquad \Delta u = -\frac{f\,\Delta x}{z}, \qquad \theta(t) = 2\arctan\frac{l}{v\,(t_c - t)}"
+        caption={t(
+          'Pure rotation moves every point by the same homography whatever its depth (C13); a sideways step moves a point at depth z by f times the step over z (C15, C16); a looming disk subtends θ(t) (C11).',
+          'La rotación pura mueve cada punto por la misma homografía sea cual sea su profundidad (C13); un paso lateral mueve un punto a profundidad z en f por el paso sobre z (C15, C16); un disco que se aproxima subtiende θ(t) (C11).',
+        )}
+      />
+      <div className="cx-table-wrap">
+        <table className="cx-table">
+          <thead><tr><th>{t('Category', 'Categoría')}</th><th>{t('Cases', 'Casos')}</th><th>{t('What it asks', 'Qué pregunta')}</th></tr></thead>
+          <tbody>
+            <tr><td>{t('nominal', 'nominal')}</td><td>C01, C02, C03, C04</td><td>{t('how depth from motion depends on ego speed and light, and what survives without motion', 'cómo depende la profundidad por movimiento de la velocidad propia y la luz, y qué sobrevive sin movimiento')}</td></tr>
+            <tr><td>{t('extreme lighting, degradation', 'iluminación extrema, degradación')}</td><td>C05, C06, C07</td><td>{t('photon noise, the limits of temporal integration, contrast lost with distance', 'ruido de fotones, los límites de la integración temporal, contraste perdido con la distancia')}</td></tr>
+            <tr><td>{t('transfer', 'transferencia')}</td><td>C08, C09</td><td>{t('the published model’s own domain on its held-out sequences; finer sampling', 'el dominio propio del modelo publicado en sus secuencias reservadas; muestreo más fino')}</td></tr>
+            <tr><td>{t('ethological', 'etológico')}</td><td>C10, C11, C12</td><td>{t('the fly’s own tasks through its own eye: a gap, a looming disk, a small target', 'las tareas propias de la mosca por su propio ojo: una brecha, un disco que se aproxima, un objetivo pequeño')}</td></tr>
+            <tr><td>{t('controls', 'controles')}</td><td>C13, C14, C15, C16</td><td>{t('depth unobservable by construction, exact ground truth, the aperture problem', 'profundidad inobservable por construcción, verdad de terreno exacta, el problema de apertura')}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <Callout variant="honest" title={t('Two controls where confidence is the error', 'Dos controles donde la confianza es el error')}>
+        {t(
+          'On C13 the camera turns in place and on C14 it does not move: depth cannot be recovered from the motion in either. A method that reports a confident depth map there is reporting a prior, what scenes usually look like, and the evaluation scores its uncertainty, not its depth.',
+          'En C13 la cámara gira en su lugar y en C14 no se mueve: la profundidad no se puede recuperar del movimiento en ninguno. Un método que reporta un mapa de profundidad confiado ahí está reportando un a priori, cómo suelen verse las escenas, y la evaluación califica su incertidumbre, no su profundidad.',
+        )}
+      </Callout>
+      <SectionRefs ids={['pick2005', 'klapoetke2017', 'keles2017', 'wangchen2024', 'butler2012']} />
+    </section>
+  );
+
   return (
     <div className="page-body wide prose">
       <div className="page-head">
         <h1>{t('Methodology', 'Metodología')}</h1>
         <p className="lede">
           {t(
-            'How the measured connectome becomes a network and how that network is kept honest: the consensus filters and their signs, the inferred retinotopic columns, the placement of every cell type and the expansion of its filters, the frame the filters are written in, the dynamics and the three regimes, and the null controls. The method ladder for depth and segmentation joins this page as its units arrive. Throughout, a filter is ',
-            'Cómo el conectoma medido se vuelve una red y cómo esa red se mantiene honesta: los filtros de consenso y sus signos, las columnas retinotópicas inferidas, la ubicación de cada tipo celular y la expansión de sus filtros, el marco en que se escriben los filtros, la dinámica y los tres regímenes, y los controles nulos. La escalera de métodos para profundidad y segmentación se suma a esta página a medida que llegan sus unidades. En todo momento, un filtro es ',
+            'How the measured connectome becomes a network and how that network is kept honest: the consensus filters and their signs, the inferred retinotopic columns, the placement of every cell type and the expansion of its filters, the frame the filters are written in, the dynamics and the three regimes, and the null controls; and how the world reaches its eye: the vision sources, one geometry for all of them, the fly’s own eye, and the sixteen cases. The method ladder for depth and segmentation joins this page as its units arrive. Throughout, a filter is ',
+            'Cómo el conectoma medido se vuelve una red y cómo esa red se mantiene honesta: los filtros de consenso y sus signos, las columnas retinotópicas inferidas, la ubicación de cada tipo celular y la expansión de sus filtros, el marco en que se escriben los filtros, la dinámica y los tres regímenes, y los controles nulos; y cómo llega el mundo a su ojo: las fuentes de visión, una geometría para todas, el propio ojo de la mosca y los dieciséis casos. La escalera de métodos para profundidad y segmentación se suma a esta página a medida que llegan sus unidades. En todo momento, un filtro es ',
           )}
           <InlineMath tex="F_{t_i t_j}(\Delta u, \Delta v)" />.
         </p>
@@ -305,6 +425,8 @@ export default function Methodology() {
           { id: 'orientation', label: t('Orientation', 'Orientación'), content: orientation },
           { id: 'dynamics', label: t('Dynamics', 'Dinámica'), content: dynamics },
           { id: 'controls', label: t('Controls', 'Controles'), content: controls },
+          { id: 'vision-data', label: t('Vision data', 'Datos de visión'), content: visionData },
+          { id: 'cases', label: t('Cases', 'Casos'), content: casesMethod },
         ]}
       />
     </div>

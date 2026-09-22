@@ -1,6 +1,7 @@
 import { countProblems, explorerProblems, manifestProblems } from '../lib/contract';
 import { sha256Hex } from '../lib/sha256';
 import type { Explorer, ExplorerManifest } from '../lib/contract.types';
+import { eyeClipProblems, eyeManifestProblems, type EyeClip, type EyeManifest } from '../lib/eye';
 
 // Every artifact is read from the site root (the build copies data/derived into public/data), with an
 // absolute path so a deep route never resolves it against itself.
@@ -57,4 +58,41 @@ export async function loadExplorer(): Promise<Verified<Explorer>> {
 /** A committed report, read as it is (the Experiments and Benchmark pages take their numbers from these). */
 export function loadReport<T>(path: string): Promise<T> {
   return getJson<T>(path);
+}
+
+/** The eye artifact's manifest: which case files exist, their digests, and the lattice's sampling positions. */
+export async function loadEyeManifest(): Promise<EyeManifest> {
+  const raw = await getJson<unknown>('manifests/eyeclips.json');
+  const problems = eyeManifestProblems(raw);
+  if (problems.length) refuse('The eye manifest', problems);
+  return raw as EyeManifest;
+}
+
+export interface VerifiedClip {
+  clip: EyeClip;
+  /** true when the bytes received hash to the manifest's SHA-256 */
+  verified: boolean;
+}
+
+const clipCache = new Map<string, Promise<VerifiedClip>>();
+
+/** One case's clip at all six levels, read once, checked against the contract and its declared digest. */
+export function loadEyeClip(manifest: EyeManifest, caseId: string): Promise<VerifiedClip> {
+  const entry = manifest.cases[caseId];
+  if (!entry) return Promise.reject(new Error(`the eye manifest has no case ${caseId}`));
+  const cached = clipCache.get(caseId);
+  if (cached) return cached;
+  const promise = (async () => {
+    const response = await fetch(DATA + entry.path, { cache: 'no-cache' });
+    if (!response.ok) throw new Error(`${entry.path}: HTTP ${response.status}`);
+    const buffer = await response.arrayBuffer();
+    const verified = (await sha256(buffer)) === entry.sha256;
+    const parsed: unknown = JSON.parse(new TextDecoder().decode(buffer));
+    const problems = eyeClipProblems(parsed, caseId);
+    if (problems.length) refuse(`The eye clip of ${caseId}`, problems);
+    return { clip: parsed as EyeClip, verified };
+  })();
+  promise.catch(() => clipCache.delete(caseId));
+  clipCache.set(caseId, promise);
+  return promise;
 }

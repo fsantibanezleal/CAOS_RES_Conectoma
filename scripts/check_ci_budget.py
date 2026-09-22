@@ -7,7 +7,8 @@ Fails when a workflow:
   - has a job without timeout-minutes;
   - installs the training stack (precompute lane, pipeline requirements, torch & co.);
   - runs a training, pipeline, bake or benchmark entry point;
-  - runs a test suite in a product repo (one with data-pipeline/): tests run locally.
+  - runs a test suite in a product repo (data-pipeline/ or requirements-precompute.txt):
+    tests run locally.
 Stdlib only, so it runs before any install.
 Usage: python scripts/check_ci_budget.py [repo_dir]
 """
@@ -21,8 +22,9 @@ from pathlib import Path
 ROOT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[1]
 TRUNKS = {"develop", "main", "master"}
 STACK_INSTALL = re.compile(
-    r"requirements-precompute|data-pipeline/requirements|download\.pytorch\.org|"
-    r"(pip|uv)\s+(pip\s+)?install\b[^\n#]*\b(torch|torchvision|tensorflow|jax|jaxlib|transformers|lightning)\b"
+    r"download\.pytorch\.org|(pip|uv)\s+(pip\s+)?install\b[^\n#]*("
+    r"requirements-precompute|data-pipeline/requirements|"
+    r"\b(torch|torchvision|tensorflow|jax|jaxlib|transformers|lightning)\b)"
 )
 PIPELINE_RUN = re.compile(
     r"data-pipeline/\S+\.py|\brun_all\b|\bprecompute\b|\bbenchmark\b|stages\.train|--epochs\b|"
@@ -89,7 +91,8 @@ def check_workflow(path: Path, product: bool) -> list[str]:
 
 
 def main() -> int:
-    product = (ROOT / "data-pipeline").is_dir()
+    # A product has an offline lane: data-pipeline/ or a precompute requirements file.
+    product = (ROOT / "data-pipeline").is_dir() or (ROOT / "requirements-precompute.txt").is_file()
     errs: list[str] = []
     for wf in sorted((ROOT / ".github" / "workflows").glob("*.y*ml")):
         errs += check_workflow(wf, product)

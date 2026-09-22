@@ -1,0 +1,79 @@
+# Vision data: what is fetched, how it is grouped, how it is split. Everything that changes the data the
+# methods see is declared here, and every run records the digest of this file next to its output.
+# Design and the facts behind each choice: docs/architecture/05_vision-data.md.
+
+tartanair:
+  version: v2
+  license: CC BY 4.0
+  attribution: "TartanAir V2, Carnegie Mellon University AirLab (tartanair.org), CC BY 4.0"
+  endpoint: https://airlab-cloud.andrew.cmu.edu:8080/swift/v1/AUTH_ac8533a83cff4d48bc8c608ad222d330/tartanair_v2/
+  index: tartanair_v2_front.tsv
+  camera: lcam_front          # the only camera with optical flow in V2
+  modalities: [image, depth, seg, flow]
+  difficulties: [easy, hard]
+  intrinsics: {fx: 320.0, fy: 320.0, cx: 320.0, cy: 320.0, width: 640, height: 640}   # 90 degree FOV pinhole
+  frame_interval_s: 0.1       # 10 Hz
+  depth_units: metres
+  # the selection rule: every environment, both difficulties, every trajectory; per trajectory, clips of
+  # consecutive frames centred at fixed fractions of its length (one clip when it is too short for two)
+  clip_length: 32
+  clip_centres: [0.25, 0.75]
+
+# Geometry families: environments that are the same geometry under another light, weather or season, or that
+# come from one asset pack. A family never straddles two splits. Every environment not listed is its own
+# family. "same" is declared by the environment table (Day/Night, Season); "pack" is grouped conservatively.
+families:
+  ArchVizTinyHouse: {members: [ArchVizTinyHouseDay, ArchVizTinyHouseNight], reason: same}
+  OldBrickHouse: {members: [OldBrickHouseDay, OldBrickHouseNight], reason: same}
+  OldTown: {members: [OldTownFall, OldTownNight, OldTownSummer, OldTownWinter], reason: same}
+  SeasonalForest:
+    members: [SeasonalForestAutumn, SeasonalForestSpring, SeasonalForestSummerNight, SeasonalForestWinter,
+              SeasonalForestWinterNight]
+    reason: same
+  WaterMill: {members: [WaterMillDay, WaterMillNight], reason: same}
+  ModularNeighborhood: {members: [ModularNeighborhood, ModularNeighborhoodIntExt], reason: pack}
+  AbandonedFactory: {members: [AbandonedFactory, AbandonedFactory2], reason: pack}
+  Cyberpunk: {members: [Cyberpunk, CyberPunkDowntown], reason: pack}
+  Japanese: {members: [JapaneseAlley, JapaneseCity], reason: pack}
+
+splits:
+  seed: 20260918
+  # families the cases draw their test clips from; always test
+  case_families: [SeasonalForest, VictorianStreet, Hospital, Office, HongKong, GreatMarsh, BrushifyMoon]
+  # of the remaining families, drawn with the seed
+  validation_fraction: 0.10
+  calibration_fraction: 0.10
+  test_fraction: 0.05
+  test_only_sources: [sintel, spring, flygym, synthetic]
+
+sintel:
+  license: CC BY 3.0 (content)
+  attribution: "(c) copyright Blender Foundation, durian.blender.org; MPI Sintel, Butler et al. 2012"
+  frame_interval_s: 0.0416667   # 24 frames per second
+  depth_units: relative         # scene units, not metres
+
+spring:
+  license: CC BY 4.0
+  attribution: "Spring, Mehl et al. 2023, University of Stuttgart, doi:10.18419/DARUS-3376"
+  dataverse: https://darus.uni-stuttgart.de
+  persistent_id: doi:10.18419/DARUS-3376
+  # Dataverse file ids and MD5s of version 2 of the dataset record, read from its API on 2026-09-18
+  archives:
+    frame: {id: 199097, name: train_frame_left.zip, md5: 3a53483f}
+    disp: {id: 198961, name: train_disp1_left.zip, md5: 9534f609}
+    maps: {id: 242149, name: train_maps.zip, md5: 6f69ef9a}
+    cam: {id: 198954, name: train_cam_data.zip, md5: 9b1611f9}
+  baseline_m: 0.065             # the dataset paper (section 3.2) and the authors' spring_utils.get_depth
+  depth_units: metres           # fx * baseline / disparity
+  clip_length: 32
+  clip_centres: [0.25, 0.75]
+
+hypersim:
+  license: CC BY-SA 3.0
+  attribution: "Hypersim, Roberts et al. 2021, Apple (github.com/apple/ml-hypersim), CC BY-SA 3.0"
+  scenes_url: https://docs-assets.developer.apple.com/ml-research/datasets/hypersim/v1/scenes/
+  depth_units: metres           # converted from Euclidean distance to planar depth
+  split: official test partition (hypersim_test_split.csv, pinned); test only here
+  camera: cam_00
+  every: 5                      # every fifth frame of the public release
+  ground_classes: [1, 2, 8, 9, 20, 22, 38]   # wall floor door window floormat ceiling otherstructure

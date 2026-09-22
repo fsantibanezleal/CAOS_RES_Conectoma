@@ -3,6 +3,64 @@
 All notable changes to this project are documented here. Format: Keep a Changelog, newest on top.
 Versions use the `X.XX.XXX` display form; the semver form (zeros dropped) appears in manifests.
 
+## [0.05.000] - 2026-09-22
+
+### Added
+
+- The vision data (U4). Six sources, each used only for what it can grade: TartanAir V2 (2,244 clips of 32
+  frames from all 74 environments and both difficulties, 114.5 GB, fetched member by member over HTTP
+  ranges with every member checked by its CRC32), its 360 degree panoramas, MPI Sintel through the engine's
+  own downloader, Spring, Hypersim's official test partition, and FlyGym 2.1.0 for the fly's own compound
+  eye. `fetch-vision`, `render-vision`, `build-splits`, `build-cases`, `export-eyeclips`,
+  `summarize-vision` and `case-docs`.
+- One geometry for every planar source: frames resized to 436 rows and the lattice on the central 391 x 391
+  pixels, the engine's box rules, checked against its box eye and, on the held-out Sintel sequences, against
+  its own rendering (luminance 1e-6, depth 1e-6 relative, flow 1e-4). FlyGym's 721 ommatidia placed on the
+  engine's lattice by a measured symmetry, with depth as range and figure per ommatidium.
+- Contract 1 for vision clips: what each source must carry, shapes, ranges and units, masked depth counted
+  and never dropped; every rendering checked, rejections listed with their reasons.
+- Splits by geometry family, not by name, with the leakage gate on families, environments and identical
+  frames: 2,239 of the 2,244 TartanAir clips accepted and 5 rejected (every column the same luminance: the camera saw nothing), 60 families over the 74 environments split 38 / 6 / 6 / 10 into train, validation, calibration and test (1,437 / 196 / 227 / 379 clips), 71,648 frames hashed, no leakage.
+- Sixteen cases in six categories, each one physical quantity over six levels with units, the same clips at
+  every level, test data only: ego speed, illumination, field of view, photon noise per column, exposure
+  blur, fog with its visibility, contrast, sampling, a gap between catwalks, a looming disk, a small target,
+  pure rotation from panoramas, a still camera, textured planes and textureless surfaces. 126 distinct clips, 756 renderings, every one accepted. One
+  page per case, its measured table generated from the committed summary and held to it by a test.
+- The App's second mode, the eye's input: what the 721 columns receive in every case, level by level and
+  frame by frame, beside the ground truth the case grades; all six levels side by side; the time course
+  (uPlot). One compact file per case (contract 2), verified against its manifest before it is drawn.
+- Experiments: the vision data (sources, the angle a column spans per source, the splits and the leakage
+  gate) and the cases. Methodology: the vision data and the cases. The Implementation page, the
+  Introduction and the architecture modal describe the vision lane. Seven citations checked on Crossref.
+- Documentation: architecture 05 (the vision data), guide 05, the OpenCV and FlyGym framework cards, the
+  case index and sixteen case pages, contract 1 as enforced, two diagrams.
+- The fit gate covers the eye mode at every size, theme and language (every lattice canvas must hold a
+  picture), and loads all sixteen cases.
+
+### Found
+
+- The published model learned at 0.23 to 1.29 degrees per column (Sintel, median 0.83), 3 to 18 times finer
+  than FlyGym's model of the fly's eye (4.24); TartanAir's wide lens (3.42) is the planar source closest to
+  it. Every case records its column spacing.
+- TartanAir's depth saturates at float16's maximum (masked); some of its skies are domes kilometres away
+  (kept, so depth metrics cap their range). Hypersim's semantic labels are incomplete in 20 of its 46 test
+  scenes, so C04 draws only annotated, cluttered rooms. Spring's frame rate is not published anywhere
+  reachable, and no case depends on it.
+
+### Changed
+
+- CI and CD are cheap checks on the committed files (ADR-0074). CI installed torch and the offline lane
+  and ran the full test suite on every push and every pull request, and the fit gate ran twice, in CI and
+  again in the deploy. The suite now runs locally, where the data and the GPU are, and is the validation
+  of record; CI runs ruff, the contract 2 check, the base-integrity guards and the web build with the fit
+  gate once, on pushes to develop and main only, every workflow with a concurrency group and every job
+  with a timeout.
+- `scripts/check_artifacts.py` (standard library only) checks the bytes and the SHA-256 of every file the
+  two manifests declare, the digests that tie the explorer to its connectome specification and the eye
+  clips to cases.json, and re-derives the split conditions from the committed table row by row.
+  `scripts/check_ci_budget.py` holds the workflows to ADR-0074, and the repository invariants run both
+  locally, so a workflow that regresses fails before the push.
+
 ## [0.04.001] - 2026-09-18
 
 ### Fixed

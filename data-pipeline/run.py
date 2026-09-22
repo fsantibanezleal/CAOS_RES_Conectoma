@@ -306,6 +306,117 @@ def cmd_export_web(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_fetch_vision(args: argparse.Namespace) -> int:
+    """Fetch a vision source into the data root (resumable; see docs/guides/05_vision-data.md)."""
+    from conectoma.stages.vision_data import fetch_tartanair
+
+    if args.source == "sintel":
+        from conectoma.stages.vision_data import fetch_sintel
+
+        summary = fetch_sintel()
+        print(f"sintel: {summary['rendered_sequences']} rendered sequences at {summary['rendered_dir']}")
+        return 0
+    root = data_root(args.data_root)
+    if args.source == "spring":
+        from conectoma.stages.vision_data import fetch_spring
+
+        summary = fetch_spring(root, args.workers)
+        print(f"spring: {summary['clips']} clips planned, {summary['written']} written, "
+              f"{summary['bytes'] / 1e9:.1f} GB; failed {summary['failed']}, missing {summary['missing']}")
+        return 1 if summary["failed"] else 0
+    if args.source == "hypersim":
+        from conectoma.stages.vision_data import fetch_hypersim
+
+        summary = fetch_hypersim(root, args.workers)
+        print(f"hypersim: {summary['images']} images in {summary['scenes']} scenes, "
+              f"{summary['written']} written, {summary['bytes'] / 1e9:.1f} GB; "
+              f"failed {summary['failed']}, missing {summary['missing']}")
+        return 1 if summary["failed"] else 0
+    if args.source == "panorama":
+        from conectoma.stages.vision_data import fetch_panorama
+
+        summary = fetch_panorama(root, min(args.workers, 4))
+        print(f"panorama: {summary['clips']} panoramas for C13, {summary['written']} written, "
+              f"{summary['skipped']} already present; failed {summary['failed']}, "
+              f"missing {summary['missing']}")
+        return 1 if summary["failed"] or summary["missing"] or not summary["clips"] else 0
+    summary = fetch_tartanair(root, args.environments, args.workers)
+    print(f"tartanair: {summary['clips']} clips from {summary['pairs']} environment-difficulty pairs, "
+          f"{summary['bytes'] / 1e9:.1f} GB; failed {summary['failed']}, missing {summary['missing']}")
+    return 1 if summary["failed"] else 0
+
+
+def cmd_render_vision(args: argparse.Namespace) -> int:
+    """Render the fetched clips onto the lattice and check them against contract 1."""
+    from conectoma.stages.vision_render import render_source
+
+    summary = render_source(data_root(args.data_root), args.source, args.workers)
+    print(f"{args.source}: {summary['accepted']} of {summary['clips']} clips rendered and accepted, "
+          f"{summary['rejected']} rejected, {summary['failed']} failed")
+    # a rejection is contract 1 doing its job (listed with its reasons in the manifest); a failure is not
+    return 1 if summary["failed"] else 0
+
+
+def cmd_build_splits(args: argparse.Namespace) -> int:
+    """Assign rendered clips to splits by geometry family and run the leakage test (the U4 gate)."""
+    from conectoma.stages.vision_splits import build_splits
+
+    summary = build_splits(data_root(args.data_root))
+    for name, counts in summary["counts"].items():
+        print(f"{name:12s} {counts['families']:3d} families {counts['environments']:3d} environments "
+              f"{counts['clips']:5d} clips {counts['frames']:6d} frames")
+    problems = summary["leakage"]["problems"]
+    print("leakage: none" if not problems else "LEAKAGE: " + "; ".join(problems))
+    return 1 if problems else 0
+
+
+def cmd_build_cases(args: argparse.Namespace) -> int:
+    """Render every case at its six levels (contract 1), and write the committed case summary."""
+    from conectoma.network.engine import engine_root
+    from conectoma.stages.vision_cases import build_cases
+
+    engine = engine_root()
+    summary = build_cases(data_root(args.data_root), engine.parent if engine else None, args.workers,
+                          args.cases or None)
+    print(f"cases: {summary['cases']} cases, {summary['clips']} clips, {summary['renderings']} renderings, "
+          f"{summary['rejected']} rejected, {summary['failed']} failed, "
+          f"{summary['elapsed_seconds'] / 60:.1f} min"
+          + ("" if summary["complete"] else " (partial: no summary)"))
+    return 1 if summary["rejected"] or summary["failed"] else 0
+
+
+def cmd_export_eyeclips(args: argparse.Namespace) -> int:
+    """The eye's input for the web: one compact file per case and their manifest (contract 2)."""
+    from conectoma.stages.export_eyeclips import export_eyeclips
+
+    manifest = export_eyeclips(data_root(args.data_root), REPO_ROOT / "data/derived/vision/cases.json",
+                               REPO_ROOT / "data/derived/eyeclips", REPO_ROOT / "data/derived/manifests")
+    total = sum(f["bytes"] for f in manifest["cases"].values())
+    print(f"eyeclips: {len(manifest['cases'])} case files, {total / 1e6:.1f} MB")
+    return 0
+
+
+def cmd_summarize_vision(args: argparse.Namespace) -> int:
+    """One committed summary of the vision lane: sources, renderings, splits and cases."""
+    from conectoma.stages.vision_summary import summarize_vision
+
+    summary = summarize_vision(data_root(args.data_root), models_root())
+    for name, source in summary["sources"].items():
+        print(f"{name:10s} " + ", ".join(f"{k} {v}" for k, v in source.items()
+                                         if k in ("clips", "accepted", "rejected", "sequences", "ommatidia")))
+    return 0
+
+
+def cmd_case_docs(args: argparse.Namespace) -> int:
+    """Write the generated tables of the case pages from the committed case summary."""
+    from conectoma.vision import case_docs
+
+    summary = json.loads((REPO_ROOT / "data/derived/vision/cases.json").read_text(encoding="utf-8"))
+    changed = case_docs.update(summary, REPO_ROOT / "docs", write=not args.check)
+    print(("out of date: " if args.check else "rewrote: ") + (", ".join(changed) or "nothing"))
+    return 1 if args.check and changed else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="run.py", description="Conectoma offline pipeline")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -352,6 +463,42 @@ def main(argv: list[str] | None = None) -> int:
     web.add_argument("--spec", default=None, help="connectome JSON (default: the right optic lobe)")
     web.add_argument("--reference", default=None, help="published consensus JSON (default: the engine's)")
     web.set_defaults(func=cmd_export_web)
+
+    fetch = sub.add_parser("fetch-vision", help="fetch a vision source's selected members into the data root")
+    fetch.add_argument("--source", default="tartanair",
+                       choices=["tartanair", "sintel", "spring", "hypersim", "panorama"])
+    fetch.add_argument("--data-root", default=None, help="directory of the local data cache")
+    fetch.add_argument("--environments", nargs="*", default=None, help="restrict to these environments")
+    fetch.add_argument("--workers", type=int, default=12, help="parallel member requests")
+    fetch.set_defaults(func=cmd_fetch_vision)
+
+    render = sub.add_parser("render-vision", help="render fetched clips onto the lattice (contract 1)")
+    render.add_argument("--source", default="tartanair", choices=["tartanair", "spring", "hypersim"])
+    render.add_argument("--data-root", default=None, help="directory of the local data cache")
+    render.add_argument("--workers", type=int, default=4, help="parallel rendering processes")
+    render.set_defaults(func=cmd_render_vision)
+
+    split = sub.add_parser("build-splits", help="assign clips to splits by geometry family; leakage test")
+    split.add_argument("--data-root", default=None, help="directory of the local data cache")
+    split.set_defaults(func=cmd_build_splits)
+
+    case = sub.add_parser("build-cases", help="render every case at its six levels; the committed summary")
+    case.add_argument("--data-root", default=None, help="directory of the local data cache")
+    case.add_argument("--cases", nargs="*", default=None, help="only these cases (C01 ... C16)")
+    case.add_argument("--workers", type=int, default=4, help="parallel rendering processes")
+    case.set_defaults(func=cmd_build_cases)
+
+    eyeclips = sub.add_parser("export-eyeclips", help="the eye's input per case for the web (contract 2)")
+    eyeclips.add_argument("--data-root", default=None, help="directory of the local data cache")
+    eyeclips.set_defaults(func=cmd_export_eyeclips)
+
+    vsummary = sub.add_parser("summarize-vision", help="the committed summary of the vision lane")
+    vsummary.add_argument("--data-root", default=None, help="directory of the local data cache")
+    vsummary.set_defaults(func=cmd_summarize_vision)
+
+    docs = sub.add_parser("case-docs", help="the generated tables of the case pages, from cases.json")
+    docs.add_argument("--check", action="store_true", help="only report pages that are out of date")
+    docs.set_defaults(func=cmd_case_docs)
 
     visual = sub.add_parser("build-visual-cns", help="the whole visual system as a neuron-level graph")
     visual.add_argument("--data-root", default=None, help="directory holding the MaleCNS tables")

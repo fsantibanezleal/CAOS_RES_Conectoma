@@ -1,7 +1,10 @@
 import { Callout, Equation, SubTabs } from '@fasl-work/caos-app-shell';
 import SectionRefs from '../components/SectionRefs';
 import { useNumber, useT } from '../lib/i18n';
-import { useReports } from '../lib/reports';
+import { useState } from 'react';
+import InlineSvg from '../components/InlineSvg';
+import { CASE_NAMES, CATEGORIES, levelLabel, MEASURED, QUANTITIES } from '../eye/text';
+import { useReports, type SpacingRange } from '../lib/reports';
 
 const MOTION = ['T4a', 'T4b', 'T4c', 'T4d', 'T5a', 'T5b', 'T5c', 'T5d'];
 
@@ -9,6 +12,7 @@ export default function Experiments() {
   const t = useT();
   const num = useNumber();
   const { reports, error } = useReports();
+  const [caseId, setCaseId] = useState('C01');
 
   const head = (
     <div className="page-head">
@@ -352,6 +356,211 @@ export default function Experiments() {
     </section>
   );
 
+  const { vision, cases } = reports;
+  const sources = vision.sources;
+  const gb = (bytes: number) => `${num(bytes / 1e9, 1)} GB`;
+  const range = (r: SpacingRange | number) =>
+    typeof r === 'number'
+      ? num(r, 2)
+      : t(`${num(r.min, 2)} to ${num(r.max, 2)} (median ${num(r.median, 2)})`, `${num(r.min, 2)} a ${num(r.max, 2)} (mediana ${num(r.median, 2)})`);
+  const rendered = [
+    ['TartanAir V2', sources.tartanair],
+    ['Spring', sources.spring],
+    ['Hypersim', sources.hypersim],
+  ] as const;
+  const splitNames: Record<string, [string, string]> = {
+    train: ['train', 'entrenamiento'],
+    validation: ['validation', 'validación'],
+    calibration: ['calibration', 'calibración'],
+    test: ['test', 'prueba'],
+  };
+  const visionTab = (
+    <section>
+      <h2>{t('What does the eye get, and from where?', '¿Qué recibe el ojo, y de dónde?')}</h2>
+      <p>
+        {t(
+          'Every source fetched for the vision lane, rendered onto the 721-column lattice and checked by contract 1 before anything reads it. A clip that breaks the contract is rejected with its reasons, never repaired; masked depth is counted, never dropped.',
+          'Cada fuente descargada para la línea de visión, renderizada sobre la retícula de 721 columnas y verificada por el contrato 1 antes de que algo la lea. Un clip que rompe el contrato se rechaza con sus razones, nunca se repara; la profundidad enmascarada se cuenta, nunca se descarta.',
+        )}
+      </p>
+      <div className="cx-table-wrap">
+        <table className="cx-table">
+          <thead>
+            <tr>
+              <th>{t('Source', 'Fuente')}</th>
+              <th className="num">{t('Clips', 'Clips')}</th>
+              <th className="num">{t('Frames', 'Cuadros')}</th>
+              <th className="num">{t('Accepted', 'Aceptados')}</th>
+              <th className="num">{t('Rejected', 'Rechazados')}</th>
+              <th className="num">{t('Masked depth', 'Profundidad enmascarada')}</th>
+              <th className="num">{t('Fetched', 'Descargado')}</th>
+              <th>{t('License', 'Licencia')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rendered.map(([name, s]) => (
+              <tr key={name}>
+                <td>{name}</td>
+                <td className="num">{num(s.clips)}</td>
+                <td className="num">{num(s.frames)}</td>
+                <td className="num">{num(s.accepted)}</td>
+                <td className="num">{num(s.rejected + s.failed)}</td>
+                <td className="num">{pct(s.depth_masked_share, 2)}</td>
+                <td className="num">{gb(s.bytes)}</td>
+                <td>{s.license}</td>
+              </tr>
+            ))}
+            <tr>
+              <td>MPI Sintel</td>
+              <td className="num">{num(sources.sintel.sequences)}</td>
+              <td className="num">{num(sources.sintel.frames)}</td>
+              <td className="num">
+                {t(`${num(sources.sintel.engine_rendering.strips)} strips, by the engine`, `${num(sources.sintel.engine_rendering.strips)} franjas, por el motor`)}
+              </td>
+              <td className="num">0</td>
+              <td className="num">-</td>
+              <td className="num">{t("the engine's download", 'descarga del motor')}</td>
+              <td>{sources.sintel.license}</td>
+            </tr>
+            <tr>
+              <td>{t('TartanAir panoramas (C13)', 'Panoramas de TartanAir (C13)')}</td>
+              <td className="num">{num(sources.panorama.clips)}</td>
+              <td className="num">{num(sources.panorama.clips)}</td>
+              <td className="num">{num(sources.panorama.clips)}</td>
+              <td className="num">0</td>
+              <td className="num">-</td>
+              <td className="num">{gb(sources.panorama.bytes)}</td>
+              <td>{sources.panorama.license}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>{t('What one column sees', 'Lo que ve una columna')}</h3>
+      <p>
+        {t(
+          "Every planar frame goes through the engine's geometry: resized to 436 rows, the lattice on the central 391 x 391 pixels, neighbouring columns 13 pixels apart. What a column subtends then depends on the source's lens, measured at the centre over every frame's own intrinsics:",
+          'Cada cuadro plano pasa por la geometría del motor: redimensionado a 436 filas, la retícula sobre los 391 x 391 píxeles centrales, columnas vecinas a 13 píxeles. Lo que abarca una columna depende entonces del lente de la fuente, medido en el centro sobre los intrínsecos propios de cada cuadro:',
+        )}
+      </p>
+      <div className="cx-table-wrap">
+        <table className="cx-table">
+          <thead>
+            <tr>
+              <th>{t('Source', 'Fuente')}</th>
+              <th className="num">{t('Degrees between neighbouring columns', 'Grados entre columnas vecinas')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>{t("MPI Sintel, every training frame (the published model's domain)", 'MPI Sintel, cada cuadro de entrenamiento (el dominio del modelo publicado)')}</td><td className="num">{range(sources.sintel.column_spacing_deg)}</td></tr>
+            <tr><td>Spring</td><td className="num">{range(sources.spring.column_spacing_deg)}</td></tr>
+            <tr><td>{t('Hypersim, test scenes', 'Hypersim, escenas de prueba')}</td><td className="num">{range(sources.hypersim.column_spacing_deg)}</td></tr>
+            <tr><td>{t('TartanAir (and the synthetic cases)', 'TartanAir (y los casos sintéticos)')}</td><td className="num">{range(sources.tartanair.column_spacing_deg)}</td></tr>
+            <tr><td>{t("FlyGym, the fly's own compound eye", 'FlyGym, el propio ojo compuesto de la mosca')}</td><td className="num">{range(sources.flygym.column_spacing_deg)}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <InlineSvg src="svg/docs/lattice-geometry.svg" label={t('Degrees between neighbouring columns, per source', 'Grados entre columnas vecinas, por fuente')} />
+
+      <h3>{t('Are the splits free of leakage?', '¿Están las particiones libres de fuga?')}</h3>
+      <p>
+        {t(
+          `TartanAir reuses one geometry under several names, so the split unit is the geometry family: ${num(vision.splits.families)} families, assigned with a fixed seed, the families the cases draw from always in test. The leakage test fails if a family or an environment appears in two splits, or if two identical frames do (${num(vision.splits.leakage.frames_hashed)} frames hashed).`,
+          `TartanAir reutiliza una geometría bajo varios nombres, así que la unidad de partición es la familia geométrica: ${num(vision.splits.families)} familias, asignadas con una semilla fija, y las familias de las que toman los casos siempre en prueba. La prueba de fuga falla si una familia o un entorno aparece en dos particiones, o si lo hacen dos cuadros idénticos (${num(vision.splits.leakage.frames_hashed)} cuadros con hash).`,
+        )}
+      </p>
+      <div className="cx-table-wrap">
+        <table className="cx-table">
+          <thead>
+            <tr>
+              <th>{t('Split', 'Partición')}</th>
+              <th className="num">{t('Families', 'Familias')}</th>
+              <th className="num">{t('Environments', 'Entornos')}</th>
+              <th className="num">{t('Clips', 'Clips')}</th>
+              <th className="num">{t('Frames', 'Cuadros')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(['train', 'validation', 'calibration', 'test'] as const).map((name) => (
+              <tr key={name}>
+                <td>{t(splitNames[name][0], splitNames[name][1])}</td>
+                <td className="num">{num(vision.splits.counts[name].families)}</td>
+                <td className="num">{num(vision.splits.counts[name].environments)}</td>
+                <td className="num">{num(vision.splits.counts[name].clips)}</td>
+                <td className="num">{num(vision.splits.counts[name].frames)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <Callout variant={vision.splits.leakage.problems.length ? 'honest' : 'note'} title={vision.splits.leakage.problems.length ? t('Leakage', 'Fuga') : t('The leakage gate', 'La compuerta de fuga')}>
+        {vision.splits.leakage.problems.length
+          ? t(`Leakage found: ${vision.splits.leakage.problems.join('; ')}`, `Fuga encontrada: ${vision.splits.leakage.problems.join('; ')}`)
+          : t('No leakage: no family, environment or identical frame appears in two splits.', 'Sin fuga: ninguna familia, entorno ni cuadro idéntico aparece en dos particiones.')}
+      </Callout>
+      <SectionRefs ids={['wang2020', 'butler2012', 'mehl2023', 'roberts2021', 'wangchen2024', 'lappalainen2024']} />
+    </section>
+  );
+
+  const selected = cases.cases[caseId] ? caseId : 'C01';
+  const chosen = cases.cases[selected];
+  const measuredKeys = MEASURED[selected] ?? [];
+  const casesTab = (
+    <section>
+      <h2>{t('What did each case level measure?', '¿Qué midió cada nivel de cada caso?')}</h2>
+      <p>
+        {t(
+          `Sixteen cases, each one physical quantity over six levels, each drawing its clips once from test data and rendering the same clips at every level: ${num(vision.cases.accepted)} of ${num(vision.cases.renderings)} renderings accepted by contract 1. Each level records what it means in the image; the table shows the medians over the clips of each level.`,
+          `Dieciséis casos, cada uno una cantidad física en seis niveles, cada uno tomando sus clips una vez de datos de prueba y renderizando los mismos clips en cada nivel: ${num(vision.cases.accepted)} de ${num(vision.cases.renderings)} renderizados aceptados por el contrato 1. Cada nivel registra lo que significa en la imagen; la tabla muestra las medianas sobre los clips de cada nivel.`,
+        )}
+      </p>
+      <label className="cx-label" htmlFor="cx-exp-case">{t('Case', 'Caso')}</label>
+      <select id="cx-exp-case" className="cx-select cx-select-inline" value={selected} onChange={(e) => setCaseId(e.target.value)}>
+        {Object.keys(cases.cases).map((id) => (
+          <option key={id} value={id}>{id} {t(CASE_NAMES[id]?.[0] ?? id, CASE_NAMES[id]?.[1] ?? id)}</option>
+        ))}
+      </select>
+      <p>
+        <strong>{t(CATEGORIES[chosen.category]?.[0] ?? chosen.category, CATEGORIES[chosen.category]?.[1] ?? chosen.category)}</strong>
+        {'. '}
+        {t(
+          `Source: ${chosen.source}${chosen.family ? ` (${chosen.family})` : ''}. Grades: ${chosen.grades.join(', ')}. Clips drawn: ${chosen.items.length}.`,
+          `Fuente: ${chosen.source}${chosen.family ? ` (${chosen.family})` : ''}. Evalúa: ${chosen.grades.join(', ')}. Clips tomados: ${chosen.items.length}.`,
+        )}
+      </p>
+      <div className="cx-table-wrap">
+        <table className="cx-table">
+          <thead>
+            <tr>
+              <th>{t(QUANTITIES[selected]?.[0] ?? 'level', QUANTITIES[selected]?.[1] ?? 'nivel')}</th>
+              <th className="num">{t('Accepted', 'Aceptados')}</th>
+              <th className="num">{t('Frame interval (ms)', 'Intervalo (ms)')}</th>
+              {measuredKeys.map(([key, label]) => <th key={key} className="num">{t(label[0], label[1])}</th>)}
+              <th className="num">{t('Mean luminance', 'Luminancia media')}</th>
+              <th className="num">{t('Median depth', 'Profundidad mediana')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {chosen.levels.map((level, i) => (
+              <tr key={i}>
+                <td>{levelLabel(selected, level.value, t, num)}</td>
+                <td className="num">{num(level.accepted)} / {num(level.clips)}</td>
+                <td className="num">{level.interval_s ? num(level.interval_s * 1000, level.interval_s < 0.01 ? 2 : 1) : '-'}</td>
+                {measuredKeys.map(([key, , digits]) => {
+                  const value = level.measured[key];
+                  return <td key={key} className="num">{typeof value === 'number' ? num(value, digits) : '-'}</td>;
+                })}
+                <td className="num">{typeof level.statistics.lum_mean === 'number' ? num(level.statistics.lum_mean, 3) : '-'}</td>
+                <td className="num">{typeof level.statistics.depth_median_m === 'number' ? num(level.statistics.depth_median_m, 2) : '-'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <SectionRefs ids={['pick2005', 'klapoetke2017', 'keles2017', 'wangchen2024']} />
+    </section>
+  );
+
   return (
     <div className="page-body wide prose">
       {head}
@@ -366,6 +575,8 @@ export default function Experiments() {
           { id: 'ensemble', label: t('Published ensemble', 'Ensamble publicado'), content: ensemble },
           { id: 'lattice', label: t('Frozen lattice', 'Retícula congelada'), content: frozen },
           { id: 'visual-cns', label: t('Whole visual system', 'Sistema visual completo'), content: whole },
+          { id: 'vision-data', label: t('Vision data', 'Datos de visión'), content: visionTab },
+          { id: 'cases', label: t('Cases', 'Casos'), content: casesTab },
         ]}
       />
     </div>

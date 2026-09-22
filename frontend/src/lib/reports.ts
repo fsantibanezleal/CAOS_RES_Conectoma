@@ -132,6 +132,70 @@ export interface VisualCnsSummary {
   columns: Record<'L' | 'R', { optic_lobe_neurons: number; annotated: number; inferred: number; unplaced: number; holdout: { median_exact_fraction: number; median_within_one_fraction: number } }>;
 }
 
+export interface SpacingRange { min: number; median: number; max: number }
+
+export interface RenderedSource {
+  clips: number;
+  accepted: number;
+  rejected: number;
+  failed: number;
+  frames: number;
+  depth_masked_share: number;
+  render_version: number;
+  bytes: number;
+  license: string;
+  attribution: string;
+}
+
+export interface SplitCounts { families: number; environments: number; clips: number; frames: number }
+
+export interface VisionIngestion {
+  sources: {
+    tartanair: RenderedSource & { frame_interval_s: number; column_spacing_deg: number };
+    panorama: { clips: number; bytes: number; license: string };
+    sintel: { sequences: number; held_out: string[]; frames: number; engine_rendering: { strips: number; complete: boolean }; column_spacing_deg: SpacingRange; license: string; frame_interval_s: number };
+    spring: RenderedSource & { frame_interval_s: number | null; column_spacing_deg: SpacingRange };
+    hypersim: RenderedSource & { column_spacing_deg: SpacingRange };
+    flygym: { flygym: string; ommatidia: number; orientation: string; orientation_score: number; column_spacing_deg: number; license: string };
+  };
+  splits: { unit: string; families: number; counts: Record<'train' | 'validation' | 'calibration' | 'test', SplitCounts>; leakage: { checked: string[]; frames_hashed: number; problems: string[] } };
+  cases: { count: number; renderings: number; accepted: number; cases_sha256: string };
+}
+
+export type Measured = Record<string, number | number[] | string | null>;
+
+export interface CaseLevel {
+  value: number | string | null;
+  clips: number;
+  accepted: number;
+  interval_s: number | null;
+  measured: Measured;
+  statistics: Measured;
+}
+
+export interface CaseSummary {
+  name: string;
+  category: string;
+  reason: string;
+  source: string;
+  grades: string[];
+  family: string | null;
+  contract: string;
+  variant: { quantity: string; unit: string; levels: (number | string | null)[] };
+  items: string[];
+  levels: CaseLevel[];
+  failed: Record<string, string>;
+}
+
+export interface Cases {
+  cases_sha256: string;
+  render_version: number;
+  code_sha256: string;
+  seed: number;
+  clips_per_case: number;
+  cases: Record<string, CaseSummary>;
+}
+
 export const REPORTS = {
   build: 'connectome/malecns-optic-lobe-r.report.json',
   comparison: 'connectome/malecns-optic-lobe-r.comparison.json',
@@ -139,6 +203,8 @@ export const REPORTS = {
   lattice: 'connectome/malecns-optic-lobe-r.characterization.json',
   visualCns: 'connectome/malecns-visual-cns.characterization.json',
   visualCnsSummary: 'connectome/malecns-visual-cns.summary.json',
+  vision: 'vision/ingestion.json',
+  cases: 'vision/cases.json',
 } as const;
 
 export interface Reports {
@@ -148,6 +214,8 @@ export interface Reports {
   lattice: Characterization;
   visualCns: VisualCnsCharacterization;
   visualCnsSummary: VisualCnsSummary;
+  vision: VisionIngestion;
+  cases: Cases;
 }
 
 /** All committed reports, loaded once per page. */
@@ -163,9 +231,11 @@ export function useReports(): { reports: Reports | null; error: string | null } 
       loadReport<Characterization>(REPORTS.lattice),
       loadReport<VisualCnsCharacterization>(REPORTS.visualCns),
       loadReport<VisualCnsSummary>(REPORTS.visualCnsSummary),
+      loadReport<VisionIngestion>(REPORTS.vision),
+      loadReport<Cases>(REPORTS.cases),
     ])
-      .then(([build, comparison, parity, lattice, visualCns, visualCnsSummary]) => {
-        if (live) setReports({ build, comparison, parity, lattice, visualCns, visualCnsSummary });
+      .then(([build, comparison, parity, lattice, visualCns, visualCnsSummary, vision, cases]) => {
+        if (live) setReports({ build, comparison, parity, lattice, visualCns, visualCnsSummary, vision, cases });
       })
       .catch((e) => live && setError(String(e)));
     return () => {

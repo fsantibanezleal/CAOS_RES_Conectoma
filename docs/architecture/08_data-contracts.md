@@ -1,7 +1,10 @@
 # The two data contracts
 
-Both contracts are enforced in code and checked in CI. Without the first, the product cannot be pointed at
-new data and is a demo; without the second, the web can drift from what the pipeline produced.
+Both contracts are enforced in code. Contract 1 is enforced by the ingestion itself and by the test suite,
+which runs locally before every push and is the validation of record (ADR-0074); contract 2 is re-checked
+mechanically from the committed files by `scripts/check_artifacts.py`, in CI and again in the deploy, with
+no install beyond the standard library. Without the first, the product cannot be pointed at new data and is
+a demo; without the second, the web can drift from what the pipeline produced.
 
 ## Contract 1, ingestion (raw to pipeline)
 
@@ -13,12 +16,41 @@ outlier policy:
    connection table, and synapse positions in 8 nm voxel units. Rejected rows are rejected with a reason,
    never silently coerced; low-confidence neurotransmitter calls are flagged and the flag travels into the
    manifest, because the sign of a connection is itself a prediction.
-2. **Vision sequences**: frames with camera intrinsics and poses, plus the ground truth a case declares
-   (depth in metres, optical flow in pixels, segmentation labels). A sequence is accepted only if the
-   declared ground truth is present and finite, and if its units match the declared ones.
+2. **Vision clips** (`data-pipeline/conectoma/vision/contract.py`, design in
+   [05](05_vision-data.md)): every clip rendered onto the 721-column lattice is checked before anything
+   reads it, and a clip that fails is rejected with its reasons, never repaired.
 
-The contract lives with the pipeline and is documented in `data/README.md`. It is what lets a third party
-run this on their own footage instead of only replaying the baked cases.
+### Vision clips, as enforced
+
+Every source must carry luminance, depth and frame numbers; each declares what else it must carry:
+
+| Source | Required beyond luminance, depth and frames |
+|---|---|
+| TartanAir | flow, flow validity, segment boundaries, camera poses |
+| Spring | sky share, independent-motion share |
+| Hypersim | segment boundaries, figure share, labelled share, NYU40 label |
+| Sintel | flow |
+| FlyGym | figure share |
+| synthetic (and the panorama and still-camera cases) | flow, flow validity |
+
+| Array | Shape | Rule |
+|---|---|---|
+| `lum` | (frames, 721) | finite, in [0, 1]; for a real source no frame blank (every column the same luminance) |
+| `depth` | (frames, 721) | positive where known; NaN where masked (counted, never dropped); never zero, negative or infinite |
+| `flow` | (frames - 1, 2, 721) | finite; the engine's unit (per image height, y up, summed over the box); row t is the motion from frame t to t + 1 |
+| `flow_valid`, `moving` | (frames - 1, 721) | shares in [0, 1] |
+| `sky`, `figure`, `labelled` | (frames, 721) | shares in [0, 1] |
+| `boundary` | (frames, 721) | 0 or 1 |
+| `semantic` | (frames, 721) | NYU40 ids, 0 for unlabelled |
+| `poses` | (frames, 7) | finite; rotations are unit quaternions |
+| `frames` | (frames,) | consecutive for video sources, never repeated |
+
+Optional arrays that are present are checked all the same. Each rendering is listed in its source's
+manifest with its statistics and SHA-256, and each rejection with its reasons; `tests/test_vision_data.py`
+builds clips that break each rule.
+
+The connectome part of the contract is documented in `data/README.md`. The whole contract is what lets a
+third party run this on their own footage instead of only replaying the baked cases.
 
 ## Between the two: the connectome specification
 
@@ -73,6 +105,27 @@ SHA-256; the file name and SHA-256 of the specification it came from, with the d
 citation; the file, SHA-256 and license of the published reference; and four counts (types, connections,
 filter entries, published connections), which the web compares with what it received. It has no timestamp,
 so the same inputs give the same bytes.
+
+### The eye input artifact (today)
+
+Written by `run.py export-eyeclips` (`data-pipeline/conectoma/stages/export_eyeclips.py`), version 1: one file
+per case, `data/derived/eyeclips/<case>.json`, holding the case's first drawn clip at its six levels.
+
+| Field | Type | Meaning |
+|---|---|---|
+| `case`, `name`, `category`, `source`, `family`, `grades`, `variant`, `item` | strings, lists | the registry entry and the source item the clip was drawn from |
+| `columns`, `frames` | integers | 721, and the clip's length |
+| `depth` | object | `near_m`, `far_m` of the case (every level), `encoding: log`, `masked: 255`, and whether depth is in metres or relative |
+| `flow` | object or null | the scale the int8 flow is divided by, and its unit (the engine's) |
+| `shared` | object | layers identical at every level, stored once |
+| `levels[]` | object | per level: `value`, `interval_s` (null for single images), `measured` (what the level means in the image), `frames`, and `arrays`: base64 bytes in the engine's column order (`lum` uint8, `depth` log uint8 with 255 masked, `figure`/`sky`/`labelled`/`flow_valid` uint8 shares, `boundary` 0 or 1, `flow` int8 x then y per step) |
+| `license` | string | what the source may be shown under (Hypersim's derived clips are ShareAlike) |
+
+The manifest (`data/derived/manifests/eyeclips.json`) records the SHA-256 of the case summary the files came
+from, the render version, each file's path, size and SHA-256, and the lattice: every column's (u, v) and the
+pixel offset the engine samples it at, from the frame centre. The web checks each file's size of every
+array against its frame count, its digest against the manifest, and its case id against the one requested,
+before drawing anything.
 
 ### The per-case artifacts (with the method units)
 

@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 470" width="900" class="vl-svg" role="img" aria-label="The vision lane: from sources to the fly's lattice, the splits and the cases">
+  <!-- Hand-designed. Every colour is a shell variable with a fallback that follows the reader's colour
+       scheme, so the diagram reads correctly both inlined in the app (ADR-0058) and as an image. -->
+  <style>
+    .vl-svg { --vl-bg:#ffffff; --vl-fg:#1f2328; --vl-sub:#57606a; --vl-grid:#d8dee4; --vl-acc:#0969da;
+              --vl-accbg:#ddf4ff; --vl-panel:#f6f8fa; --vl-good:#1a7f37; --vl-goodbg:#dafbe1; }
+    @media (prefers-color-scheme: dark) {
+      .vl-svg { --vl-bg:#0d1117; --vl-fg:#e6edf3; --vl-sub:#8b949e; --vl-grid:#30363d; --vl-acc:#58a6ff;
+                --vl-accbg:#0c2d6b; --vl-panel:#161b22; --vl-good:#3fb950; --vl-goodbg:#0f2e1b; }
+    }
+    .vl-svg text { font-family: var(--font-sans, Inter, "Segoe UI", system-ui, sans-serif); }
+    .vl-svg .bg { fill: var(--color-surface, var(--vl-bg)); }
+    .vl-svg .box { fill: var(--color-surface-2, var(--vl-panel)); stroke: var(--color-border, var(--vl-grid)); }
+    .vl-svg .step { fill: var(--vl-accbg); stroke: var(--color-accent, var(--vl-acc)); }
+    .vl-svg .out { fill: var(--vl-goodbg); stroke: var(--color-good, var(--vl-good)); }
+    .vl-svg .ttl { fill: var(--color-fg, var(--vl-fg)); font-size: 15px; font-weight: 700; }
+    .vl-svg .h { fill: var(--color-fg, var(--vl-fg)); font-size: 12.5px; font-weight: 700; }
+    .vl-svg .s { fill: var(--color-fg-subtle, var(--vl-sub)); font-size: 10.5px; }
+    .vl-svg .arrow { stroke: var(--color-fg-subtle, var(--vl-sub)); stroke-width: 1.4; fill: none; marker-end: url(#vl-head); }
+    .vl-svg .head { fill: var(--color-fg-subtle, var(--vl-sub)); }
+    svg .l-es { display: none; }
+  </style>
+  <defs><marker id="vl-head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="head" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+<rect class="bg" x="0" y="0" width="900" height="470" rx="12"/>
+<text class="ttl l-en" x="22" y="32">The vision lane: every source through one eye, then splits and cases</text><text class="ttl l-es" x="22" y="32">La línea de visión: cada fuente por un mismo ojo, luego particiones y casos</text>
+<text class="s l-en" x="22" y="52">only the members a clip needs are fetched; every rendering is checked before anything reads it</text><text class="s l-es" x="22" y="52">solo se descargan los miembros que un clip necesita; cada renderizado se verifica antes de que algo lo lea</text>
+<!-- sources -->
+<rect class="box" x="22" y="72" width="196" height="46" rx="8"/><text class="h" x="34" y="92">TartanAir V2</text><text class="s l-en" x="34" y="108">74 environments, 2,244 clips</text><text class="s l-es" x="34" y="108">74 entornos, 2.244 clips</text>
+<rect class="box" x="22" y="126" width="196" height="46" rx="8"/><text class="h l-en" x="34" y="146">TartanAir panoramas</text><text class="h l-es" x="34" y="146">Panoramas de TartanAir</text><text class="s l-en" x="34" y="162">360 degree image and range</text><text class="s l-es" x="34" y="162">imagen y rango en 360 grados</text>
+<rect class="box" x="22" y="180" width="196" height="46" rx="8"/><text class="h" x="34" y="200">MPI Sintel</text><text class="s l-en" x="34" y="216">the published model's own domain</text><text class="s l-es" x="34" y="216">el dominio del modelo publicado</text>
+<rect class="box" x="22" y="234" width="196" height="46" rx="8"/><text class="h" x="34" y="254">Spring</text><text class="s l-en" x="34" y="270">fine structure, metric depth</text><text class="s l-es" x="34" y="270">estructura fina, profundidad métrica</text>
+<rect class="box" x="22" y="288" width="196" height="46" rx="8"/><text class="h" x="34" y="308">Hypersim</text><text class="s l-en" x="34" y="324">indoor instances, NYU40 labels</text><text class="s l-es" x="34" y="324">instancias interiores, etiquetas NYU40</text>
+<rect class="box" x="22" y="342" width="196" height="46" rx="8"/><text class="h" x="34" y="362">FlyGym</text><text class="s l-en" x="34" y="378">the fly's own compound eye</text><text class="s l-es" x="34" y="378">el propio ojo compuesto de la mosca</text>
+<rect class="box" x="22" y="396" width="196" height="46" rx="8"/><text class="h l-en" x="34" y="416">Synthetic</text><text class="h l-es" x="34" y="416">Sintético</text><text class="s l-en" x="34" y="432">planes at known depths, a still frame</text><text class="s l-es" x="34" y="432">planos a profundidad conocida, un cuadro fijo</text>
+<!-- fan-in arrows -->
+<path class="arrow" d="M218,95 C240,95 240,180 262,180"/>
+<path class="arrow" d="M218,149 C240,149 240,190 262,190"/>
+<path class="arrow" d="M218,203 C240,203 240,200 262,200"/>
+<path class="arrow" d="M218,257 C240,257 240,210 262,210"/>
+<path class="arrow" d="M218,311 C240,311 240,220 262,220"/>
+<path class="arrow" d="M218,365 C240,365 240,300 262,300"/>
+<path class="arrow" d="M218,419 C240,419 240,310 262,310"/>
+<!-- fetch -->
+<rect class="step" x="264" y="150" width="190" height="96" rx="8"/>
+<text class="h l-en" x="276" y="172">Fetch members</text><text class="h l-es" x="276" y="172">Descargar miembros</text>
+<text class="s l-en" x="276" y="190">HTTP ranges into remote ZIPs</text><text class="s l-es" x="276" y="190">rangos HTTP sobre ZIP remotos</text>
+<text class="s l-en" x="276" y="205">each member checked by CRC32</text><text class="s l-es" x="276" y="205">cada miembro verificado por CRC32</text>
+<text class="s l-en" x="276" y="220">one archive per clip, atomic</text><text class="s l-es" x="276" y="220">un archivo por clip, atómico</text>
+<text class="s l-en" x="276" y="235">a log makes every run resumable</text><text class="s l-es" x="276" y="235">un registro hace reanudable cada corrida</text>
+<rect class="step" x="264" y="268" width="190" height="66" rx="8"/>
+<text class="h l-en" x="276" y="290">Render scenes</text><text class="h l-es" x="276" y="290">Renderizar escenas</text>
+<text class="s l-en" x="276" y="308">MuJoCo through the eye's fisheye</text><text class="s l-es" x="276" y="308">MuJoCo con el ojo de pez de FlyGym</text>
+<text class="s l-en" x="276" y="323">exact flow, depth and figure</text><text class="s l-es" x="276" y="323">flujo, profundidad y figura exactos</text>
+<path class="arrow" d="M454,198 L494,198"/>
+<path class="arrow" d="M454,300 C474,300 474,230 494,230"/>
+<!-- geometry -->
+<rect class="step" x="496" y="150" width="190" height="122" rx="8"/>
+<text class="h l-en" x="508" y="172">Onto the lattice</text><text class="h l-es" x="508" y="172">Sobre la retícula</text>
+<text class="s l-en" x="508" y="190">frames resized to 436 rows</text><text class="s l-es" x="508" y="190">cuadros a 436 filas</text>
+<text class="s l-en" x="508" y="205">central 391 x 391 window</text><text class="s l-es" x="508" y="205">ventana central de 391 x 391</text>
+<text class="s l-en" x="508" y="220">721 columns, 13 px boxes:</text><text class="s l-es" x="508" y="220">721 columnas, cajas de 13 px:</text>
+<text class="s l-en" x="508" y="235">mean, flow sum, depth median</text><text class="s l-es" x="508" y="235">media, suma de flujo, mediana</text>
+<text class="s l-en" x="508" y="250">FlyGym: ommatidia mapped</text><text class="s l-es" x="508" y="250">FlyGym: omatidios mapeados</text>
+<text class="s l-en" x="508" y="265">by a measured symmetry</text><text class="s l-es" x="508" y="265">por una simetría medida</text>
+<path class="arrow" d="M686,211 L706,211"/>
+<!-- contract -->
+<rect class="step" x="708" y="160" width="170" height="102" rx="8"/>
+<text class="h l-en" x="720" y="182">Contract 1</text><text class="h l-es" x="720" y="182">Contrato 1</text>
+<text class="s l-en" x="720" y="200">what each source must carry</text><text class="s l-es" x="720" y="200">lo que cada fuente debe traer</text>
+<text class="s l-en" x="720" y="215">shapes, ranges, units</text><text class="s l-es" x="720" y="215">formas, rangos, unidades</text>
+<text class="s l-en" x="720" y="230">masked depth is NaN</text><text class="s l-es" x="720" y="230">profundidad enmascarada: NaN</text>
+<text class="s l-en" x="720" y="245">rejected with reasons</text><text class="s l-es" x="720" y="245">rechazo con sus razones</text>
+<!-- outputs -->
+<path class="arrow" d="M793,262 C793,300 640,300 640,330"/>
+<path class="arrow" d="M793,262 C793,300 820,300 820,330"/>
+<rect class="out" x="496" y="332" width="258" height="110" rx="8"/>
+<text class="h l-en" x="508" y="354">Splits by geometry family</text><text class="h l-es" x="508" y="354">Particiones por familia geométrica</text>
+<text class="s l-en" x="508" y="372">one geometry under several names</text><text class="s l-es" x="508" y="372">una geometría bajo varios nombres</text>
+<text class="s l-en" x="508" y="387">is one family, in one split only</text><text class="s l-es" x="508" y="387">es una familia, en una sola partición</text>
+<text class="s l-en" x="508" y="402">leakage gate: families, environments,</text><text class="s l-es" x="508" y="402">compuerta de fuga: familias, entornos,</text>
+<text class="s l-en" x="508" y="417">identical frames never in two splits</text><text class="s l-es" x="508" y="417">cuadros idénticos nunca en dos particiones</text>
+<text class="s l-en" x="508" y="432">train, validation, calibration, test</text><text class="s l-es" x="508" y="432">entrenamiento, validación, calibración, prueba</text>
+<rect class="out" x="764" y="332" width="114" height="110" rx="8"/>
+<text class="h l-en" x="776" y="354">16 cases</text><text class="h l-es" x="776" y="354">16 casos</text>
+<text class="s l-en" x="776" y="372">test data only</text><text class="s l-es" x="776" y="372">solo prueba</text>
+<text class="s l-en" x="776" y="387">6 levels each,</text><text class="s l-es" x="776" y="387">6 niveles cada uno,</text>
+<text class="s l-en" x="776" y="402">one physical</text><text class="s l-es" x="776" y="402">una cantidad</text>
+<text class="s l-en" x="776" y="417">quantity with</text><text class="s l-es" x="776" y="417">física con</text>
+<text class="s l-en" x="776" y="432">its unit</text><text class="s l-es" x="776" y="432">su unidad</text>
+</svg>

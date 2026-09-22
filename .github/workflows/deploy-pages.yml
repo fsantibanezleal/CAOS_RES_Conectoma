@@ -10,35 +10,31 @@ permissions:
   pages: write
   id-token: write
 
+# a deploy queues behind the one in flight, it is not cancelled half published
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    defaults:
-      run:
-        working-directory: frontend
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      # The committed artifacts under data/derived are canonical: the site reads them as they are. Nothing
-      # is regenerated here (the network runs need the local GPU); ci.yml rebuilds the explorer artifact
-      # byte for byte and fails on drift.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # stdlib only: the deploy publishes the committed artifacts, it never installs the offline
+      # lane, renders or regenerates them (ADR-0074). The fit gate runs in CI, not here.
+      - name: CONTRACT 2, the manifests match the artifacts being published
+        run: python scripts/check_artifacts.py
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: npm
           cache-dependency-path: frontend/package-lock.json
-      - run: npm ci
       - name: Build (copy-data.mjs brings data/derived into the site; contract tests run first)
-        run: npm run build
-      - name: Browser for the fit gate
-        run: npx playwright install --with-deps chromium
-      # the site that fails the ADR-0071 gate is never uploaded
-      - name: Fit gate on the built site
-        run: npm run gate
+        run: cd frontend && npm ci && npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
           path: frontend/dist
@@ -46,7 +42,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
