@@ -196,6 +196,57 @@ export interface Cases {
   cases: Record<string, CaseSummary>;
 }
 
+export interface MethodLevel {
+  value: number | string;
+  clips: number;
+  coverage?: number;
+  abs_rel?: number;
+  rmse_m?: number;
+  delta_1?: number;
+  silog?: number;
+  refusal_refused?: number;
+  refusal_correct?: number;
+  moving_iou?: number;
+  boundary_f?: number;
+  skipped?: string;
+}
+
+export interface MethodCase {
+  name: string;
+  category: string;
+  grades: string[];
+  quantity: string;
+  unit: string;
+  observable: boolean;
+  levels: MethodLevel[];
+}
+
+export interface PairedDifference {
+  first: string;
+  second: string;
+  key: string;
+  clips: number;
+  median: number;
+  low: number;
+  high: number;
+  pairs: number;
+}
+
+export interface EvaluationSummary {
+  artifact: string;
+  version: number;
+  kind: Record<string, string>;
+  methods: Record<string, {
+    cases: Record<string, MethodCase>;
+    clips_scored: number;
+    clips_skipped: number;
+    thresholds: Record<string, number | string>;
+    calibration: { tau_s: number; gain: number; r2: number; rings: number } | null;
+    seconds: number;
+  }>;
+  against_floor: Record<string, PairedDifference>;
+}
+
 export const REPORTS = {
   build: 'connectome/malecns-optic-lobe-r.report.json',
   comparison: 'connectome/malecns-optic-lobe-r.comparison.json',
@@ -205,9 +256,11 @@ export const REPORTS = {
   visualCnsSummary: 'connectome/malecns-visual-cns.summary.json',
   vision: 'vision/ingestion.json',
   cases: 'vision/cases.json',
+  evaluation: 'evaluation/summary.json',
 } as const;
 
 export interface Reports {
+  evaluation: EvaluationSummary;
   build: BuildReport;
   comparison: Comparison;
   parity: Parity;
@@ -233,9 +286,10 @@ export function useReports(): { reports: Reports | null; error: string | null } 
       loadReport<VisualCnsSummary>(REPORTS.visualCnsSummary),
       loadReport<VisionIngestion>(REPORTS.vision),
       loadReport<Cases>(REPORTS.cases),
+      loadReport<EvaluationSummary>(REPORTS.evaluation),
     ])
-      .then(([build, comparison, parity, lattice, visualCns, visualCnsSummary, vision, cases]) => {
-        if (live) setReports({ build, comparison, parity, lattice, visualCns, visualCnsSummary, vision, cases });
+      .then(([build, comparison, parity, lattice, visualCns, visualCnsSummary, vision, cases, evaluation]) => {
+        if (live) setReports({ build, comparison, parity, lattice, visualCns, visualCnsSummary, vision, cases, evaluation });
       })
       .catch((e) => live && setError(String(e)));
     return () => {

@@ -9,7 +9,7 @@ wiring diagram of the *Drosophila melanogaster* male central nervous system, fre
 network built from measured biology can compute: depth from a moving camera, and figure-ground
 segmentation. Everything the connectome measures stays fixed. Only what it cannot measure is learned.
 
-> Status: **building**. This repository is at version 0.05.000; the units listed in *Build order* below land
+> Status: **building**. This repository is at version 0.06.000; the units listed in *Build order* below land
 > one at a time, each with its code, tests and documentation in the same commit. Nothing here is a
 > placeholder for work that is not done: what is absent is absent.
 >

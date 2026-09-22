@@ -10,6 +10,8 @@ projection of an audited subset of it.
   determinism rules, the live-versus-precompute gate, the staged pipeline, evaluation and deploy.
 - **[frameworks/](frameworks/)**, one card per engine the product actually runs (what it is, why it was
   chosen, the exact pins, how it is used here, its license). Added as each engine lands.
+- **[methods/](methods.md)**, one page per method the product runs: what it consumes, what it refuses,
+  and what it measured, with its reference.
 - **[cases/](cases/)**, the category taxonomy, the coverage matrix and one page per case.
 - **[guides/](guides/)**, runnable how-tos: environments, the pipeline, bringing your own data, the GPU
   lane, the dormant API.
