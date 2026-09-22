@@ -66,23 +66,62 @@ def spec_digest(spec: dict) -> str:
     return hashlib.sha256(json.dumps(spec, sort_keys=True).encode("utf-8")).hexdigest()
 
 
+# The fly's own visual pathway, in the order the signal travels: the lamina monopolar cells, the medulla
+# types that feed motion detection, and the direction-selective outputs. Used for what the web animates;
+# the training cache keeps the declared output units only, because that is what the readout reads.
+PATHWAY = ("L1", "L2", "L3", "Mi1", "Tm3", "Tm1", "Tm2", "Mi9", "Mi4", "CT1",
+           "T4a", "T4b", "T4c", "T4d", "T5a", "T5b", "T5c", "T5d")
+
+
 def output_types(network) -> list[str]:
     return [t.decode() if isinstance(t, bytes) else str(t)
             for t in network.connectome.output_cell_types[:]]
 
 
-def activity_of(network, lum: np.ndarray, interval_s: float, dt_s: float = DT_S) -> np.ndarray:
-    """(frames, types, columns) the output units' voltage, one row per frame, on the given network."""
+def available(network, wanted: tuple[str, ...], columns: int = 721) -> list[str]:
+    """Those of `wanted` the network carries with ONE CELL PER COLUMN, in the order given.
+
+    A wide-field type is not dropped for being uninteresting: it has a single cell for the whole lattice
+    (CT1 in the MaleCNS optic lobe), so it cannot be drawn on the lattice at all and would break a stack
+    of per-column maps. What is dropped is named by the caller's report.
+    """
+    from collections import Counter
+
+    kinds = [t.decode() if isinstance(t, bytes) else str(t) for t in network.connectome.nodes.type[:]]
+    counts = Counter(kinds)
+    return [name for name in wanted if counts.get(name) == columns]
+
+
+def wide_field(network, wanted: tuple[str, ...], columns: int = 721) -> list[str]:
+    """Those of `wanted` the network carries with fewer cells than columns: one cell sees everything."""
+    from collections import Counter
+
+    kinds = [t.decode() if isinstance(t, bytes) else str(t) for t in network.connectome.nodes.type[:]]
+    counts = Counter(kinds)
+    return [name for name in wanted if 0 < counts.get(name, 0) < columns]
+
+
+def activity_of(network, lum: np.ndarray, interval_s: float, dt_s: float = DT_S,
+                types: list[str] | None = None, every_step: bool = False) -> np.ndarray:
+    """(frames, types, columns) the voltage of `types`, one row per frame, on the given network.
+
+    With `every_step` the rows are the simulated steps rather than the source frames, which is what an
+    animation wants: the network is stepped at 0.02 s and a source frame lasts several steps, so the
+    response moves between frames and a per-frame sample hides it.
+    """
     from flyvis.utils.activity_utils import LayerActivity
 
     repeats = max(int(round(float(interval_s) / dt_s)), 1)
     device = next(network.parameters()).device
+    wanted = types or output_types(network)
     movie = torch.from_numpy(np.repeat(np.asarray(lum, dtype=np.float32), repeats, axis=0))
     with torch.no_grad():
         states = network.simulate(movie[None, :, None, :].to(device), dt_s)
         layers = LayerActivity(states, network.connectome, use_central=False)
-        stack = torch.stack([getattr(layers, name) for name in output_types(network)], dim=2)
+        stack = torch.stack([getattr(layers, name) for name in wanted], dim=2)
     held = stack[0].detach().cpu().numpy()
+    if every_step:
+        return held.astype(np.float16)
     return held[repeats - 1:: repeats][: len(lum)].astype(np.float16)
 
 

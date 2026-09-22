@@ -19,6 +19,9 @@
 - [07, how a method is scored](architecture/07_how-a-method-is-scored.md): the metrics and the conventions
   behind them, the floor every flow-based row is read against, the cases where refusing IS the right
   answer, the motion a case declares when it records no poses, and why a comparison is paired on the clip
+- [09, the response view](architecture/09_the-response-view.md): the connectome's own pathway playing
+  beside the eye's input, why the response is precomputed rather than simulated in the browser, the
+  measured size budget behind what the artifact carries, and the gate check that an animation moves
 - [08, the data contracts](architecture/08_data-contracts.md): connectome and vision ingestion, the
   connectome specification, and the artifact contract the web consumes
 

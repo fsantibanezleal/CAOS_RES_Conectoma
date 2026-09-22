@@ -56,3 +56,22 @@ export function parseRgb(value: string, fallback: RGB): RGB {
 }
 
 export const DEPTH_LEGEND = DEPTH_STOPS.map(css);
+
+// A voltage is SIGNED and centred on nothing in particular, so it gets a diverging map with a neutral
+// middle: cool below the cell's resting level, warm above it. Sampled from a colour-blind-safe diverging
+// family (the blue-to-red one used for signed fields), never a rainbow, per the visualisation rubric.
+const SIGNED_STOPS: RGB[] = [
+  [5, 48, 97], [33, 102, 172], [67, 147, 195], [146, 197, 222], [209, 229, 240],
+  [247, 247, 247],
+  [253, 219, 199], [244, 165, 130], [214, 96, 77], [178, 24, 43], [103, 0, 31],
+];
+
+/** A value in [-1, 1] (already divided by its scale) as a diverging colour centred on zero. */
+export function signedColour(value: number): string {
+  return css(lerp(SIGNED_STOPS, (Math.min(Math.max(value, -1), 1) + 1) / 2));
+}
+
+/** The eleven stops of the signed map, for a legend that a reader can check against the data. */
+export function signedStops(): string[] {
+  return SIGNED_STOPS.map(css);
+}

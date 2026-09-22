@@ -6,6 +6,7 @@ import { decodeLevel, type EyeManifest } from '../lib/eye';
 import { useNumber, useT } from '../lib/i18n';
 import EyeLattice, { type View } from './EyeLattice';
 import TimeCourse, { LEVEL_COLOURS } from './TimeCourse';
+import { usePlayback } from './usePlayback';
 import { CASE_NAMES, CATEGORIES, levelLabel, MEASURED, QUANTITIES } from './text';
 
 const DEFAULT_CASE = 'C01';
@@ -24,7 +25,7 @@ export default function EyeMode({ switcher }: { switcher: ReactNode }) {
   const [manifest, setManifest] = useState<EyeManifest | null>(null);
   const [loaded, setLoaded] = useState<VerifiedClip | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [playing, setPlaying] = useState(false);
+  const [speed, setSpeed] = useState(1);
   // the six panels are square, the stage is not: the column count that makes the cells squarest fills it.
   // The grid mounts with its tab panel, so the observer is attached by the ref itself, not by an effect.
   const [columns, setColumns] = useState(3);
@@ -57,7 +58,7 @@ export default function EyeMode({ switcher }: { switcher: ReactNode }) {
   const levels = useMemo(() => (clip ? clip.levels.map((_, i) => decodeLevel(clip, i)) : []), [clip]);
   const levelIndex = Math.min(Math.max(Number(params.get('level') ?? '0') || 0, 0), 5);
   const frames = clip?.frames ?? 1;
-  const frame = Math.min(Math.max(Number(params.get('frame') ?? '0') || 0, 0), frames - 1);
+  const asked = Math.min(Math.max(Number(params.get('frame') ?? '0') || 0, 0), frames - 1);
   const available: View[] = clip ? TARGETS.filter((v) => (v === 'depth' ? true : v in (levels[0] ?? {}))) : ['depth'];
   const requestedLayer = (params.get('layer') ?? 'depth') as View;
   const target: View = available.includes(requestedLayer) ? requestedLayer : 'depth';
@@ -73,21 +74,15 @@ export default function EyeMode({ switcher }: { switcher: ReactNode }) {
     setParams(next, { replace: true });
   }
 
-  // playback: one frame per recorded interval (never faster than 25 per second on screen), paused by
-  // default, and stopped whenever the page is hidden
-  useEffect(() => {
-    if (!playing || !clip) return;
-    const step = Math.max((interval ?? 0.5) * 1000, 40);
-    const timer = window.setTimeout(() => update({ frame: String((frame + 1) % frames) }), step);
-    return () => window.clearTimeout(timer);
-    // one timeout per frame shown; `update` is this render's
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playing, clip, frame, frames, interval]);
-  useEffect(() => {
-    const stop = () => { if (document.hidden) setPlaying(false); };
-    document.addEventListener('visibilitychange', stop);
-    return () => document.removeEventListener('visibilitychange', stop);
-  }, []);
+  // Playback lives in `usePlayback`: local state on the frame clock, paused by default, stopped when the
+  // tab is hidden, and the URL written only when the reader pauses. It used to write every frame into the
+  // URL, one router navigation per frame, which is what made this feel like a slide show.
+  const clock = usePlayback(frames, interval ?? 0.2, {
+    initial: asked,
+    speed,
+    onPause: (at) => update({ frame: at ? String(at) : null }),
+  });
+  const frame = clock.frame;
 
   const name = (id: string) => t(CASE_NAMES[id]?.[0] ?? id, CASE_NAMES[id]?.[1] ?? id);
   const layerName: Record<View, string> = {
@@ -145,7 +140,7 @@ export default function EyeMode({ switcher }: { switcher: ReactNode }) {
       </div>
       <div className="cx-eye-charts">
         <TimeCourse clip={clip} levels={levels} labels={labels} view={shown} frame={frame}
-          onFrame={(f) => update({ frame: String(f) })} />
+          onFrame={(f) => clock.setFrame(f)} />
       </div>
     </div>
   );
@@ -169,7 +164,7 @@ export default function EyeMode({ switcher }: { switcher: ReactNode }) {
     <>
       <div className="cx-eye-charts cx-eye-charts-tall">
         <TimeCourse clip={clip} levels={levels} labels={labels} view={shown} frame={frame}
-          onFrame={(f) => update({ frame: String(f) })} />
+          onFrame={(f) => clock.setFrame(f)} />
       </div>
     </>
   );
@@ -215,11 +210,19 @@ export default function EyeMode({ switcher }: { switcher: ReactNode }) {
             {t('Frame', 'Cuadro')}: <strong>{frame + 1}</strong> / {frames} ({time})
           </label>
           <div className="cx-frame-row">
-            <button type="button" className="cx-play" aria-pressed={playing} onClick={() => setPlaying(!playing)}>
-              {playing ? t('Pause', 'Pausa') : t('Play', 'Reproducir')}
+            <button type="button" className="cx-play" aria-pressed={clock.playing} onClick={clock.toggle}>
+              {clock.playing ? t('Pause', 'Pausa') : t('Play', 'Reproducir')}
             </button>
             <input id="cx-frame" type="range" min={0} max={frames - 1} step={1} value={frame}
-              onChange={(e) => update({ frame: e.target.value === '0' ? null : e.target.value })} />
+              onChange={(e) => clock.setFrame(Number(e.target.value))} />
+          </div>
+          <div className="cx-segmented" role="radiogroup" aria-label={t('Speed', 'Velocidad')}>
+            {[0.25, 0.5, 1, 2, 4].map((one) => (
+              <button key={one} type="button" role="radio" aria-checked={one === speed}
+                className={one === speed ? 'active' : ''} onClick={() => setSpeed(one)}>
+                {one}x
+              </button>
+            ))}
           </div>
         </section>
 

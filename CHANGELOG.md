@@ -3,6 +3,46 @@
 All notable changes to this project are documented here. Format: Keep a Changelog, newest on top.
 Versions use the `X.XX.XXX` display form; the semver form (zeros dropped) appears in manifests.
 
+## [0.08.000] - 2026-09-22
+
+### Added
+
+- **The response view**: the fly's own visual pathway playing beside the eye's input. The lamina (L1, L2,
+  L3), the medulla types that feed motion detection (Mi1, Tm3, Tm1, Tm2, Mi9, Mi4) and the eight
+  direction-selective outputs, each on the same hexagonal lattice the column that drove it looks through,
+  advancing in lockstep with what the eye receives. CT1 belongs to that pathway and is named in the
+  manifest as wide-field rather than dropped: this connectome carries one CT1 for the whole lattice.
+- `run.py export-brainclips` and contract 2 for the response: the frozen network is run in the pipeline
+  and the result committed, verified against its digest before it is drawn, so what moves on screen is the
+  same network the Experiments page reports numbers for. Nothing is simulated in the browser, where 40,051
+  cells would be dishonest performance.
+- A one-column trace view: point at any column in any map and read what its T4 and T5 cells did over the
+  clip, with the playing position marked and clickable.
+
+### Changed
+
+- **Playback is an animation, not a slide show.** It advanced the frame by writing it into the URL, one
+  router navigation and one history entry per frame at five to ten frames a second. It now lives in local
+  state on `requestAnimationFrame` against the real clock, with a speed control from 0.25x to 4x, paused
+  by default, stopped when the tab is hidden, and the URL written only when the reader pauses, so a shared
+  link still opens on an exact frame.
+- The App's three modes are named in one word each, because three labels share a 224-pixel rail at the
+  narrow viewport.
+
+### Found
+
+- The size budget, measured: one case-level with 17 cell types at every simulated step is 1.36 MB gzipped
+  stored plainly and 0.74 MB delta-coded over time, so all sixteen cases at all six levels would be 71 MB.
+  The artifact carries the two ends of each case's sweep at every third step, which is 20 MB.
+- Three defects a green gate did not catch and the screenshots did: the activity canvases inherited an
+  absolute position and stacked at the viewport origin, painting over the page header; wide, short cards
+  drew an 81-pixel lattice in a 411-pixel box; and maps centred on zero painted each cell type solid blue
+  or solid red, because neurons rest at different levels (Mi1 near -2.7, T5a near +2.7 on one clip).
+  Maps are now centred on each type's own resting level.
+- The fit gate grew from 1,183 checks to 1,543, including the one an animation needs: pressing play must
+  CHANGE what is drawn, and pausing must stop it. A gate that looks at one frame passes a view that never
+  moves.
+
 ## [0.07.000] - 2026-09-22
 
 ### Added
