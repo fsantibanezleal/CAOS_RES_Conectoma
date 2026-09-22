@@ -440,6 +440,43 @@ def cmd_fetch_stereo(args: argparse.Namespace) -> int:
     return 1 if report["failed"] or report["missing"] else 0
 
 
+def cmd_cache_activity(args: argparse.Namespace) -> int:
+    """Run a frozen network over the corpus once and keep what a readout needs."""
+    from conectoma.stages import cache_activity
+
+    root = data_root(args.data_root)
+    if args.cases:
+        clips = cache_activity.case_clips(root)
+    else:
+        clips = []
+        for split in args.splits:
+            clips += cache_activity.split_clips(root, split, args.limit)
+    if not clips:
+        print("no clips to cache")
+        return 1
+    report = cache_activity.run(root, clips, arm=args.arm, seed=args.seed, regime=args.regime,
+                                transfer=not args.no_transfer)
+    print(f"{args.arm}: {report['written']} cached, {report['skipped']} already there, "
+          f"{report['seconds']} s")
+    return 0
+
+
+def cmd_train_readout(args: argparse.Namespace) -> int:
+    """Fit a readout head on cached activity, one arm and one seed at a time."""
+    from conectoma.stages import train_readout
+
+    root = data_root(args.data_root)
+    for seed in args.seeds:
+        record = train_readout.train(root, arm=args.arm, seed=seed, window=args.window,
+                                     steps=args.steps, batch=args.batch,
+                                     out_dir=Path(args.out_dir) if args.out_dir else None)
+        best = record["best"]["validation"]
+        print(f"{args.arm} seed {seed}: {record['parameters']} parameters, {record['seconds']} s, "
+              f"best validation silog {best['silog']:.4f} absrel {best['abs_rel']:.3f} "
+              f"boundary {best['boundary_accuracy']:.3f}")
+    return 0
+
+
 def cmd_evaluate(args: argparse.Namespace) -> int:
     """Score a method over the case clips and write its report."""
     from conectoma.stages.evaluate import compare, run
@@ -550,6 +587,29 @@ def main(argv: list[str] | None = None) -> int:
     stereo_parser.add_argument("--cases", nargs="*", default=None, help="only these cases")
     stereo_parser.add_argument("--workers", type=int, default=12, help="parallel member fetches")
     stereo_parser.set_defaults(func=cmd_fetch_stereo)
+
+    cache = sub.add_parser("cache-activity", help="a frozen network's activity over the corpus, cached")
+    cache.add_argument("--data-root", default=None, help="directory of the local data cache")
+    cache.add_argument("--arm", default="connectome", help="connectome, N1, N2 or N3")
+    cache.add_argument("--seed", type=int, default=0, help="the seed a null is built with")
+    cache.add_argument("--regime", default="R0", help="the regime the network is built in")
+    cache.add_argument("--splits", nargs="*", default=["train", "validation", "calibration"],
+                       help="which corpus splits to cache")
+    cache.add_argument("--cases", action="store_true", help="cache the case renderings instead")
+    cache.add_argument("--limit", type=int, default=None, help="only the first N clips of each split")
+    cache.add_argument("--no-transfer", action="store_true",
+                       help="use the engine's default biophysics instead of the published model's")
+    cache.set_defaults(func=cmd_cache_activity)
+
+    readout = sub.add_parser("train-readout", help="fit a readout head on cached activity")
+    readout.add_argument("--data-root", default=None, help="directory of the local data cache")
+    readout.add_argument("--arm", default="connectome", help="connectome, N1, N2 or N3")
+    readout.add_argument("--seeds", nargs="*", type=int, default=[0], help="one run per seed")
+    readout.add_argument("--window", type=int, default=2, help="frames the head sees at once")
+    readout.add_argument("--steps", type=int, default=3000, help="optimiser steps")
+    readout.add_argument("--batch", type=int, default=16, help="clips per step")
+    readout.add_argument("--out-dir", default=None, help="where the checkpoints go")
+    readout.set_defaults(func=cmd_train_readout)
 
     evaluate = sub.add_parser("evaluate", help="score a method over the case clips (test data only)")
     evaluate.add_argument("method", help="M01, or floor (the readout on the committed flow)")

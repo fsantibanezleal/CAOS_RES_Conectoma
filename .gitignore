@@ -44,6 +44,9 @@ data/raw/
 # large trained models stay local/LFS; commit small ONNX explicitly with `git add -f` if needed
 models/*.pt
 models/*.pth
+# trained readout checkpoints: the RECORD of each run is committed (what it scored, on which cache, with
+# which statistics), the weights are not. `run.py train-readout` rebuilds them from the cache.
+data/derived/readout/*.pt
 *.dll
 *.so
 *.dylib
