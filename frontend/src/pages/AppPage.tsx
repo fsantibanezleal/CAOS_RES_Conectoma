@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useSearchParams } from 'react-router';
 import { Tabs } from '@fasl-work/caos-app-shell';
 import { loadExplorer, type Verified } from '../api/artifacts';
@@ -7,6 +7,7 @@ import { useNumber, useT } from '../lib/i18n';
 import HexFilter, { type Panel } from '../explorer/HexFilter';
 import PartnerList from '../explorer/PartnerList';
 import Placement from '../explorer/Placement';
+import EyeMode from '../eye/EyeMode';
 import {
   angleBetween,
   buildModel,
@@ -31,7 +32,41 @@ const GROUPS: { id: TypeGroup; en: string; es: string }[] = [
 
 const DEFAULT_TYPE = 'T4a';
 
+type Mode = 'connectome' | 'eye';
+
+/**
+ * The App has two modes, switched in the rail so the page keeps one row of tabs: the connectome explorer
+ * (the wiring the network is built from) and the eye's input (what its 721 columns see in each case).
+ */
 export default function AppPage() {
+  const t = useT();
+  const [params, setParams] = useSearchParams();
+  const mode: Mode = params.get('mode') === 'eye' ? 'eye' : 'connectome';
+  const switcher = (
+    <div className="cx-segmented cx-mode" role="radiogroup" aria-label={t('App mode', 'Modo de la aplicación')}>
+      {(['connectome', 'eye'] as Mode[]).map((m) => (
+        <button
+          key={m}
+          type="button"
+          role="radio"
+          aria-checked={mode === m}
+          className={mode === m ? 'active' : ''}
+          onClick={() => {
+            const next = new URLSearchParams(params);
+            if (m === 'eye') next.set('mode', 'eye');
+            else next.delete('mode');
+            setParams(next, { replace: true });
+          }}
+        >
+          {m === 'connectome' ? t('Connectome', 'Conectoma') : t('Eye input', 'Entrada del ojo')}
+        </button>
+      ))}
+    </div>
+  );
+  return mode === 'eye' ? <EyeMode switcher={switcher} /> : <ConnectomeMode switcher={switcher} />;
+}
+
+function ConnectomeMode({ switcher }: { switcher: ReactNode }) {
   const t = useT();
   const num = useNumber();
   const [loaded, setLoaded] = useState<Verified<Explorer> | null>(null);
@@ -71,14 +106,16 @@ export default function AppPage() {
   if (error) {
     return (
       <div className="page-body wide cx-app">
-        <p className="cx-muted">{t('The connectome artifact could not be loaded: ', 'No se pudo cargar el artefacto del conectoma: ')}{error}</p>
+        <aside className="cx-rail">{switcher}</aside>
+        <section className="cx-main"><p className="cx-muted">{t('The connectome artifact could not be loaded: ', 'No se pudo cargar el artefacto del conectoma: ')}{error}</p></section>
       </div>
     );
   }
   if (!model || !type || !loaded) {
     return (
       <div className="page-body wide cx-app">
-        <p className="cx-muted">{t('Loading the connectome...', 'Cargando el conectoma...')}</p>
+        <aside className="cx-rail">{switcher}</aside>
+        <section className="cx-main"><p className="cx-muted">{t('Loading the connectome...', 'Cargando el conectoma...')}</p></section>
       </div>
     );
   }
@@ -156,6 +193,7 @@ export default function AppPage() {
   return (
     <div className="page-body wide cx-app">
       <aside className="cx-rail" aria-label={t('Explorer controls', 'Controles del explorador')}>
+        {switcher}
         <section className="cx-rail-section">
           <label className="cx-label" htmlFor="cx-type">{t('Cell type', 'Tipo celular')}</label>
           <select

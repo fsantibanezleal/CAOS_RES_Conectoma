@@ -9,8 +9,9 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..');
 const PUBLIC = join(HERE, 'public');
 
-// Only what the web reads: the explorer artifact, the manifests, and the committed reports the Benchmark and
-// Experiments pages read their numbers from. The engine-format specification (8 MB) stays out.
+// Only what the web reads: the explorer artifact, the eye's case clips, the manifests, and the committed
+// reports the Benchmark and Experiments pages read their numbers from. The engine-format specification
+// (8 MB) and the full renderings stay out.
 const ARTIFACTS = [
   'explorer',
   'manifests',
@@ -20,6 +21,9 @@ const ARTIFACTS = [
   'connectome/malecns-optic-lobe-r.characterization.json',
   'connectome/malecns-visual-cns.summary.json',
   'connectome/malecns-visual-cns.characterization.json',
+  'eyeclips',
+  'vision/ingestion.json',
+  'vision/cases.json',
 ];
 
 const derived = join(ROOT, 'data', 'derived');

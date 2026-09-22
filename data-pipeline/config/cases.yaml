@@ -1,0 +1,142 @@
+# The case registry (docs/architecture/05_vision-data.md). Sixteen cases in six categories, each varying one
+# physical quantity over six levels with units. A case draws only test data: its TartanAir family is in the
+# test split (splits.case_families in vision.yaml), and every other source is test-only. `clips` is how many
+# clips each case draws (fewer when its source has fewer), the same clips at every level, so the six levels
+# of a case differ only in the quantity it varies. `grades` are the targets the case is scored on.
+seed: 20260918
+clips: 8
+
+cases:
+  C01:
+    name: forest flight
+    category: nominal-outdoor
+    reason: dense texture and strong parallax, the conditions depth from motion is made for
+    source: tartanair
+    family: SeasonalForest
+    grades: [depth, boundary, flow]
+    variant: {quantity: ego speed, unit: times the recorded speed, transform: speed,
+              levels: [0.5, 1, 2, 4, 8, 16]}
+  C02:
+    name: urban street
+    category: nominal-outdoor
+    reason: planar structure and occlusion edges
+    source: tartanair
+    family: VictorianStreet
+    grades: [depth, boundary, flow]
+    variant: {quantity: ego speed, unit: times the recorded speed, transform: speed,
+              levels: [0.5, 1, 2, 4, 8, 16]}
+  C03:
+    name: hospital corridor
+    category: nominal-indoor
+    reason: long depth range and textureless walls
+    source: tartanair
+    family: Hospital
+    grades: [depth, boundary, flow]
+    variant: {quantity: illumination, unit: relative illuminance, transform: illumination,
+              levels: [1, 0.5, 0.25, 0.125, 0.0625, 0.03125]}
+  C04:
+    name: cluttered room, single image
+    category: nominal-indoor
+    reason: single-image indoor depth and object instances, the non-native condition
+    source: hypersim
+    # Hypersim's semantic labels are incomplete in some test scenes (20 of 46 have less than 90 percent of
+    # the view labelled, measured on the lattice), and figure-ground and semantics can only be graded where
+    # they are; a cluttered room also has objects in it. Scenes are drawn among those meeting both.
+    require: {labelled_share: 0.9, figure_share: 0.1}
+    grades: [depth, boundary, figure, semantic]
+    variant: {quantity: field of view, unit: degrees (vertical), transform: field_of_view,
+              levels: [full, 40, 32, 24, 18, 12]}
+  C05:
+    name: city at night
+    category: extreme-lighting
+    reason: the photoreceptor noise regime
+    source: tartanair
+    family: HongKong
+    grades: [depth, boundary, flow]
+    variant: {quantity: photon noise, unit: photons per column per frame at luminance 1, transform: photons,
+              levels: [null, 10000, 1000, 100, 10, 1]}
+  C06:
+    name: motion blur
+    category: degradation
+    reason: the limits of temporal integration
+    source: tartanair
+    family: Office
+    grades: [depth, boundary, flow]
+    variant: {quantity: exposure, unit: ms, transform: blur, levels: [0, 10, 20, 40, 80, 160]}
+  C07:
+    name: marsh in fog
+    category: degradation
+    reason: contrast lost with distance, which depth cues rely on
+    source: tartanair
+    family: GreatMarsh
+    grades: [depth, boundary, flow]
+    variant: {quantity: fog attenuation, unit: 1/m, transform: fog, levels: [0, 0.01, 0.02, 0.05, 0.1, 0.2]}
+  C08:
+    name: Sintel, the published model's domain
+    category: transfer
+    reason: parity with the published model's training data, on the sequences it held out
+    source: sintel
+    grades: [depth_relative, flow]
+    variant: {quantity: contrast, unit: factor on contrast about the mean, transform: contrast,
+              levels: [1, 0.7, 0.5, 0.35, 0.25, 0.15]}
+  C09:
+    name: Spring, fine structure
+    category: transfer
+    reason: thin objects and high detail at a known metric scale
+    source: spring
+    grades: [depth, sky]
+    variant: {quantity: sampling, unit: rows the 1080-row frame is resampled to (the lattice sees 391 of 436),
+              transform: rows, levels: [436, 520, 620, 740, 880, 1080]}
+  C10:
+    name: gap crossing
+    category: ethological
+    reason: flies judge a gap's width from the parallax of its edges during the approach (Pick and Strauss 2005)
+    source: flygym
+    grades: [depth, figure]
+    variant: {quantity: gap width, unit: mm, transform: scene, levels: [1, 2, 3, 4, 5, 6]}
+  C11:
+    name: looming object
+    category: ethological
+    reason: looming detection by radial motion opponency (LPLC2)
+    source: flygym
+    grades: [depth, figure]
+    variant: {quantity: approach, unit: l/v in ms, transform: scene, levels: [10, 20, 40, 80, 160, 320]}
+  C12:
+    name: small moving target
+    category: ethological
+    reason: small-object detection (LC11)
+    source: flygym
+    grades: [depth, figure]
+    variant: {quantity: target size, unit: degrees, transform: scene, levels: [2, 4, 6, 8, 12, 16]}
+  C13:
+    name: pure rotation
+    category: negative-control
+    reason: rotation gives no parallax, so depth from motion is unobservable; a model must say so
+    source: panorama
+    family: BrushifyMoon
+    grades: [flow, uncertainty]
+    variant: {quantity: rotation rate, unit: deg/s, transform: rotation, levels: [0, 15, 30, 60, 120, 240]}
+  C14:
+    name: static camera
+    category: negative-control
+    reason: no motion signal at all
+    source: tartanair
+    family: GreatMarsh
+    grades: [uncertainty]
+    variant: {quantity: photon noise, unit: photons per column per frame at luminance 1, transform: static,
+              levels: [null, 10000, 1000, 100, 10, 1]}
+  C15:
+    name: textured planes at known depths
+    category: positive-control
+    reason: analytic depth, flow and figure-ground, exact
+    source: synthetic
+    grades: [depth, flow, figure]
+    variant: {quantity: nearest plane depth, unit: m, transform: planes, levels: [0.5, 1, 2, 4, 8, 16]}
+  C16:
+    name: textureless surfaces
+    category: boundary
+    reason: the aperture problem, where motion cannot be seen but depth is defined
+    source: synthetic
+    grades: [depth, flow, figure]
+    variant: {quantity: texture contrast, unit: RMS contrast, transform: texture,
+              levels: [0.5, 0.2, 0.1, 0.05, 0.02, 0.0]}

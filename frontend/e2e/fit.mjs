@@ -12,6 +12,10 @@
 //               cover at least half the viewport (their union box, not the stretched svg element).
 //   doc routes  the page mounted with its own heading; full width; one tab row; no horizontal drag; the
 //               Experiments and Benchmark tables are filled from the reports, not left loading.
+//   eye mode    the same App floors on each of its three tabs (the six level panels take the column count
+//               that makes them squarest, so they fill the stage), every lattice canvas holding a picture
+//               (colours sampled inside the box it declares it painted), and at one size every one of the
+//               sixteen cases loads a clip verified against its manifest and draws all its lattices.
 //   modal       each architecture diagram is inlined, sized, in the reader's language, and drawn in the
 //               theme's colours (a diagram that fell back to black text is a failure).
 import { spawn } from 'node:child_process';
@@ -112,8 +116,16 @@ function measure() {
     top: Math.max(r.top, box.top), bottom: Math.min(r.bottom, box.bottom),
   });
   const drawn = [...document.querySelectorAll('.cx-hex-cell, .cx-place, .cx-density-plot')]
-    .map((el) => clip(el.getBoundingClientRect(), el.closest('svg').getBoundingClientRect()))
-    .filter((r) => r.right > r.left && r.bottom > r.top);
+    .map((el) => clip(el.getBoundingClientRect(), el.closest('svg').getBoundingClientRect()));
+  // canvases declare the box they painted (the eye's lattices); a chart's plot area is uPlot's .u-over
+  for (const canvas of document.querySelectorAll('.cx-eye-canvas[data-painted]')) {
+    const box = canvas.getBoundingClientRect();
+    const [x0, y0, x1, y1] = canvas.dataset.painted.split(',').map(Number);
+    drawn.push(clip({ left: box.left + x0, top: box.top + y0, right: box.left + x1, bottom: box.top + y1 }, box));
+  }
+  // a chart's canvas is drawn edge to edge (grid, axes, series), so the canvas is what the reader sees
+  for (const canvas of document.querySelectorAll('.cx-timecourse canvas')) drawn.push(canvas.getBoundingClientRect());
+  drawn.splice(0, drawn.length, ...drawn.filter((r) => r.right > r.left && r.bottom > r.top));
   let viz = 0;
   if (drawn.length) {
     const left = Math.max(0, Math.min(...drawn.map((r) => r.left)));
@@ -135,6 +147,35 @@ function measure() {
     brand: document.querySelector('.brand')?.textContent?.trim() ?? '',
     verified: document.querySelector('.cx-provenance')?.getAttribute('data-verified') ?? null,
   };
+}
+
+// Whether each eye canvas actually holds a picture: distinct colours sampled inside the box it declares it
+// painted. A canvas that is sized and declared but left blank shows one or two colours.
+function paintedCanvases() {
+  return [...document.querySelectorAll('.cx-eye-canvas[data-painted]')].map((canvas) => {
+    const [x0, y0, x1, y1] = canvas.dataset.painted.split(',').map(Number);
+    const ratio = canvas.width / Math.max(canvas.getBoundingClientRect().width, 1);
+    const ctx = canvas.getContext('2d');
+    const colours = new Set();
+    for (let i = 1; i < 24; i += 1) {
+      for (let j = 1; j < 24; j += 1) {
+        const x = Math.round((x0 + ((x1 - x0) * i) / 24) * ratio);
+        const y = Math.round((y0 + ((y1 - y0) * j) / 24) * ratio);
+        const d = ctx.getImageData(x, y, 1, 1).data;
+        colours.add(`${d[0]},${d[1]},${d[2]},${d[3]}`);
+      }
+    }
+    return { columns: Number(canvas.dataset.columns), colours: colours.size };
+  });
+}
+
+const EYE_TABS = { en: ['Input and ground truth', 'All six levels', 'Over time'], es: ['Entrada y verdad de terreno', 'Los seis niveles', 'En el tiempo'] };
+const EYE_CASES = Array.from({ length: 16 }, (_, i) => `C${String(i + 1).padStart(2, '0')}`);
+
+async function openEye(page, caseId) {
+  await page.goto(`${base}/?mode=eye&case=${caseId}`, { waitUntil: 'networkidle' });
+  await page.waitForSelector('.cx-provenance[data-verified]', { timeout: 30000 });
+  await page.waitForSelector('.cx-eye-canvas[data-painted]', { timeout: 30000 });
 }
 
 const server = await serve();
@@ -165,6 +206,31 @@ try {
             await page.screenshot({ path: `${out}/app-${tab.toLowerCase()}-${tag}.png` });
           }
           pass(errors.length === 0, `${tag} App: no page errors ${JSON.stringify(errors.slice(0, 3))}`);
+          await ctx.close();
+        }
+
+        // ---- App route, eye mode: the same floors, and every canvas holds a picture
+        {
+          const { ctx, page, errors } = await open(browser, viewport, theme, lang);
+          await openEye(page, 'C01');
+          for (const tab of EYE_TABS[lang]) {
+            await page.getByRole('tab', { name: tab, exact: true }).click();
+            await page.waitForTimeout(500);
+            const m = await page.evaluate(measure);
+            const where = `${tag} App eye/${tab}`;
+            pass(m.brand.includes('Conectoma'), `${where}: the brand reads Conectoma (got "${m.brand}")`);
+            pass(m.verified === 'true', `${where}: the eye clip verified against its manifest (${m.verified})`);
+            pass(m.scrollW <= m.vw, `${where}: no horizontal drag (${m.scrollW} > ${m.vw})`);
+            pass(m.scrollH <= m.vh, `${where}: no scroll to the footer (${m.scrollH} > ${m.vh})`);
+            pass(m.rail && m.rail.scroll <= m.rail.client + 1, `${where}: the rail shows its controls (${JSON.stringify(m.rail)})`);
+            pass(m.navRows === 1 && m.tabRows.every((r) => r === 1), `${where}: chrome on one row (nav ${m.navRows}, tabs ${m.tabRows})`);
+            pass(m.vizShare >= VIZ_FLOOR, `${where}: painted instrument covers ${(100 * m.vizShare).toFixed(1)}% of the viewport`);
+            const canvases = await page.evaluate(paintedCanvases);
+            canvases.forEach((c, k) => pass(c.columns === 721 && c.colours >= 8,
+              `${where}: canvas ${k + 1} painted 721 columns in ${c.colours} sampled colours`));
+            await page.screenshot({ path: `${out}/app-eye-${EYE_TABS.en[EYE_TABS[lang].indexOf(tab)].split(' ')[0].toLowerCase()}-${tag}.png` });
+          }
+          pass(errors.length === 0, `${tag} App eye: no page errors ${JSON.stringify(errors.slice(0, 3))}`);
           await ctx.close();
         }
 
@@ -212,6 +278,28 @@ try {
         }
       }
     }
+  }
+
+  // ---- every case of the eye mode, at one size: its clip verifies, and both of its views draw a picture
+  {
+    const { ctx, page, errors } = await open(browser, { width: 1600, height: 900 }, 'light', 'en');
+    for (const caseId of EYE_CASES) {
+      await openEye(page, caseId);
+      for (const tab of ['Input and ground truth', 'All six levels']) {
+        await page.getByRole('tab', { name: tab, exact: true }).click();
+        await page.waitForTimeout(400);
+        const verified = await page.evaluate(() => document.querySelector('.cx-provenance')?.getAttribute('data-verified'));
+        const canvases = await page.evaluate(paintedCanvases);
+        const where = `eye ${caseId} ${tab}`;
+        pass(verified === 'true', `${where}: clip verified (${verified})`);
+        pass(canvases.length === (tab === 'All six levels' ? 6 : 2), `${where}: ${canvases.length} lattices drawn`);
+        pass(canvases.every((c) => c.columns === 721 && c.colours >= 4),
+          `${where}: every lattice holds a picture (${canvases.map((c) => c.colours).join(', ')} colours)`);
+      }
+      await page.screenshot({ path: `${out}/eye-${caseId}.png` });
+    }
+    pass(errors.length === 0, `eye cases: no page errors ${JSON.stringify(errors.slice(0, 3))}`);
+    await ctx.close();
   }
 
   // ---- the artifact check without WebCrypto. A page served over plain HTTP is not a secure context and has no

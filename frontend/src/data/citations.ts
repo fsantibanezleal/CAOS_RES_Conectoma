@@ -92,6 +92,49 @@ export const CITATIONS: Citation[] = [
     url: 'https://github.com/TuragaLab/flyvis',
   },
   {
+    id: 'wang2020',
+    label: 'Wang et al. 2020',
+    citation:
+      'Wang W, Zhu D, Wang X, Hu Y, Qiu Y, Wang C, and colleagues. TartanAir: a dataset to push the limits of visual SLAM. IEEE/RSJ IROS, 2020. Version 2 of the dataset: tartanair.org.',
+    doi: '10.1109/IROS45743.2020.9341801',
+  },
+  {
+    id: 'butler2012',
+    label: 'Butler et al. 2012',
+    citation: 'Butler DJ, Wulff J, Stanley GB, Black MJ. A naturalistic open source movie for optical flow evaluation. ECCV, Lecture Notes in Computer Science, 2012.',
+    doi: '10.1007/978-3-642-33783-3_44',
+  },
+  {
+    id: 'mehl2023',
+    label: 'Mehl et al. 2023',
+    citation: 'Mehl L, Schmalfuss J, Jahedi A, Nalivayko Y, Bruhn A. Spring: a high-resolution high-detail dataset and benchmark for scene flow, optical flow and stereo. IEEE/CVF CVPR, 2023. Data: doi:10.18419/DARUS-3376.',
+    doi: '10.1109/CVPR52729.2023.00482',
+  },
+  {
+    id: 'roberts2021',
+    label: 'Roberts et al. 2021',
+    citation: 'Roberts M, Ramapuram J, Ranjan A, Kumar A, Bautista MA, Paczan N, and colleagues. Hypersim: a photorealistic synthetic dataset for holistic indoor scene understanding. IEEE/CVF ICCV, 2021.',
+    doi: '10.1109/ICCV48922.2021.01073',
+  },
+  {
+    id: 'wangchen2024',
+    label: 'Wang-Chen et al. 2024',
+    citation: 'Wang-Chen S, Stimpfling VA, Lam TKC, Özdil PG, Genoud L, Hurtak F, Ramdya P. NeuroMechFly v2: simulating embodied sensorimotor control in adult Drosophila. Nature Methods, 2024.',
+    doi: '10.1038/s41592-024-02497-y',
+  },
+  {
+    id: 'klapoetke2017',
+    label: 'Klapoetke et al. 2017',
+    citation: 'Klapoetke NC, Nern A, Peek MY, Rogers EM, Breads P, Rubin GM, and colleagues. Ultra-selective looming detection from radial motion opponency. Nature, 2017.',
+    doi: '10.1038/nature24626',
+  },
+  {
+    id: 'keles2017',
+    label: 'Keleş and Frye 2017',
+    citation: 'Keleş MF, Frye MA. Object-detecting neurons in Drosophila. Current Biology, 2017.',
+    doi: '10.1016/j.cub.2017.01.012',
+  },
+  {
     id: 'eigen2014',
     label: 'Eigen et al. 2014',
     citation: 'Eigen D, Puhrsch C, Fergus R. Depth map prediction from a single image using a multi-scale deep network. arXiv, 2014.',

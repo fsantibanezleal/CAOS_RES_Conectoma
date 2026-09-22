@@ -1,0 +1,2932 @@
+{
+ "cases_sha256": "b73e721a163475c2ca9d3e7ffce9af2a3a93026f9579a9c158723f0b0680ea00",
+ "render_version": 2,
+ "code_sha256": "bb92fc28817c3dd6542e92d1e93ca99de93157e0d73e7592a7526a26923fb6ae",
+ "seed": 20260918,
+ "clips_per_case": 8,
+ "cases": {
+  "C01": {
+   "name": "forest flight",
+   "category": "nominal-outdoor",
+   "reason": "dense texture and strong parallax, the conditions depth from motion is made for",
+   "source": "tartanair",
+   "grades": [
+    "depth",
+    "boundary",
+    "flow"
+   ],
+   "family": "SeasonalForest",
+   "contract": "tartanair",
+   "variant": {
+    "quantity": "ego speed",
+    "unit": "times the recorded speed",
+    "levels": [
+     0.5,
+     1,
+     2,
+     4,
+     8,
+     16
+    ]
+   },
+   "items": [
+    "SeasonalForestWinter/hard/P000/001001",
+    "SeasonalForestAutumn/hard/P002/001042",
+    "SeasonalForestWinterNight/hard/P002/000479",
+    "SeasonalForestSpring/hard/P000/001389",
+    "SeasonalForestSummerNight/easy/P000/002020",
+    "SeasonalForestWinter/easy/P002/001100",
+    "SeasonalForestAutumn/easy/P002/000617",
+    "SeasonalForestWinterNight/easy/P002/002468"
+   ],
+   "levels": [
+    {
+     "value": 0.5,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.2,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "frame_rate_hz": 5.0,
+      "speed_m_s": 1.587273
+     },
+     "statistics": {
+      "boundary_share": 0.632693,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 15844.0,
+      "depth_median_m": 9.78125,
+      "depth_min_m": 0.968262,
+      "engine_flow_per_frame": 8.43784,
+      "flow_valid_share": 0.856911,
+      "frames": 32.0,
+      "lum_mean": 0.359565,
+      "lum_std": 0.19484,
+      "step_m_median": 0.317455
+     }
+    },
+    {
+     "value": 1,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "frame_rate_hz": 10.0,
+      "speed_m_s": 3.174546
+     },
+     "statistics": {
+      "boundary_share": 0.632693,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 15844.0,
+      "depth_median_m": 9.78125,
+      "depth_min_m": 0.968262,
+      "engine_flow_per_frame": 8.43784,
+      "flow_valid_share": 0.856911,
+      "frames": 32.0,
+      "lum_mean": 0.359565,
+      "lum_std": 0.19484,
+      "step_m_median": 0.317455
+     }
+    },
+    {
+     "value": 2,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.05,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "frame_rate_hz": 20.0,
+      "speed_m_s": 6.349092
+     },
+     "statistics": {
+      "boundary_share": 0.632693,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 15844.0,
+      "depth_median_m": 9.78125,
+      "depth_min_m": 0.968262,
+      "engine_flow_per_frame": 8.43784,
+      "flow_valid_share": 0.856911,
+      "frames": 32.0,
+      "lum_mean": 0.359565,
+      "lum_std": 0.19484,
+      "step_m_median": 0.317455
+     }
+    },
+    {
+     "value": 4,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.025,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "frame_rate_hz": 40.0,
+      "speed_m_s": 12.698184
+     },
+     "statistics": {
+      "boundary_share": 0.632693,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 15844.0,
+      "depth_median_m": 9.78125,
+      "depth_min_m": 0.968262,
+      "engine_flow_per_frame": 8.43784,
+      "flow_valid_share": 0.856911,
+      "frames": 32.0,
+      "lum_mean": 0.359565,
+      "lum_std": 0.19484,
+      "step_m_median": 0.317455
+     }
+    },
+    {
+     "value": 8,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.0125,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "frame_rate_hz": 80.0,
+      "speed_m_s": 25.396368
+     },
+     "statistics": {
+      "boundary_share": 0.632693,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 15844.0,
+      "depth_median_m": 9.78125,
+      "depth_min_m": 0.968262,
+      "engine_flow_per_frame": 8.43784,
+      "flow_valid_share": 0.856911,
+      "frames": 32.0,
+      "lum_mean": 0.359565,
+      "lum_std": 0.19484,
+      "step_m_median": 0.317455
+     }
+    },
+    {
+     "value": 16,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.00625,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "frame_rate_hz": 160.0,
+      "speed_m_s": 50.792737
+     },
+     "statistics": {
+      "boundary_share": 0.632693,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 15844.0,
+      "depth_median_m": 9.78125,
+      "depth_min_m": 0.968262,
+      "engine_flow_per_frame": 8.43784,
+      "flow_valid_share": 0.856911,
+      "frames": 32.0,
+      "lum_mean": 0.359565,
+      "lum_std": 0.19484,
+      "step_m_median": 0.317455
+     }
+    }
+   ],
+   "failed": {}
+  },
+  "C02": {
+   "name": "urban street",
+   "category": "nominal-outdoor",
+   "reason": "planar structure and occlusion edges",
+   "source": "tartanair",
+   "grades": [
+    "depth",
+    "boundary",
+    "flow"
+   ],
+   "family": "VictorianStreet",
+   "contract": "tartanair",
+   "variant": {
+    "quantity": "ego speed",
+    "unit": "times the recorded speed",
+    "levels": [
+     0.5,
+     1,
+     2,
+     4,
+     8,
+     16
+    ]
+   },
+   "items": [
+    "VictorianStreet/easy/P003/000477",
+    "VictorianStreet/easy/P000/000616",
+    "VictorianStreet/easy/P004/000097",
+    "VictorianStreet/easy/P005/000101",
+    "VictorianStreet/hard/P001/000087",
+    "VictorianStreet/easy/P006/000489",
+    "VictorianStreet/hard/P000/000118",
+    "VictorianStreet/hard/P005/000202"
+   ],
+   "levels": [
+    {
+     "value": 0.5,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.2,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "frame_rate_hz": 5.0,
+      "speed_m_s": 1.078222
+     },
+     "statistics": {
+      "boundary_share": 0.159761,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 14284.0,
+      "depth_median_m": 3.807617,
+      "depth_min_m": 1.277832,
+      "engine_flow_per_frame": 8.150183,
+      "flow_valid_share": 0.964331,
+      "frames": 32.0,
+      "lum_mean": 0.309641,
+      "lum_std": 0.269286,
+      "step_m_median": 0.215644
+     }
+    },
+    {
+     "value": 1,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "frame_rate_hz": 10.0,
+      "speed_m_s": 2.156443
+     },
+     "statistics": {
+      "boundary_share": 0.159761,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 14284.0,
+      "depth_median_m": 3.807617,
+      "depth_min_m": 1.277832,
+      "engine_flow_per_frame": 8.150183,
+      "flow_valid_share": 0.964331,
+      "frames": 32.0,
+      "lum_mean": 0.309641,
+      "lum_std": 0.269286,
+      "step_m_median": 0.215644
+     }
+    },
+    {
+     "value": 2,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.05,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "frame_rate_hz": 20.0,
+      "speed_m_s": 4.312886
+     },
+     "statistics": {
+      "boundary_share": 0.159761,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 14284.0,
+      "depth_median_m": 3.807617,
+      "depth_min_m": 1.277832,
+      "engine_flow_per_frame": 8.150183,
+      "flow_valid_share": 0.964331,
+      "frames": 32.0,
+      "lum_mean": 0.309641,
+      "lum_std": 0.269286,
+      "step_m_median": 0.215644
+     }
+    },
+    {
+     "value": 4,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.025,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "frame_rate_hz": 40.0,
+      "speed_m_s": 8.625774
+     },
+     "statistics": {
+      "boundary_share": 0.159761,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 14284.0,
+      "depth_median_m": 3.807617,
+      "depth_min_m": 1.277832,
+      "engine_flow_per_frame": 8.150183,
+      "flow_valid_share": 0.964331,
+      "frames": 32.0,
+      "lum_mean": 0.309641,
+      "lum_std": 0.269286,
+      "step_m_median": 0.215644
+     }
+    },
+    {
+     "value": 8,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.0125,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "frame_rate_hz": 80.0,
+      "speed_m_s": 17.251548
+     },
+     "statistics": {
+      "boundary_share": 0.159761,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 14284.0,
+      "depth_median_m": 3.807617,
+      "depth_min_m": 1.277832,
+      "engine_flow_per_frame": 8.150183,
+      "flow_valid_share": 0.964331,
+      "frames": 32.0,
+      "lum_mean": 0.309641,
+      "lum_std": 0.269286,
+      "step_m_median": 0.215644
+     }
+    },
+    {
+     "value": 16,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.00625,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "frame_rate_hz": 160.0,
+      "speed_m_s": 34.503095
+     },
+     "statistics": {
+      "boundary_share": 0.159761,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 14284.0,
+      "depth_median_m": 3.807617,
+      "depth_min_m": 1.277832,
+      "engine_flow_per_frame": 8.150183,
+      "flow_valid_share": 0.964331,
+      "frames": 32.0,
+      "lum_mean": 0.309641,
+      "lum_std": 0.269286,
+      "step_m_median": 0.215644
+     }
+    }
+   ],
+   "failed": {}
+  },
+  "C03": {
+   "name": "hospital corridor",
+   "category": "nominal-indoor",
+   "reason": "long depth range and textureless walls",
+   "source": "tartanair",
+   "grades": [
+    "depth",
+    "boundary",
+    "flow"
+   ],
+   "family": "Hospital",
+   "contract": "tartanair",
+   "variant": {
+    "quantity": "illumination",
+    "unit": "relative illuminance",
+    "levels": [
+     1,
+     0.5,
+     0.25,
+     0.125,
+     0.0625,
+     0.03125
+    ]
+   },
+   "items": [
+    "Hospital/hard/P004/000250",
+    "Hospital/hard/P002/000269",
+    "Hospital/hard/P009/000206",
+    "Hospital/hard/P010/000176",
+    "Hospital/hard/P003/001208",
+    "Hospital/hard/P010/000562",
+    "Hospital/hard/P000/000325",
+    "Hospital/easy/P004/000378"
+   ],
+   "levels": [
+    {
+     "value": 1,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "lum_mean": 0.394449
+     },
+     "statistics": {
+      "boundary_share": 0.210667,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 25.203125,
+      "depth_median_m": 2.345215,
+      "depth_min_m": 0.425781,
+      "engine_flow_per_frame": 13.35102,
+      "flow_valid_share": 0.89053,
+      "frames": 32.0,
+      "lum_mean": 0.394449,
+      "lum_std": 0.224695,
+      "step_m_median": 0.281406
+     }
+    },
+    {
+     "value": 0.5,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "lum_mean": 0.197224
+     },
+     "statistics": {
+      "boundary_share": 0.210667,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 25.203125,
+      "depth_median_m": 2.345215,
+      "depth_min_m": 0.425781,
+      "engine_flow_per_frame": 13.35102,
+      "flow_valid_share": 0.89053,
+      "frames": 32.0,
+      "lum_mean": 0.197224,
+      "lum_std": 0.112348,
+      "step_m_median": 0.281406
+     }
+    },
+    {
+     "value": 0.25,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "lum_mean": 0.098612
+     },
+     "statistics": {
+      "boundary_share": 0.210667,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 25.203125,
+      "depth_median_m": 2.345215,
+      "depth_min_m": 0.425781,
+      "engine_flow_per_frame": 13.35102,
+      "flow_valid_share": 0.89053,
+      "frames": 32.0,
+      "lum_mean": 0.098612,
+      "lum_std": 0.056174,
+      "step_m_median": 0.281406
+     }
+    },
+    {
+     "value": 0.125,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "lum_mean": 0.049306
+     },
+     "statistics": {
+      "boundary_share": 0.210667,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 25.203125,
+      "depth_median_m": 2.345215,
+      "depth_min_m": 0.425781,
+      "engine_flow_per_frame": 13.35102,
+      "flow_valid_share": 0.89053,
+      "frames": 32.0,
+      "lum_mean": 0.049306,
+      "lum_std": 0.028087,
+      "step_m_median": 0.281406
+     }
+    },
+    {
+     "value": 0.0625,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "lum_mean": 0.024653
+     },
+     "statistics": {
+      "boundary_share": 0.210667,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 25.203125,
+      "depth_median_m": 2.345215,
+      "depth_min_m": 0.425781,
+      "engine_flow_per_frame": 13.35102,
+      "flow_valid_share": 0.89053,
+      "frames": 32.0,
+      "lum_mean": 0.024653,
+      "lum_std": 0.014043,
+      "step_m_median": 0.281406
+     }
+    },
+    {
+     "value": 0.03125,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "lum_mean": 0.012327
+     },
+     "statistics": {
+      "boundary_share": 0.210667,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 25.203125,
+      "depth_median_m": 2.345215,
+      "depth_min_m": 0.425781,
+      "engine_flow_per_frame": 13.35102,
+      "flow_valid_share": 0.89053,
+      "frames": 32.0,
+      "lum_mean": 0.012327,
+      "lum_std": 0.007022,
+      "step_m_median": 0.281406
+     }
+    }
+   ],
+   "failed": {}
+  },
+  "C04": {
+   "name": "cluttered room, single image",
+   "category": "nominal-indoor",
+   "reason": "single-image indoor depth and object instances, the non-native condition",
+   "source": "hypersim",
+   "grades": [
+    "depth",
+    "boundary",
+    "figure",
+    "semantic"
+   ],
+   "family": null,
+   "contract": "hypersim",
+   "variant": {
+    "quantity": "field of view",
+    "unit": "degrees (vertical)",
+    "levels": [
+     "full",
+     40,
+     32,
+     24,
+     18,
+     12
+    ]
+   },
+   "items": [
+    "ai_053_010",
+    "ai_051_001",
+    "ai_037_009",
+    "ai_030_001",
+    "ai_054_007",
+    "ai_008_007",
+    "ai_048_008",
+    "ai_023_005"
+   ],
+   "levels": [
+    {
+     "value": "full",
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": null,
+     "measured": {
+      "column_spacing_deg": 1.479401,
+      "crop_fraction": 1.0,
+      "images_dropped_uniform": 0.0,
+      "vertical_fov_deg": 46.82645
+     },
+     "statistics": {
+      "boundary_share": 0.341297,
+      "depth_masked_columns": 0.5,
+      "depth_max_m": 15.399263,
+      "depth_median_m": 6.007124,
+      "depth_min_m": 1.478335,
+      "figure_share": 0.362249,
+      "frames": 20.0,
+      "labelled_share": 0.980358,
+      "lum_mean": 0.297784,
+      "lum_std": 0.205124
+     }
+    },
+    {
+     "value": 40,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": null,
+     "measured": {
+      "column_spacing_deg": 1.243536,
+      "crop_fraction": 0.840553,
+      "images_dropped_uniform": 0.0,
+      "vertical_fov_deg": 40.0
+     },
+     "statistics": {
+      "boundary_share": 0.334466,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 15.420945,
+      "depth_median_m": 6.294637,
+      "depth_min_m": 1.581769,
+      "figure_share": 0.379866,
+      "frames": 20.0,
+      "labelled_share": 0.980055,
+      "lum_mean": 0.287614,
+      "lum_std": 0.213163
+     }
+    },
+    {
+     "value": 32,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": null,
+     "measured": {
+      "column_spacing_deg": 0.979705,
+      "crop_fraction": 0.66221,
+      "images_dropped_uniform": 0.0,
+      "vertical_fov_deg": 32.0
+     },
+     "statistics": {
+      "boundary_share": 0.324133,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 15.441815,
+      "depth_median_m": 6.688884,
+      "depth_min_m": 1.768428,
+      "figure_share": 0.392011,
+      "frames": 20.0,
+      "labelled_share": 0.983923,
+      "lum_mean": 0.27179,
+      "lum_std": 0.202062
+     }
+    },
+    {
+     "value": 24,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": null,
+     "measured": {
+      "column_spacing_deg": 0.726237,
+      "crop_fraction": 0.490878,
+      "images_dropped_uniform": 0.0,
+      "vertical_fov_deg": 24.0
+     },
+     "statistics": {
+      "boundary_share": 0.297226,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 15.312823,
+      "depth_median_m": 7.361293,
+      "depth_min_m": 2.091657,
+      "figure_share": 0.403405,
+      "frames": 20.0,
+      "labelled_share": 0.992479,
+      "lum_mean": 0.273125,
+      "lum_std": 0.196691
+     }
+    },
+    {
+     "value": 18,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": null,
+     "measured": {
+      "column_spacing_deg": 0.541151,
+      "crop_fraction": 0.365773,
+      "images_dropped_uniform": 0.0,
+      "vertical_fov_deg": 18.0
+     },
+     "statistics": {
+      "boundary_share": 0.249931,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 13.888401,
+      "depth_median_m": 7.632403,
+      "depth_min_m": 2.157968,
+      "figure_share": 0.3988,
+      "frames": 20.0,
+      "labelled_share": 0.995532,
+      "lum_mean": 0.282885,
+      "lum_std": 0.198168
+     }
+    },
+    {
+     "value": 12,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": null,
+     "measured": {
+      "column_spacing_deg": 0.359111,
+      "crop_fraction": 0.242728,
+      "images_dropped_uniform": 0.0,
+      "vertical_fov_deg": 12.0
+     },
+     "statistics": {
+      "boundary_share": 0.181068,
+      "depth_masked_columns": 1.5,
+      "depth_max_m": 13.715268,
+      "depth_median_m": 7.947404,
+      "depth_min_m": 2.420554,
+      "figure_share": 0.381832,
+      "frames": 20.0,
+      "labelled_share": 0.997978,
+      "lum_mean": 0.294076,
+      "lum_std": 0.198096
+     }
+    }
+   ],
+   "failed": {}
+  },
+  "C05": {
+   "name": "city at night",
+   "category": "extreme-lighting",
+   "reason": "the photoreceptor noise regime",
+   "source": "tartanair",
+   "grades": [
+    "depth",
+    "boundary",
+    "flow"
+   ],
+   "family": "HongKong",
+   "contract": "tartanair",
+   "variant": {
+    "quantity": "photon noise",
+    "unit": "photons per column per frame at luminance 1",
+    "levels": [
+     null,
+     10000,
+     1000,
+     100,
+     10,
+     1
+    ]
+   },
+   "items": [
+    "HongKong/hard/P002/000260",
+    "HongKong/easy/P000/000495",
+    "HongKong/easy/P001/000194",
+    "HongKong/hard/P000/000076",
+    "HongKong/easy/P000/000154",
+    "HongKong/hard/P001/000287",
+    "HongKong/easy/P001/000615",
+    "HongKong/easy/P002/000494"
+   ],
+   "levels": [
+    {
+     "value": null,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709
+     },
+     "statistics": {
+      "boundary_share": 0.411126,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 16.742188,
+      "depth_median_m": 1.947754,
+      "depth_min_m": 0.641357,
+      "engine_flow_per_frame": 10.63591,
+      "flow_valid_share": 0.95341,
+      "frames": 32.0,
+      "lum_mean": 0.151586,
+      "lum_std": 0.142267,
+      "step_m_median": 0.15851
+     }
+    },
+    {
+     "value": 10000,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "photons_per_column_per_s": 100000.0,
+      "snr_at_mean": 38.933998
+     },
+     "statistics": {
+      "boundary_share": 0.411126,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 16.742188,
+      "depth_median_m": 1.947754,
+      "depth_min_m": 0.641357,
+      "engine_flow_per_frame": 10.63591,
+      "flow_valid_share": 0.95341,
+      "frames": 32.0,
+      "lum_mean": 0.151584,
+      "lum_std": 0.142303,
+      "step_m_median": 0.15851
+     }
+    },
+    {
+     "value": 1000,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "photons_per_column_per_s": 10000.0,
+      "snr_at_mean": 12.312012
+     },
+     "statistics": {
+      "boundary_share": 0.411126,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 16.742188,
+      "depth_median_m": 1.947754,
+      "depth_min_m": 0.641357,
+      "engine_flow_per_frame": 10.63591,
+      "flow_valid_share": 0.95341,
+      "frames": 32.0,
+      "lum_mean": 0.151555,
+      "lum_std": 0.142743,
+      "step_m_median": 0.15851
+     }
+    },
+    {
+     "value": 100,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "photons_per_column_per_s": 1000.0,
+      "snr_at_mean": 3.8934
+     },
+     "statistics": {
+      "boundary_share": 0.411126,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 16.742188,
+      "depth_median_m": 1.947754,
+      "depth_min_m": 0.641357,
+      "engine_flow_per_frame": 10.63591,
+      "flow_valid_share": 0.95341,
+      "frames": 32.0,
+      "lum_mean": 0.151321,
+      "lum_std": 0.146968,
+      "step_m_median": 0.15851
+     }
+    },
+    {
+     "value": 10,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "photons_per_column_per_s": 100.0,
+      "snr_at_mean": 1.231201
+     },
+     "statistics": {
+      "boundary_share": 0.411126,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 16.742188,
+      "depth_median_m": 1.947754,
+      "depth_min_m": 0.641357,
+      "engine_flow_per_frame": 10.63591,
+      "flow_valid_share": 0.95341,
+      "frames": 32.0,
+      "lum_mean": 0.15114,
+      "lum_std": 0.184723,
+      "step_m_median": 0.15851
+     }
+    },
+    {
+     "value": 1,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "photons_per_column_per_s": 10.0,
+      "snr_at_mean": 0.38934
+     },
+     "statistics": {
+      "boundary_share": 0.411126,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 16.742188,
+      "depth_median_m": 1.947754,
+      "depth_min_m": 0.641357,
+      "engine_flow_per_frame": 10.63591,
+      "flow_valid_share": 0.95341,
+      "frames": 32.0,
+      "lum_mean": 0.132455,
+      "lum_std": 0.338985,
+      "step_m_median": 0.15851
+     }
+    }
+   ],
+   "failed": {}
+  },
+  "C06": {
+   "name": "motion blur",
+   "category": "degradation",
+   "reason": "the limits of temporal integration",
+   "source": "tartanair",
+   "grades": [
+    "depth",
+    "boundary",
+    "flow"
+   ],
+   "family": "Office",
+   "contract": "tartanair",
+   "variant": {
+    "quantity": "exposure",
+    "unit": "ms",
+    "levels": [
+     0,
+     10,
+     20,
+     40,
+     80,
+     160
+    ]
+   },
+   "items": [
+    "Office/hard/P005/000461",
+    "Office/easy/P004/000899",
+    "Office/easy/P001/000129",
+    "Office/easy/P002/000549",
+    "Office/hard/P002/000112",
+    "Office/easy/P001/000420",
+    "Office/easy/P006/000778",
+    "Office/hard/P002/000366"
+   ],
+   "levels": [
+    {
+     "value": 0,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "blur_length_px": 0.0,
+      "column_spacing_deg": 3.415709
+     },
+     "statistics": {
+      "boundary_share": 0.284111,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 6441.625,
+      "depth_median_m": 3.394043,
+      "depth_min_m": 0.657471,
+      "engine_flow_per_frame": 6.551741,
+      "flow_valid_share": 0.956766,
+      "frames": 32.0,
+      "lum_mean": 0.585993,
+      "lum_std": 0.23475,
+      "step_m_median": 0.175243
+     }
+    },
+    {
+     "value": 10,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "blur_length_px": 2.873208,
+      "column_spacing_deg": 3.415709
+     },
+     "statistics": {
+      "boundary_share": 0.284111,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 6441.625,
+      "depth_median_m": 3.394043,
+      "depth_min_m": 0.657471,
+      "engine_flow_per_frame": 6.551741,
+      "flow_valid_share": 0.956766,
+      "frames": 32.0,
+      "lum_mean": 0.586133,
+      "lum_std": 0.234632,
+      "step_m_median": 0.175243
+     }
+    },
+    {
+     "value": 20,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "blur_length_px": 5.746416,
+      "column_spacing_deg": 3.415709
+     },
+     "statistics": {
+      "boundary_share": 0.284111,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 6441.625,
+      "depth_median_m": 3.394043,
+      "depth_min_m": 0.657471,
+      "engine_flow_per_frame": 6.551741,
+      "flow_valid_share": 0.956766,
+      "frames": 32.0,
+      "lum_mean": 0.586136,
+      "lum_std": 0.23441,
+      "step_m_median": 0.175243
+     }
+    },
+    {
+     "value": 40,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "blur_length_px": 11.492832,
+      "column_spacing_deg": 3.415709
+     },
+     "statistics": {
+      "boundary_share": 0.284111,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 6441.625,
+      "depth_median_m": 3.394043,
+      "depth_min_m": 0.657471,
+      "engine_flow_per_frame": 6.551741,
+      "flow_valid_share": 0.956766,
+      "frames": 32.0,
+      "lum_mean": 0.586093,
+      "lum_std": 0.233716,
+      "step_m_median": 0.175243
+     }
+    },
+    {
+     "value": 80,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "blur_length_px": 22.985664,
+      "column_spacing_deg": 3.415709
+     },
+     "statistics": {
+      "boundary_share": 0.284111,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 6441.625,
+      "depth_median_m": 3.394043,
+      "depth_min_m": 0.657471,
+      "engine_flow_per_frame": 6.551741,
+      "flow_valid_share": 0.956766,
+      "frames": 32.0,
+      "lum_mean": 0.5858,
+      "lum_std": 0.231725,
+      "step_m_median": 0.175243
+     }
+    },
+    {
+     "value": 160,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "blur_length_px": 45.971329,
+      "column_spacing_deg": 3.415709
+     },
+     "statistics": {
+      "boundary_share": 0.284111,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 6441.625,
+      "depth_median_m": 3.394043,
+      "depth_min_m": 0.657471,
+      "engine_flow_per_frame": 6.551741,
+      "flow_valid_share": 0.956766,
+      "frames": 32.0,
+      "lum_mean": 0.584264,
+      "lum_std": 0.226858,
+      "step_m_median": 0.175243
+     }
+    }
+   ],
+   "failed": {}
+  },
+  "C07": {
+   "name": "marsh in fog",
+   "category": "degradation",
+   "reason": "contrast lost with distance, which depth cues rely on",
+   "source": "tartanair",
+   "grades": [
+    "depth",
+    "boundary",
+    "flow"
+   ],
+   "family": "GreatMarsh",
+   "contract": "tartanair",
+   "variant": {
+    "quantity": "fog attenuation",
+    "unit": "1/m",
+    "levels": [
+     0,
+     0.01,
+     0.02,
+     0.05,
+     0.1,
+     0.2
+    ]
+   },
+   "items": [
+    "GreatMarsh/easy/P009/001208",
+    "GreatMarsh/easy/P006/000790",
+    "GreatMarsh/hard/P009/001927",
+    "GreatMarsh/hard/P005/001678",
+    "GreatMarsh/easy/P008/003658",
+    "GreatMarsh/hard/P007/000826",
+    "GreatMarsh/easy/P007/001461",
+    "GreatMarsh/hard/P002/000877"
+   ],
+   "levels": [
+    {
+     "value": 0,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "rms_contrast": 0.072545
+     },
+     "statistics": {
+      "boundary_share": 0.30316,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 9892.0,
+      "depth_median_m": 21.578125,
+      "depth_min_m": 4.292969,
+      "engine_flow_per_frame": 4.71175,
+      "flow_valid_share": 0.930186,
+      "frames": 32.0,
+      "lum_mean": 0.660696,
+      "lum_std": 0.055783,
+      "step_m_median": 0.269886
+     }
+    },
+    {
+     "value": 0.01,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "rms_contrast": 0.061559,
+      "visibility_m": 391.202301
+     },
+     "statistics": {
+      "boundary_share": 0.30316,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 9892.0,
+      "depth_median_m": 21.578125,
+      "depth_min_m": 4.292969,
+      "engine_flow_per_frame": 4.71175,
+      "flow_valid_share": 0.930186,
+      "frames": 32.0,
+      "lum_mean": 0.660178,
+      "lum_std": 0.046473,
+      "step_m_median": 0.269886
+     }
+    },
+    {
+     "value": 0.02,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "rms_contrast": 0.057593,
+      "visibility_m": 195.60115
+     },
+     "statistics": {
+      "boundary_share": 0.30316,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 9892.0,
+      "depth_median_m": 21.578125,
+      "depth_min_m": 4.292969,
+      "engine_flow_per_frame": 4.71175,
+      "flow_valid_share": 0.930186,
+      "frames": 32.0,
+      "lum_mean": 0.663525,
+      "lum_std": 0.04407,
+      "step_m_median": 0.269886
+     }
+    },
+    {
+     "value": 0.05,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "rms_contrast": 0.047564,
+      "visibility_m": 78.24046
+     },
+     "statistics": {
+      "boundary_share": 0.30316,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 9892.0,
+      "depth_median_m": 21.578125,
+      "depth_min_m": 4.292969,
+      "engine_flow_per_frame": 4.71175,
+      "flow_valid_share": 0.930186,
+      "frames": 32.0,
+      "lum_mean": 0.671524,
+      "lum_std": 0.037743,
+      "step_m_median": 0.269886
+     }
+    },
+    {
+     "value": 0.1,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "rms_contrast": 0.0353,
+      "visibility_m": 39.12023
+     },
+     "statistics": {
+      "boundary_share": 0.30316,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 9892.0,
+      "depth_median_m": 21.578125,
+      "depth_min_m": 4.292969,
+      "engine_flow_per_frame": 4.71175,
+      "flow_valid_share": 0.930186,
+      "frames": 32.0,
+      "lum_mean": 0.68044,
+      "lum_std": 0.026079,
+      "step_m_median": 0.269886
+     }
+    },
+    {
+     "value": 0.2,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "rms_contrast": 0.016568,
+      "visibility_m": 19.560115
+     },
+     "statistics": {
+      "boundary_share": 0.30316,
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 9892.0,
+      "depth_median_m": 21.578125,
+      "depth_min_m": 4.292969,
+      "engine_flow_per_frame": 4.71175,
+      "flow_valid_share": 0.930186,
+      "frames": 32.0,
+      "lum_mean": 0.689971,
+      "lum_std": 0.012797,
+      "step_m_median": 0.269886
+     }
+    }
+   ],
+   "failed": {}
+  },
+  "C08": {
+   "name": "Sintel, the published model's domain",
+   "category": "transfer",
+   "reason": "parity with the published model's training data, on the sequences it held out",
+   "source": "sintel",
+   "grades": [
+    "depth_relative",
+    "flow"
+   ],
+   "family": null,
+   "contract": "sintel",
+   "variant": {
+    "quantity": "contrast",
+    "unit": "factor on contrast about the mean",
+    "levels": [
+     1,
+     0.7,
+     0.5,
+     0.35,
+     0.25,
+     0.15
+    ]
+   },
+   "items": [
+    "ambush_2",
+    "bamboo_1",
+    "bandage_1",
+    "cave_4",
+    "market_2",
+    "mountain_1"
+   ],
+   "levels": [
+    {
+     "value": 1,
+     "clips": 6,
+     "accepted": 6,
+     "interval_s": 0.041667,
+     "measured": {
+      "column_spacing_deg": 0.881161,
+      "rms_contrast": 0.359665
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 62.352964,
+      "depth_median_m": 6.263164,
+      "depth_min_m": 1.263405,
+      "engine_flow_per_frame": 1.480244,
+      "flow_valid_share": 0.948191,
+      "frames": 32.0,
+      "lum_mean": 0.402825,
+      "lum_std": 0.132065
+     }
+    },
+    {
+     "value": 0.7,
+     "clips": 6,
+     "accepted": 6,
+     "interval_s": 0.041667,
+     "measured": {
+      "column_spacing_deg": 0.881161,
+      "rms_contrast": 0.250734
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 62.352964,
+      "depth_median_m": 6.263164,
+      "depth_min_m": 1.263405,
+      "engine_flow_per_frame": 1.480244,
+      "flow_valid_share": 0.948191,
+      "frames": 32.0,
+      "lum_mean": 0.400442,
+      "lum_std": 0.09246
+     }
+    },
+    {
+     "value": 0.5,
+     "clips": 6,
+     "accepted": 6,
+     "interval_s": 0.041667,
+     "measured": {
+      "column_spacing_deg": 0.881161,
+      "rms_contrast": 0.178768
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 62.352964,
+      "depth_median_m": 6.263164,
+      "depth_min_m": 1.263405,
+      "engine_flow_per_frame": 1.480244,
+      "flow_valid_share": 0.948191,
+      "frames": 32.0,
+      "lum_mean": 0.398854,
+      "lum_std": 0.066068
+     }
+    },
+    {
+     "value": 0.35,
+     "clips": 6,
+     "accepted": 6,
+     "interval_s": 0.041667,
+     "measured": {
+      "column_spacing_deg": 0.881161,
+      "rms_contrast": 0.124906
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 62.352964,
+      "depth_median_m": 6.263164,
+      "depth_min_m": 1.263405,
+      "engine_flow_per_frame": 1.480244,
+      "flow_valid_share": 0.948191,
+      "frames": 32.0,
+      "lum_mean": 0.397662,
+      "lum_std": 0.046734
+     }
+    },
+    {
+     "value": 0.25,
+     "clips": 6,
+     "accepted": 6,
+     "interval_s": 0.041667,
+     "measured": {
+      "column_spacing_deg": 0.881161,
+      "rms_contrast": 0.089097
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 62.352964,
+      "depth_median_m": 6.263164,
+      "depth_min_m": 1.263405,
+      "engine_flow_per_frame": 1.480244,
+      "flow_valid_share": 0.948191,
+      "frames": 32.0,
+      "lum_mean": 0.396868,
+      "lum_std": 0.034582
+     }
+    },
+    {
+     "value": 0.15,
+     "clips": 6,
+     "accepted": 6,
+     "interval_s": 0.041667,
+     "measured": {
+      "column_spacing_deg": 0.881161,
+      "rms_contrast": 0.053394
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 62.352964,
+      "depth_median_m": 6.263164,
+      "depth_min_m": 1.263405,
+      "engine_flow_per_frame": 1.480244,
+      "flow_valid_share": 0.948191,
+      "frames": 32.0,
+      "lum_mean": 0.396074,
+      "lum_std": 0.023048
+     }
+    }
+   ],
+   "failed": {}
+  },
+  "C09": {
+   "name": "Spring, fine structure",
+   "category": "transfer",
+   "reason": "thin objects and high detail at a known metric scale",
+   "source": "spring",
+   "grades": [
+    "depth",
+    "sky"
+   ],
+   "family": null,
+   "contract": "spring",
+   "variant": {
+    "quantity": "sampling",
+    "unit": "rows the 1080-row frame is resampled to (the lattice sees 391 of 436)",
+    "levels": [
+     436,
+     520,
+     620,
+     740,
+     880,
+     1080
+    ]
+   },
+   "items": [
+    "0008/clip_0118",
+    "0044/clip_0038",
+    "0015/clip_0051",
+    "0024/clip_0001",
+    "0039/clip_0043",
+    "0017/clip_0009",
+    "0016/clip_0197",
+    "0011/clip_0056"
+   ],
+   "levels": [
+    {
+     "value": 436,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": null,
+     "measured": {
+      "column_spacing_deg": 0.708212,
+      "crop_fraction": 1.0,
+      "focal_px_at_436_rows": 1092.85447
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 37.249651,
+      "depth_median_m": 9.926935,
+      "depth_min_m": 3.532074,
+      "frames": 32.0,
+      "lum_mean": 0.237013,
+      "lum_std": 0.090263,
+      "moving_share": 0.106531,
+      "sky_share": 0.0
+     }
+    },
+    {
+     "value": 520,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": null,
+     "measured": {
+      "column_spacing_deg": 0.593811,
+      "crop_fraction": 0.838462,
+      "focal_px_at_436_rows": 1303.404415
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 36.124718,
+      "depth_median_m": 7.919605,
+      "depth_min_m": 3.639207,
+      "frames": 32.0,
+      "lum_mean": 0.23514,
+      "lum_std": 0.103134,
+      "moving_share": 0.135972,
+      "sky_share": 0.0
+     }
+    },
+    {
+     "value": 620,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": null,
+     "measured": {
+      "column_spacing_deg": 0.498036,
+      "crop_fraction": 0.703226,
+      "focal_px_at_436_rows": 1554.05911
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 35.253561,
+      "depth_median_m": 7.867707,
+      "depth_min_m": 3.686306,
+      "frames": 32.0,
+      "lum_mean": 0.234605,
+      "lum_std": 0.113204,
+      "moving_share": 0.165585,
+      "sky_share": 0.0
+     }
+    },
+    {
+     "value": 740,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": null,
+     "measured": {
+      "column_spacing_deg": 0.417275,
+      "crop_fraction": 0.589189,
+      "focal_px_at_436_rows": 1854.844744
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 34.214685,
+      "depth_median_m": 7.811399,
+      "depth_min_m": 3.696767,
+      "frames": 32.0,
+      "lum_mean": 0.231106,
+      "lum_std": 0.115971,
+      "moving_share": 0.17071,
+      "sky_share": 0.0
+     }
+    },
+    {
+     "value": 880,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": null,
+     "measured": {
+      "column_spacing_deg": 0.350891,
+      "crop_fraction": 0.495455,
+      "focal_px_at_436_rows": 2205.761317
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 33.457211,
+      "depth_median_m": 8.579418,
+      "depth_min_m": 3.696767,
+      "frames": 32.0,
+      "lum_mean": 0.240184,
+      "lum_std": 0.117305,
+      "moving_share": 0.186871,
+      "sky_share": 0.0
+     }
+    },
+    {
+     "value": 1080,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": null,
+     "measured": {
+      "column_spacing_deg": 0.285911,
+      "crop_fraction": 0.403704,
+      "focal_px_at_436_rows": 2707.070707
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 25.31183,
+      "depth_median_m": 8.154722,
+      "depth_min_m": 4.501134,
+      "frames": 32.0,
+      "lum_mean": 0.254018,
+      "lum_std": 0.118944,
+      "moving_share": 0.232243,
+      "sky_share": 0.0
+     }
+    }
+   ],
+   "failed": {}
+  },
+  "C10": {
+   "name": "gap crossing",
+   "category": "ethological",
+   "reason": "flies judge a gap's width from the parallax of its edges during the approach (Pick and Strauss 2005)",
+   "source": "flygym",
+   "grades": [
+    "depth",
+    "figure"
+   ],
+   "family": null,
+   "contract": "flygym",
+   "variant": {
+    "quantity": "gap width",
+    "unit": "mm",
+    "levels": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "items": [
+    "20270918",
+    "20270919",
+    "20270920",
+    "20270921",
+    "20270922",
+    "20270923",
+    "20270924",
+    "20270925"
+   ],
+   "levels": [
+    {
+     "value": 1,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.01,
+     "measured": {
+      "column_spacing_deg": 4.2389,
+      "eye_height_mm": 1.0,
+      "eye_to_near_edge_mm": [
+       8.2,
+       2.10035
+      ],
+      "gap_mm": 1.0,
+      "heading_deg": 10.3215,
+      "speed_mm_s": 20.0
+     },
+     "statistics": {
+      "depth_masked_columns": 12265.0,
+      "depth_max_m": 0.164549,
+      "depth_median_m": 0.001918,
+      "depth_min_m": 0.001044,
+      "figure_share": 0.027029,
+      "frames": 32.0,
+      "lum_mean": 0.666397,
+      "lum_std": 0.368305
+     }
+    },
+    {
+     "value": 2,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.01,
+     "measured": {
+      "column_spacing_deg": 4.2389,
+      "eye_height_mm": 1.0,
+      "eye_to_near_edge_mm": [
+       8.2,
+       2.10035
+      ],
+      "gap_mm": 2.0,
+      "heading_deg": 10.3215,
+      "speed_mm_s": 20.0
+     },
+     "statistics": {
+      "depth_masked_columns": 12265.0,
+      "depth_max_m": 0.164549,
+      "depth_median_m": 0.001918,
+      "depth_min_m": 0.001044,
+      "figure_share": 0.026331,
+      "frames": 32.0,
+      "lum_mean": 0.667232,
+      "lum_std": 0.367657
+     }
+    },
+    {
+     "value": 3,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.01,
+     "measured": {
+      "column_spacing_deg": 4.2389,
+      "eye_height_mm": 1.0,
+      "eye_to_near_edge_mm": [
+       8.2,
+       2.10035
+      ],
+      "gap_mm": 3.0,
+      "heading_deg": 10.3215,
+      "speed_mm_s": 20.0
+     },
+     "statistics": {
+      "depth_masked_columns": 12265.0,
+      "depth_max_m": 0.164549,
+      "depth_median_m": 0.001918,
+      "depth_min_m": 0.001044,
+      "figure_share": 0.024911,
+      "frames": 32.0,
+      "lum_mean": 0.667687,
+      "lum_std": 0.367379
+     }
+    },
+    {
+     "value": 4,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.01,
+     "measured": {
+      "column_spacing_deg": 4.2389,
+      "eye_height_mm": 1.0,
+      "eye_to_near_edge_mm": [
+       8.2,
+       2.10035
+      ],
+      "gap_mm": 4.0,
+      "heading_deg": 10.3215,
+      "speed_mm_s": 20.0
+     },
+     "statistics": {
+      "depth_masked_columns": 12265.0,
+      "depth_max_m": 0.164549,
+      "depth_median_m": 0.001918,
+      "depth_min_m": 0.001044,
+      "figure_share": 0.023031,
+      "frames": 32.0,
+      "lum_mean": 0.667745,
+      "lum_std": 0.367253
+     }
+    },
+    {
+     "value": 5,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.01,
+     "measured": {
+      "column_spacing_deg": 4.2389,
+      "eye_height_mm": 1.0,
+      "eye_to_near_edge_mm": [
+       8.2,
+       2.10035
+      ],
+      "gap_mm": 5.0,
+      "heading_deg": 10.3215,
+      "speed_mm_s": 20.0
+     },
+     "statistics": {
+      "depth_masked_columns": 12265.0,
+      "depth_max_m": 0.164549,
+      "depth_median_m": 0.001918,
+      "depth_min_m": 0.001044,
+      "figure_share": 0.021396,
+      "frames": 32.0,
+      "lum_mean": 0.667708,
+      "lum_std": 0.367237
+     }
+    },
+    {
+     "value": 6,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.01,
+     "measured": {
+      "column_spacing_deg": 4.2389,
+      "eye_height_mm": 1.0,
+      "eye_to_near_edge_mm": [
+       8.2,
+       2.10035
+      ],
+      "gap_mm": 6.0,
+      "heading_deg": 10.3215,
+      "speed_mm_s": 20.0
+     },
+     "statistics": {
+      "depth_masked_columns": 12265.0,
+      "depth_max_m": 0.164549,
+      "depth_median_m": 0.001918,
+      "depth_min_m": 0.001044,
+      "figure_share": 0.019942,
+      "frames": 32.0,
+      "lum_mean": 0.667632,
+      "lum_std": 0.367309
+     }
+    }
+   ],
+   "failed": {}
+  },
+  "C11": {
+   "name": "looming object",
+   "category": "ethological",
+   "reason": "looming detection by radial motion opponency (LPLC2)",
+   "source": "flygym",
+   "grades": [
+    "depth",
+    "figure"
+   ],
+   "family": null,
+   "contract": "flygym",
+   "variant": {
+    "quantity": "approach",
+    "unit": "l/v in ms",
+    "levels": [
+     10,
+     20,
+     40,
+     80,
+     160,
+     320
+    ]
+   },
+   "items": [
+    "20271918",
+    "20271919",
+    "20271920",
+    "20271921",
+    "20271922",
+    "20271923",
+    "20271924",
+    "20271925"
+   ],
+   "levels": [
+    {
+     "value": 10,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.01,
+     "measured": {
+      "angular_size_deg": [
+       3.5798,
+       90.0
+      ],
+      "azimuth_deg": 77.902,
+      "column_spacing_deg": 4.2389,
+      "elevation_deg": 41.109,
+      "l_over_v_ms": 10.0,
+      "radius_mm": 2.0,
+      "speed_mm_s": 200.0
+     },
+     "statistics": {
+      "depth_masked_columns": 10617.5,
+      "depth_max_m": 0.078033,
+      "depth_median_m": 0.002123,
+      "depth_min_m": 0.001044,
+      "figure_share": 0.022286,
+      "frames": 32.0,
+      "lum_mean": 0.605832,
+      "lum_std": 0.375302
+     }
+    },
+    {
+     "value": 20,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.01,
+     "measured": {
+      "angular_size_deg": [
+       6.9365,
+       90.0
+      ],
+      "azimuth_deg": 77.902,
+      "column_spacing_deg": 4.2389,
+      "elevation_deg": 41.109,
+      "l_over_v_ms": 20.0,
+      "radius_mm": 2.0,
+      "speed_mm_s": 100.0
+     },
+     "statistics": {
+      "depth_masked_columns": 10194.5,
+      "depth_max_m": 0.078033,
+      "depth_median_m": 0.002185,
+      "depth_min_m": 0.001044,
+      "figure_share": 0.037191,
+      "frames": 32.0,
+      "lum_mean": 0.592011,
+      "lum_std": 0.376653
+     }
+    },
+    {
+     "value": 40,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.01,
+     "measured": {
+      "angular_size_deg": [
+       13.0396,
+       90.0
+      ],
+      "azimuth_deg": 77.902,
+      "column_spacing_deg": 4.2389,
+      "elevation_deg": 41.109,
+      "l_over_v_ms": 40.0,
+      "radius_mm": 2.0,
+      "speed_mm_s": 50.0
+     },
+     "statistics": {
+      "depth_masked_columns": 9462.5,
+      "depth_max_m": 0.078033,
+      "depth_median_m": 0.002334,
+      "depth_min_m": 0.001044,
+      "figure_share": 0.064388,
+      "frames": 32.0,
+      "lum_mean": 0.566009,
+      "lum_std": 0.378377
+     }
+    },
+    {
+     "value": 80,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.01,
+     "measured": {
+      "angular_size_deg": [
+       23.1844,
+       90.0
+      ],
+      "azimuth_deg": 77.902,
+      "column_spacing_deg": 4.2389,
+      "elevation_deg": 41.109,
+      "l_over_v_ms": 80.0,
+      "radius_mm": 2.0,
+      "speed_mm_s": 25.0
+     },
+     "statistics": {
+      "depth_masked_columns": 8328.0,
+      "depth_max_m": 0.078033,
+      "depth_median_m": 0.002499,
+      "depth_min_m": 0.001044,
+      "figure_share": 0.108359,
+      "frames": 32.0,
+      "lum_mean": 0.524755,
+      "lum_std": 0.378484
+     }
+    },
+    {
+     "value": 160,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.01,
+     "measured": {
+      "angular_size_deg": [
+       37.5998,
+       90.0
+      ],
+      "azimuth_deg": 77.902,
+      "column_spacing_deg": 4.2389,
+      "elevation_deg": 41.109,
+      "l_over_v_ms": 160.0,
+      "radius_mm": 2.0,
+      "speed_mm_s": 12.5
+     },
+     "statistics": {
+      "depth_masked_columns": 6935.5,
+      "depth_max_m": 0.078033,
+      "depth_median_m": 0.002644,
+      "depth_min_m": 0.001044,
+      "figure_share": 0.165054,
+      "frames": 32.0,
+      "lum_mean": 0.470262,
+      "lum_std": 0.372633
+     }
+    },
+    {
+     "value": 320,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.01,
+     "measured": {
+      "angular_size_deg": [
+       53.8554,
+       90.0
+      ],
+      "azimuth_deg": 77.902,
+      "column_spacing_deg": 4.2389,
+      "elevation_deg": 41.109,
+      "l_over_v_ms": 320.0,
+      "radius_mm": 2.0,
+      "speed_mm_s": 6.25
+     },
+     "statistics": {
+      "depth_masked_columns": 5450.0,
+      "depth_max_m": 0.078033,
+      "depth_median_m": 0.002659,
+      "depth_min_m": 0.001044,
+      "figure_share": 0.228479,
+      "frames": 32.0,
+      "lum_mean": 0.413539,
+      "lum_std": 0.358378
+     }
+    }
+   ],
+   "failed": {}
+  },
+  "C12": {
+   "name": "small moving target",
+   "category": "ethological",
+   "reason": "small-object detection (LC11)",
+   "source": "flygym",
+   "grades": [
+    "depth",
+    "figure"
+   ],
+   "family": null,
+   "contract": "flygym",
+   "variant": {
+    "quantity": "target size",
+    "unit": "degrees",
+    "levels": [
+     2,
+     4,
+     6,
+     8,
+     12,
+     16
+    ]
+   },
+   "items": [
+    "20272918",
+    "20272919",
+    "20272920",
+    "20272921",
+    "20272922",
+    "20272923",
+    "20272924",
+    "20272925"
+   ],
+   "levels": [
+    {
+     "value": 2,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.01,
+     "measured": {
+      "column_spacing_deg": 4.2389,
+      "distance_mm": 20.0,
+      "elevation_deg": 6.3,
+      "radius_mm": 0.34905,
+      "size_deg": 2.0,
+      "speed_deg_s": 90.0,
+      "start_azimuth_deg": 47.5455
+     },
+     "statistics": {
+      "depth_masked_columns": 11249.0,
+      "depth_max_m": 0.078033,
+      "depth_median_m": 0.002075,
+      "depth_min_m": 0.001044,
+      "figure_share": 0.000119,
+      "frames": 32.0,
+      "lum_mean": 0.626545,
+      "lum_std": 0.371673
+     }
+    },
+    {
+     "value": 4,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.01,
+     "measured": {
+      "column_spacing_deg": 4.2389,
+      "distance_mm": 20.0,
+      "elevation_deg": 6.3,
+      "radius_mm": 0.69799,
+      "size_deg": 4.0,
+      "speed_deg_s": 90.0,
+      "start_azimuth_deg": 47.5455
+     },
+     "statistics": {
+      "depth_masked_columns": 11220.0,
+      "depth_max_m": 0.078033,
+      "depth_median_m": 0.00208,
+      "depth_min_m": 0.001044,
+      "figure_share": 0.000463,
+      "frames": 32.0,
+      "lum_mean": 0.626224,
+      "lum_std": 0.371463
+     }
+    },
+    {
+     "value": 6,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.01,
+     "measured": {
+      "column_spacing_deg": 4.2389,
+      "distance_mm": 20.0,
+      "elevation_deg": 6.3,
+      "radius_mm": 1.04672,
+      "size_deg": 6.0,
+      "speed_deg_s": 90.0,
+      "start_azimuth_deg": 47.5455
+     },
+     "statistics": {
+      "depth_masked_columns": 11197.0,
+      "depth_max_m": 0.078033,
+      "depth_median_m": 0.00208,
+      "depth_min_m": 0.001044,
+      "figure_share": 0.001035,
+      "frames": 32.0,
+      "lum_mean": 0.625676,
+      "lum_std": 0.371272
+     }
+    },
+    {
+     "value": 8,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.01,
+     "measured": {
+      "column_spacing_deg": 4.2389,
+      "distance_mm": 20.0,
+      "elevation_deg": 6.3,
+      "radius_mm": 1.39513,
+      "size_deg": 8.0,
+      "speed_deg_s": 90.0,
+      "start_azimuth_deg": 47.5455
+     },
+     "statistics": {
+      "depth_masked_columns": 11167.0,
+      "depth_max_m": 0.078033,
+      "depth_median_m": 0.002081,
+      "depth_min_m": 0.001044,
+      "figure_share": 0.001863,
+      "frames": 32.0,
+      "lum_mean": 0.624881,
+      "lum_std": 0.371199
+     }
+    },
+    {
+     "value": 12,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.01,
+     "measured": {
+      "column_spacing_deg": 4.2389,
+      "distance_mm": 20.0,
+      "elevation_deg": 6.3,
+      "radius_mm": 2.09057,
+      "size_deg": 12.0,
+      "speed_deg_s": 90.0,
+      "start_azimuth_deg": 47.5455
+     },
+     "statistics": {
+      "depth_masked_columns": 11101.5,
+      "depth_max_m": 0.078033,
+      "depth_median_m": 0.002095,
+      "depth_min_m": 0.001044,
+      "figure_share": 0.004237,
+      "frames": 32.0,
+      "lum_mean": 0.622691,
+      "lum_std": 0.371383
+     }
+    },
+    {
+     "value": 16,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.01,
+     "measured": {
+      "column_spacing_deg": 4.2389,
+      "distance_mm": 20.0,
+      "elevation_deg": 6.3,
+      "radius_mm": 2.78346,
+      "size_deg": 16.0,
+      "speed_deg_s": 90.0,
+      "start_azimuth_deg": 47.5455
+     },
+     "statistics": {
+      "depth_masked_columns": 11024.0,
+      "depth_max_m": 0.078033,
+      "depth_median_m": 0.0021,
+      "depth_min_m": 0.001044,
+      "figure_share": 0.007622,
+      "frames": 32.0,
+      "lum_mean": 0.620065,
+      "lum_std": 0.37181
+     }
+    }
+   ],
+   "failed": {}
+  },
+  "C13": {
+   "name": "pure rotation",
+   "category": "negative-control",
+   "reason": "rotation gives no parallax, so depth from motion is unobservable; a model must say so",
+   "source": "panorama",
+   "grades": [
+    "flow",
+    "uncertainty"
+   ],
+   "family": "BrushifyMoon",
+   "contract": "synthetic",
+   "variant": {
+    "quantity": "rotation rate",
+    "unit": "deg/s",
+    "levels": [
+     0,
+     15,
+     30,
+     60,
+     120,
+     240
+    ]
+   },
+   "items": [
+    "BrushifyMoon/hard/P004/002991",
+    "BrushifyMoon/hard/P004/000986",
+    "BrushifyMoon/easy/P005/000577",
+    "BrushifyMoon/hard/P003/002170",
+    "BrushifyMoon/hard/P005/000280",
+    "BrushifyMoon/hard/P003/000713",
+    "BrushifyMoon/hard/P001/000643",
+    "BrushifyMoon/easy/P004/001833"
+   ],
+   "levels": [
+    {
+     "value": 0,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "engine_flow_per_frame": 0.0,
+      "rotation_deg_per_frame": 0.0
+     },
+     "statistics": {
+      "depth_masked_columns": 8240.0,
+      "depth_max_m": 830.479706,
+      "depth_median_m": 9.382004,
+      "depth_min_m": 3.505616,
+      "engine_flow_per_frame": 0.0,
+      "flow_valid_share": 1.0,
+      "frames": 32.0,
+      "lum_mean": 0.369425,
+      "lum_std": 0.26564
+     }
+    },
+    {
+     "value": 15,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "engine_flow_per_frame": 2.573277,
+      "rotation_deg_per_frame": 1.5
+     },
+     "statistics": {
+      "depth_masked_columns": 6546.0,
+      "depth_max_m": 1181.627625,
+      "depth_median_m": 10.285102,
+      "depth_min_m": 3.176894,
+      "engine_flow_per_frame": 2.573277,
+      "flow_valid_share": 1.0,
+      "frames": 32.0,
+      "lum_mean": 0.379659,
+      "lum_std": 0.267794
+     }
+    },
+    {
+     "value": 30,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "engine_flow_per_frame": 5.127337,
+      "rotation_deg_per_frame": 3.0
+     },
+     "statistics": {
+      "depth_masked_columns": 7106.0,
+      "depth_max_m": 1315.374329,
+      "depth_median_m": 11.067429,
+      "depth_min_m": 3.066282,
+      "engine_flow_per_frame": 5.127337,
+      "flow_valid_share": 0.991465,
+      "frames": 32.0,
+      "lum_mean": 0.363051,
+      "lum_std": 0.260698
+     }
+    },
+    {
+     "value": 60,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "engine_flow_per_frame": 10.116083,
+      "rotation_deg_per_frame": 6.0
+     },
+     "statistics": {
+      "depth_masked_columns": 10902.0,
+      "depth_max_m": 7162.208496,
+      "depth_median_m": 9.236409,
+      "depth_min_m": 2.414523,
+      "engine_flow_per_frame": 10.116083,
+      "flow_valid_share": 0.956044,
+      "frames": 32.0,
+      "lum_mean": 0.271927,
+      "lum_std": 0.279985
+     }
+    },
+    {
+     "value": 120,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "engine_flow_per_frame": 20.034678,
+      "rotation_deg_per_frame": 12.0
+     },
+     "statistics": {
+      "depth_masked_columns": 9851.0,
+      "depth_max_m": 12774.526367,
+      "depth_median_m": 8.97893,
+      "depth_min_m": 2.42018,
+      "engine_flow_per_frame": 20.034678,
+      "flow_valid_share": 0.887976,
+      "frames": 32.0,
+      "lum_mean": 0.301618,
+      "lum_std": 0.286637
+     }
+    },
+    {
+     "value": 240,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "engine_flow_per_frame": 39.221333,
+      "rotation_deg_per_frame": 24.0
+     },
+     "statistics": {
+      "depth_masked_columns": 9900.0,
+      "depth_max_m": 12582.751465,
+      "depth_median_m": 8.992956,
+      "depth_min_m": 2.42018,
+      "engine_flow_per_frame": 39.221333,
+      "flow_valid_share": 0.749501,
+      "frames": 32.0,
+      "lum_mean": 0.302518,
+      "lum_std": 0.28708
+     }
+    }
+   ],
+   "failed": {}
+  },
+  "C14": {
+   "name": "static camera",
+   "category": "negative-control",
+   "reason": "no motion signal at all",
+   "source": "tartanair",
+   "grades": [
+    "uncertainty"
+   ],
+   "family": "GreatMarsh",
+   "contract": "synthetic",
+   "variant": {
+    "quantity": "photon noise",
+    "unit": "photons per column per frame at luminance 1",
+    "levels": [
+     null,
+     10000,
+     1000,
+     100,
+     10,
+     1
+    ]
+   },
+   "items": [
+    "GreatMarsh/easy/P002/004804",
+    "GreatMarsh/hard/P007/002511",
+    "GreatMarsh/hard/P009/000632",
+    "GreatMarsh/hard/P002/000877",
+    "GreatMarsh/hard/P006/000408",
+    "GreatMarsh/easy/P009/001208",
+    "GreatMarsh/easy/P008/001208",
+    "GreatMarsh/easy/P001/006462"
+   ],
+   "levels": [
+    {
+     "value": null,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 8292.0,
+      "depth_median_m": 10.566406,
+      "depth_min_m": 3.359375,
+      "engine_flow_per_frame": 0.0,
+      "flow_valid_share": 1.0,
+      "frames": 32.0,
+      "lum_mean": 0.531908,
+      "lum_std": 0.130957
+     }
+    },
+    {
+     "value": 10000,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "snr_at_mean": 72.928054
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 8292.0,
+      "depth_median_m": 10.566406,
+      "depth_min_m": 3.359375,
+      "engine_flow_per_frame": 0.0,
+      "flow_valid_share": 1.0,
+      "frames": 32.0,
+      "lum_mean": 0.531884,
+      "lum_std": 0.131208
+     }
+    },
+    {
+     "value": 1000,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "snr_at_mean": 23.061876
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 8292.0,
+      "depth_median_m": 10.566406,
+      "depth_min_m": 3.359375,
+      "engine_flow_per_frame": 0.0,
+      "flow_valid_share": 1.0,
+      "frames": 32.0,
+      "lum_mean": 0.531887,
+      "lum_std": 0.133001
+     }
+    },
+    {
+     "value": 100,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "snr_at_mean": 7.292806
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 8292.0,
+      "depth_median_m": 10.566406,
+      "depth_min_m": 3.359375,
+      "engine_flow_per_frame": 0.0,
+      "flow_valid_share": 1.0,
+      "frames": 32.0,
+      "lum_mean": 0.53212,
+      "lum_std": 0.150127
+     }
+    },
+    {
+     "value": 10,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "snr_at_mean": 2.306188
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 8292.0,
+      "depth_median_m": 10.566406,
+      "depth_min_m": 3.359375,
+      "engine_flow_per_frame": 0.0,
+      "flow_valid_share": 1.0,
+      "frames": 32.0,
+      "lum_mean": 0.524036,
+      "lum_std": 0.247249
+     }
+    },
+    {
+     "value": 1,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "snr_at_mean": 0.72928
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 8292.0,
+      "depth_median_m": 10.566406,
+      "depth_min_m": 3.359375,
+      "engine_flow_per_frame": 0.0,
+      "flow_valid_share": 1.0,
+      "frames": 32.0,
+      "lum_mean": 0.407572,
+      "lum_std": 0.491298
+     }
+    }
+   ],
+   "failed": {}
+  },
+  "C15": {
+   "name": "textured planes at known depths",
+   "category": "positive-control",
+   "reason": "analytic depth, flow and figure-ground, exact",
+   "source": "synthetic",
+   "grades": [
+    "depth",
+    "flow",
+    "figure"
+   ],
+   "family": null,
+   "contract": "synthetic",
+   "variant": {
+    "quantity": "nearest plane depth",
+    "unit": "m",
+    "levels": [
+     0.5,
+     1,
+     2,
+     4,
+     8,
+     16
+    ]
+   },
+   "items": [
+    "20275918",
+    "20275919",
+    "20275920",
+    "20275921",
+    "20275922",
+    "20275923",
+    "20275924",
+    "20275925"
+   ],
+   "levels": [
+    {
+     "value": 0.5,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "engine_flow_per_frame": 4.225007,
+      "plane_depths_m": [
+       0.5,
+       2.0
+      ],
+      "rms_contrast": 0.216494,
+      "texture_contrast": 0.35
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 2.0,
+      "depth_median_m": 2.0,
+      "depth_min_m": 0.5,
+      "engine_flow_per_frame": 4.225007,
+      "figure_share": 0.454694,
+      "flow_valid_share": 0.903986,
+      "frames": 32.0,
+      "lum_mean": 0.495332,
+      "lum_std": 0.108737
+     }
+    },
+    {
+     "value": 1,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "engine_flow_per_frame": 2.112504,
+      "plane_depths_m": [
+       1.0,
+       4.0
+      ],
+      "rms_contrast": 0.2154,
+      "texture_contrast": 0.35
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 4.0,
+      "depth_median_m": 4.0,
+      "depth_min_m": 1.0,
+      "engine_flow_per_frame": 2.112504,
+      "figure_share": 0.451133,
+      "flow_valid_share": 0.956082,
+      "frames": 32.0,
+      "lum_mean": 0.496628,
+      "lum_std": 0.108769
+     }
+    },
+    {
+     "value": 2,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "engine_flow_per_frame": 1.056252,
+      "plane_depths_m": [
+       2.0,
+       8.0
+      ],
+      "rms_contrast": 0.215296,
+      "texture_contrast": 0.35
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 8.0,
+      "depth_median_m": 8.0,
+      "depth_min_m": 2.0,
+      "engine_flow_per_frame": 1.056252,
+      "figure_share": 0.452783,
+      "flow_valid_share": 0.982482,
+      "frames": 32.0,
+      "lum_mean": 0.500812,
+      "lum_std": 0.108569
+     }
+    },
+    {
+     "value": 4,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "engine_flow_per_frame": 0.528126,
+      "plane_depths_m": [
+       4.0,
+       16.0
+      ],
+      "rms_contrast": 0.214249,
+      "texture_contrast": 0.35
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 16.0,
+      "depth_median_m": 16.0,
+      "depth_min_m": 4.0,
+      "engine_flow_per_frame": 0.528126,
+      "figure_share": 0.461929,
+      "flow_valid_share": 0.990429,
+      "frames": 32.0,
+      "lum_mean": 0.499078,
+      "lum_std": 0.107167
+     }
+    },
+    {
+     "value": 8,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "engine_flow_per_frame": 0.264063,
+      "plane_depths_m": [
+       8.0,
+       32.0
+      ],
+      "rms_contrast": 0.213516,
+      "texture_contrast": 0.35
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 32.0,
+      "depth_median_m": 32.0,
+      "depth_min_m": 8.0,
+      "engine_flow_per_frame": 0.264063,
+      "figure_share": 0.452003,
+      "flow_valid_share": 0.994032,
+      "frames": 32.0,
+      "lum_mean": 0.498751,
+      "lum_std": 0.106308
+     }
+    },
+    {
+     "value": 16,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "engine_flow_per_frame": 0.132031,
+      "plane_depths_m": [
+       16.0,
+       64.0
+      ],
+      "rms_contrast": 0.21447,
+      "texture_contrast": 0.35
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 64.0,
+      "depth_median_m": 64.0,
+      "depth_min_m": 16.0,
+      "engine_flow_per_frame": 0.132031,
+      "figure_share": 0.455217,
+      "flow_valid_share": 0.9964,
+      "frames": 32.0,
+      "lum_mean": 0.49701,
+      "lum_std": 0.106812
+     }
+    }
+   ],
+   "failed": {}
+  },
+  "C16": {
+   "name": "textureless surfaces",
+   "category": "boundary",
+   "reason": "the aperture problem, where motion cannot be seen but depth is defined",
+   "source": "synthetic",
+   "grades": [
+    "depth",
+    "flow",
+    "figure"
+   ],
+   "family": null,
+   "contract": "synthetic",
+   "variant": {
+    "quantity": "texture contrast",
+    "unit": "RMS contrast",
+    "levels": [
+     0.5,
+     0.2,
+     0.1,
+     0.05,
+     0.02,
+     0.0
+    ]
+   },
+   "items": [
+    "20276918",
+    "20276919",
+    "20276920",
+    "20276921",
+    "20276922",
+    "20276923",
+    "20276924",
+    "20276925"
+   ],
+   "levels": [
+    {
+     "value": 0.5,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "engine_flow_per_frame": 1.056252,
+      "plane_depths_m": [
+       2.0,
+       8.0
+      ],
+      "rms_contrast": 0.324462,
+      "texture_contrast": 0.5
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 8.0,
+      "depth_median_m": 8.0,
+      "depth_min_m": 2.0,
+      "engine_flow_per_frame": 1.056252,
+      "figure_share": 0.452783,
+      "flow_valid_share": 0.982482,
+      "frames": 32.0,
+      "lum_mean": 0.491973,
+      "lum_std": 0.157201
+     }
+    },
+    {
+     "value": 0.2,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "engine_flow_per_frame": 1.056252,
+      "plane_depths_m": [
+       2.0,
+       8.0
+      ],
+      "rms_contrast": 0.132122,
+      "texture_contrast": 0.2
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 8.0,
+      "depth_median_m": 8.0,
+      "depth_min_m": 2.0,
+      "engine_flow_per_frame": 1.056252,
+      "figure_share": 0.452783,
+      "flow_valid_share": 0.982482,
+      "frames": 32.0,
+      "lum_mean": 0.496599,
+      "lum_std": 0.065412
+     }
+    },
+    {
+     "value": 0.1,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "engine_flow_per_frame": 1.056252,
+      "plane_depths_m": [
+       2.0,
+       8.0
+      ],
+      "rms_contrast": 0.065748,
+      "texture_contrast": 0.1
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 8.0,
+      "depth_median_m": 8.0,
+      "depth_min_m": 2.0,
+      "engine_flow_per_frame": 1.056252,
+      "figure_share": 0.452783,
+      "flow_valid_share": 0.982482,
+      "frames": 32.0,
+      "lum_mean": 0.498299,
+      "lum_std": 0.032706
+     }
+    },
+    {
+     "value": 0.05,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "engine_flow_per_frame": 1.056252,
+      "plane_depths_m": [
+       2.0,
+       8.0
+      ],
+      "rms_contrast": 0.032806,
+      "texture_contrast": 0.05
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 8.0,
+      "depth_median_m": 8.0,
+      "depth_min_m": 2.0,
+      "engine_flow_per_frame": 1.056252,
+      "figure_share": 0.452783,
+      "flow_valid_share": 0.982482,
+      "frames": 32.0,
+      "lum_mean": 0.49915,
+      "lum_std": 0.016353
+     }
+    },
+    {
+     "value": 0.02,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "engine_flow_per_frame": 1.056252,
+      "plane_depths_m": [
+       2.0,
+       8.0
+      ],
+      "rms_contrast": 0.013108,
+      "texture_contrast": 0.02
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 8.0,
+      "depth_median_m": 8.0,
+      "depth_min_m": 2.0,
+      "engine_flow_per_frame": 1.056252,
+      "figure_share": 0.452783,
+      "flow_valid_share": 0.982482,
+      "frames": 32.0,
+      "lum_mean": 0.49966,
+      "lum_std": 0.006541
+     }
+    },
+    {
+     "value": 0.0,
+     "clips": 8,
+     "accepted": 8,
+     "interval_s": 0.1,
+     "measured": {
+      "column_spacing_deg": 3.415709,
+      "engine_flow_per_frame": 1.056252,
+      "plane_depths_m": [
+       2.0,
+       8.0
+      ],
+      "rms_contrast": 0.0,
+      "texture_contrast": 0.0
+     },
+     "statistics": {
+      "depth_masked_columns": 0.0,
+      "depth_max_m": 8.0,
+      "depth_median_m": 8.0,
+      "depth_min_m": 2.0,
+      "engine_flow_per_frame": 1.056252,
+      "figure_share": 0.452783,
+      "flow_valid_share": 0.982482,
+      "frames": 32.0,
+      "lum_mean": 0.5,
+      "lum_std": 0.0
+     }
+    }
+   ],
+   "failed": {}
+  }
+ }
+}

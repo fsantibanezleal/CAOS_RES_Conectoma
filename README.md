@@ -9,14 +9,16 @@ wiring diagram of the *Drosophila melanogaster* male central nervous system, fre
 network built from measured biology can compute: depth from a moving camera, and figure-ground
 segmentation. Everything the connectome measures stays fixed. Only what it cannot measure is learned.
 
-> Status: **building**. This repository is at version 0.04.001; the units listed in *Build order* below land
+> Status: **building**. This repository is at version 0.05.000; the units listed in *Build order* below land
 > one at a time, each with its code, tests and documentation in the same commit. Nothing here is a
 > placeholder for work that is not done: what is absent is absent.
 >
 > Site: **[conectoma.fasl-work.com](https://conectoma.fasl-work.com)**. Today it holds the connectome
 > explorer (every cell type's filters on the hexagonal lattice, side by side with the published consensus,
-> and the rule that placed each type) and the six pages, with every number read from the committed reports.
-> The vision methods and their benchmark arrive with the units that build them.
+> and the rule that placed each type), the eye's input (what the 721 columns receive in each of the sixteen
+> validation cases, level by level and frame by frame, beside the ground truth each case grades) and the six
+> pages, with every number read from the committed reports. The vision methods and their benchmark arrive
+> with the units that build them.
 
 ## Motivation and problem
 
@@ -83,8 +85,12 @@ bounded before it is stable as a frozen network ([docs/architecture/04](docs/arc
 
 - Connectome: Janelia **MaleCNS v1.0** (`male-cns:v1.0`), CC-BY. 166,691 neurons, 11,691 cell types.
 - Simulation and training of connectome-constrained networks: **flyvis** (MIT).
-- Vision data with depth, optical flow and segmentation from moving cameras: **TartanAir** (CC BY 4.0),
-  with Spring, Sintel and Hypersim as transfer and control domains.
+- Vision data ([docs/architecture/05](docs/architecture/05_vision-data.md)): **TartanAir V2** (CC BY 4.0;
+  2,244 clips from all 74 environments, fetched member by member, and its panoramas), **MPI Sintel** (film
+  content CC BY 3.0; the published model's domain), **Spring** (CC BY 4.0), **Hypersim** (CC BY-SA 3.0,
+  official test partition) and **FlyGym** (Apache-2.0; the fly's own compound eye), all rendered onto the
+  engine's 721-column lattice, split by geometry family with a leakage gate, and sixteen cases of six
+  physical levels each.
 - Reference engines across the method ladder, each carrying its own license, recorded per checkpoint in the
   model registry and shown in the app.
 
@@ -99,14 +105,13 @@ bounded before it is stable as a frozen network ([docs/architecture/04](docs/arc
 | Path | What |
 |---|---|
 | `data-pipeline/` | the offline engine: connectome construction (`conectoma/connectome/`), the network compiler, regimes, null controls and parity checks (`conectoma/network/`), and the command line (`run.py`) |
-| `data/` | `raw/` git-ignored source cache, `derived/` committed compact artifacts |
+| `data/` | `raw/` git-ignored source cache, `derived/` committed compact artifacts, `derived/manifests/` the contract 2 manifests |
 | `models/` | small exported models; heavy checkpoints stay outside git |
-| `manifests/` | per-case artifact manifests (contract 2) |
 | `frontend/` | the static site: the connectome explorer, the six pages, the contract tests and the fit gate ([guide](docs/guides/04_the-web.md)) |
 | `app/` | dormant FastAPI module (this product is static replay) |
 | `deploy/` | deployment notes for the chosen target |
 | `docs/` | the wiki: architecture, frameworks, cases, guides |
-| `scripts/` | setup and the CI guards |
+| `scripts/` | setup, the local run scripts and the CI guards (artifacts, content standards, CI budget) |
 
 ## Quick start
 
