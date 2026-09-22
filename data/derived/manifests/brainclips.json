@@ -1,0 +1,149 @@
+{
+ "artifact": "brainclips",
+ "version": 1,
+ "source": {
+  "cases": "cases.json",
+  "cases_sha256": "b73e721a163475c2ca9d3e7ffce9af2a3a93026f9579a9c158723f0b0680ea00",
+  "arm": "connectome",
+  "description": "the measured MaleCNS optic-lobe connectome",
+  "dt_s": 0.02
+ },
+ "types": [
+  "L1",
+  "L2",
+  "L3",
+  "Mi1",
+  "Tm3",
+  "Tm1",
+  "Tm2",
+  "Mi9",
+  "Mi4",
+  "T4a",
+  "T4b",
+  "T4c",
+  "T4d",
+  "T5a",
+  "T5b",
+  "T5c",
+  "T5d"
+ ],
+ "wide_field": [
+  "CT1"
+ ],
+ "stride": 3,
+ "encoding": "delta-int8",
+ "cases": {
+  "C01": {
+   "path": "brainclips/C01.json",
+   "bytes": 1064259,
+   "sha256": "ed201af257296da216788143911967af5caea51cc51efc180e36318589359bb4",
+   "levels": 2,
+   "steps": 54
+  },
+  "C02": {
+   "path": "brainclips/C02.json",
+   "bytes": 1064264,
+   "sha256": "4eb9872759a56fd208607fbd7454a076fde239bca3557b5acc518e0ec6b270dd",
+   "levels": 2,
+   "steps": 54
+  },
+  "C03": {
+   "path": "brainclips/C03.json",
+   "bytes": 1766978,
+   "sha256": "dbcc0bc516f0cf19b9249e2721534e90753c0d038a42b0441baec8372db65d99",
+   "levels": 2,
+   "steps": 54
+  },
+  "C04": {
+   "path": "brainclips/C04.json",
+   "bytes": 1113372,
+   "sha256": "8a617ea9ab334c48145ef1247d3865ce3367cbf39e09cb7c2a0e70e40f2ba2b8",
+   "levels": 2,
+   "steps": 34
+  },
+  "C05": {
+   "path": "brainclips/C05.json",
+   "bytes": 1766997,
+   "sha256": "459e8449a13d4c05027c4f7592aeefa96ad05c1c9fc7655e2e07411b9c1763b1",
+   "levels": 2,
+   "steps": 54
+  },
+  "C06": {
+   "path": "brainclips/C06.json",
+   "bytes": 1766948,
+   "sha256": "7798065fcf76a826c9a30a49f53ee2336e70b092e801b1a519ea6830714bee9d",
+   "levels": 2,
+   "steps": 54
+  },
+  "C07": {
+   "path": "brainclips/C07.json",
+   "bytes": 1766950,
+   "sha256": "b095504af7b17e9ecae37a96557e24f28115a2cd6e7651acb41fca9c4ccf7d3b",
+   "levels": 2,
+   "steps": 54
+  },
+  "C08": {
+   "path": "brainclips/C08.json",
+   "bytes": 459671,
+   "sha256": "70853c46294582345951fa8aac50b1b1330e2c9bd655ed139247e40414d978b8",
+   "levels": 2,
+   "steps": 14
+  },
+  "C09": {
+   "path": "brainclips/C09.json",
+   "bytes": 1767022,
+   "sha256": "e8c88b35d6049d5726379a0adc1a0d4e8ea77087abae36d9ed79f9e73807f276",
+   "levels": 2,
+   "steps": 54
+  },
+  "C10": {
+   "path": "brainclips/C10.json",
+   "bytes": 361527,
+   "sha256": "e70ce773b6ffabbf574f69642ac22ad3db85291e3a4497a02da202523aea4939",
+   "levels": 2,
+   "steps": 11
+  },
+  "C11": {
+   "path": "brainclips/C11.json",
+   "bytes": 361534,
+   "sha256": "e5b3c356e5f41cb509a6cdc9a96cc4e4b3684aa88b0d7753ef3eb5eb963dbbe4",
+   "levels": 2,
+   "steps": 11
+  },
+  "C12": {
+   "path": "brainclips/C12.json",
+   "bytes": 361543,
+   "sha256": "2341bafd20117936c3874bf03103e6b7f4947015959112b989f192782211a593",
+   "levels": 2,
+   "steps": 11
+  },
+  "C13": {
+   "path": "brainclips/C13.json",
+   "bytes": 1766957,
+   "sha256": "63364673d0bd6b4bd24a9fb3ec74a82c7be192c23a2bc94b40a439e5a3cc97ef",
+   "levels": 2,
+   "steps": 54
+  },
+  "C14": {
+   "path": "brainclips/C14.json",
+   "bytes": 1766997,
+   "sha256": "2759ba71d28bd6fe6fef4f11feaa4e73eb15c0d5db9fee6719e5ce1d496a68c1",
+   "levels": 2,
+   "steps": 54
+  },
+  "C15": {
+   "path": "brainclips/C15.json",
+   "bytes": 1766980,
+   "sha256": "74a1645f54fd0dadd212c583d7d52a5b9f292e78c7d84b83a0b3dfcfeaf2bf49",
+   "levels": 2,
+   "steps": 54
+  },
+  "C16": {
+   "path": "brainclips/C16.json",
+   "bytes": 1766970,
+   "sha256": "e46159061939df18755932b04044fefdbf6a34fcdee0e4c99c7d64744cd1da4c",
+   "levels": 2,
+   "steps": 54
+  }
+ }
+}

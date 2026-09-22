@@ -477,6 +477,18 @@ def cmd_train_readout(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_export_brainclips(args: argparse.Namespace) -> int:
+    """What the connectome does with each case's clip, for the web (contract 2)."""
+    from conectoma.stages import export_brainclips
+
+    manifest = export_brainclips.run(data_root(args.data_root), cases_wanted=args.cases,
+                                     levels=args.levels, arm=args.arm)
+    total = sum(entry["bytes"] for entry in manifest["cases"].values())
+    print(f"brainclips: {len(manifest['cases'])} cases, {len(manifest['types'])} cell types, "
+          f"{total / 1e6:.1f} MB")
+    return 0
+
+
 def cmd_evaluate(args: argparse.Namespace) -> int:
     """Score a method over the case clips and write its report."""
     from conectoma.stages.evaluate import compare, run
@@ -610,6 +622,13 @@ def main(argv: list[str] | None = None) -> int:
     readout.add_argument("--batch", type=int, default=16, help="clips per step")
     readout.add_argument("--out-dir", default=None, help="where the checkpoints go")
     readout.set_defaults(func=cmd_train_readout)
+
+    brains = sub.add_parser("export-brainclips", help="what the connectome does with each case, for the web")
+    brains.add_argument("--data-root", default=None, help="directory of the local data cache")
+    brains.add_argument("--cases", nargs="*", default=None, help="only these cases")
+    brains.add_argument("--levels", nargs="*", type=int, default=None, help="only these levels")
+    brains.add_argument("--arm", default="connectome", help="connectome, N1, N2 or N3")
+    brains.set_defaults(func=cmd_export_brainclips)
 
     evaluate = sub.add_parser("evaluate", help="score a method over the case clips (test data only)")
     evaluate.add_argument("method", help="M01, or floor (the readout on the committed flow)")
