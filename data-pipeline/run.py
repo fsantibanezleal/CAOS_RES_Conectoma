@@ -417,6 +417,29 @@ def cmd_case_docs(args: argparse.Namespace) -> int:
     return 1 if args.check and changed else 0
 
 
+def cmd_fetch_stereo(args: argparse.Namespace) -> int:
+    """Fetch the right camera of the TartanAir clips the cases draw (the stereo pair M02 needs)."""
+    import yaml
+    from conectoma.vision import stereo
+    from conectoma.vision.clipstore import FetchLog
+
+    config = yaml.safe_load((REPO_ROOT / "data-pipeline/config/vision.yaml").read_text(encoding="utf-8"))
+    clips = stereo.case_clips(REPO_ROOT / "data/derived/vision/cases.json", args.cases,
+                              config["tartanair"]["clip_length"])
+    if not clips:
+        print("no TartanAir clips selected: nothing to fetch")
+        return 1
+    base = data_root(args.data_root) / "vision" / "tartanair"
+    log = FetchLog(base / "stereo-fetch-log.jsonl")
+    try:
+        report = stereo.fetch(config["tartanair"], clips, base / "stereo", log, args.workers)
+    finally:
+        log.close()
+    print(f"stereo: {report['written']} clips written, {report['skipped']} already there, "
+          f"{report['bytes'] / 1e9:.2f} GB, {len(report['failed'])} failed")
+    return 1 if report["failed"] or report["missing"] else 0
+
+
 def cmd_evaluate(args: argparse.Namespace) -> int:
     """Score a method over the case clips and write its report."""
     from conectoma.stages.evaluate import compare, run
@@ -520,6 +543,13 @@ def main(argv: list[str] | None = None) -> int:
     vsummary = sub.add_parser("summarize-vision", help="the committed summary of the vision lane")
     vsummary.add_argument("--data-root", default=None, help="directory of the local data cache")
     vsummary.set_defaults(func=cmd_summarize_vision)
+
+    stereo_parser = sub.add_parser("fetch-stereo",
+                                   help="the right camera of the case clips, for the stereo method")
+    stereo_parser.add_argument("--data-root", default=None, help="directory of the local data cache")
+    stereo_parser.add_argument("--cases", nargs="*", default=None, help="only these cases")
+    stereo_parser.add_argument("--workers", type=int, default=12, help="parallel member fetches")
+    stereo_parser.set_defaults(func=cmd_fetch_stereo)
 
     evaluate = sub.add_parser("evaluate", help="score a method over the case clips (test data only)")
     evaluate.add_argument("method", help="M01, or floor (the readout on the committed flow)")

@@ -32,20 +32,22 @@ from pathlib import Path
 import numpy as np
 
 from conectoma.core.jsonio import write_json
-from conectoma.methods import m01, m03, metrics
+from conectoma.methods import m01, m02, m03, m04, metrics
 from conectoma.vision import cases
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DERIVED = REPO_ROOT / "data" / "derived" / "evaluation"
 MANIFESTS = REPO_ROOT / "data" / "derived" / "manifests"
-CODE = ("readout", "flow_lattice", "sweep", "m01", "emd", "m03", "metrics")
+CODE = ("readout", "flow_lattice", "sweep", "m01", "m02", "emd", "m03", "m04", "metrics")
 
 # Each method is a callable (clip, column_spacing_deg, **thresholds) -> per-step arrays. `floor` is not a
 # method: it is the readout applied to the flow the corpus committed, and every flow-based row is reported
 # against it.
 METHODS = {
     "M01": {"call": m01.run, "requires": ("lum",)},
+    "M02": {"call": None, "requires": (), "stereo": True},      # run from the raw pair, not the lattice clip
     "M03": {"call": m03.run, "requires": ("lum",), "calibrate": m03.choose},
+    "M04": {"call": m04.run, "requires": ("lum",)},
     "floor": {"call": m01.floor, "requires": ("flow",)},
 }
 
@@ -133,10 +135,51 @@ def _run_one(method: str, case_id: str, level: int, index: int, root: str,
     if motion is None and "poses" not in clip:
         return row | {"skipped": "the clip carries no poses and its case declares no motion"}
     started = time.time()
-    result = METHODS[method]["call"](clip, spacing, motion=motion, **thresholds)
+    if METHODS[method].get("stereo"):
+        pair = _stereo_pair(Path(root), case, stamp, level)
+        if isinstance(pair, str):
+            return row | {"skipped": pair}
+        result = m02.run(*pair)
+    else:
+        result = METHODS[method]["call"](clip, spacing, motion=motion, **thresholds)
     row["seconds"] = round(time.time() - started, 3)
     row |= score_clip(clip, result, case, metric_units=_metric_units(case))
     return row
+
+
+def _stereo_pair(root: Path, case: dict, stamp: dict, level: int):
+    """The left and right frames of a case clip, with the level's variant applied to both.
+
+    Returns a reason (a string) instead of the pair when the case cannot be run: a source with no second
+    camera, or a variant that cannot be reproduced on the right image from the image alone (fog needs the
+    right camera's depth, exposure blur its flow, and neither was fetched).
+    """
+    from conectoma.vision import render, variants
+
+    if cases.contract_source(case) != "tartanair":
+        return "this case has no stereo pair: only TartanAir ships a second camera"
+    transform = case["variant"].get("transform")
+    if transform not in m02.REPLICABLE:
+        return f"the {transform} variant cannot be applied to the right camera with the data fetched"
+    item = stamp["item"]
+    environment, difficulty, trajectory, start = item.split("/")
+    base = root / "vision" / "tartanair"
+    left_path = base / "data" / environment / difficulty / trajectory / f"clip_{int(start):06d}.zip"
+    right_path = base / "stereo" / environment / difficulty / trajectory / f"clip_{int(start):06d}.zip"
+    if not right_path.exists():
+        return "the right camera of this clip has not been fetched (run.py fetch-stereo)"
+    left = render.load_tartanair_clip(left_path)["lum"]
+    right = m02.right_frames(right_path).astype(np.float32) / 255.0
+    if transform == "illumination":
+        gain = float(case["variant"]["levels"][level])
+        left, right = variants.illumination(left, gain), variants.illumination(right, gain)
+    elif transform == "photons":
+        count = case["variant"]["levels"][level]
+        seed = int(stamp.get("seed", 0))
+        left = variants.photons(left, count, seed * 10 + level)
+        right = variants.photons(right, count, seed * 10 + level + 1)
+    return ((np.clip(left, 0, 1) * 255).astype(np.uint8),
+            (np.clip(right, 0, 1) * 255).astype(np.uint8))
 
 
 def _metric_units(case: dict) -> bool:
