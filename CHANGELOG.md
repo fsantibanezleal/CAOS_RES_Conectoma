@@ -3,6 +3,45 @@
 All notable changes to this project are documented here. Format: Keep a Changelog, newest on top.
 Versions use the `X.XX.XXX` display form; the semver form (zeros dropped) appears in manifests.
 
+## [0.07.000] - 2026-09-22
+
+### Added
+
+- **M05, the connectome as a reservoir** (U6): the measured MaleCNS optic lobe, frozen, with a small head
+  (12,883 parameters) trained on this product's own corpus, and three controls built from the same wiring
+  that get the same head, the same optimiser and the same five seeds. The network's activity is computed
+  once per clip and cached (0.13 s per clip, 82 KB compressed), so twenty heads train in about half an
+  hour without a gradient ever crossing the network or time.
+- The head predicts its own spread in log depth, trained by a Gaussian likelihood, which is what lets a
+  trained row refuse a column. Each arm's refusal threshold is chosen on the CALIBRATION split by asking
+  the head to be honest: the tolerance where the claimed columns' observed error equals the tolerance they
+  were allowed. No accuracy target is set and no case is touched.
+- `run.py cache-activity` and `run.py train-readout`, and four more rows in the scoring stage (the
+  connectome and its three nulls), with the comparison that IS a connectome claim: the paired difference
+  per clip against each null, on the Experiments page and in the report.
+
+### Found
+
+- **The result of the unit, stated first.** On the cases, paired per clip, positive meaning the measured
+  wiring did better: against a size-matched random sparse graph **+0.197 [+0.173, +0.214]**, against the
+  same wiring with its signs shuffled **+0.136 [+0.121, +0.168]**, and against a degree-preserving
+  rewiring **-0.017 [-0.021, -0.008]**. What this row measures is carried by the connectome's degree
+  structure: a graph that keeps every type's in- and out-degree and scrambles the rest does as well, and
+  on the cases marginally better, with an interval that excludes zero. The two coarser controls are beaten
+  clearly, so this is not a network that fails to compute; it is a network whose specific wiring, at this
+  regime and this readout, is not what carries the result.
+- On validation the ordering is the expected one (connectome 3.58, sign shuffle 3.67, random sparse 3.88,
+  rewired 4.23 in scale-invariant error), which makes the case result, on a different distribution, worth
+  reading twice rather than once.
+- **The initialisation is not a detail.** With the engine's default biophysics the MaleCNS network's
+  signal dies before the output units: standard deviation over time 0.005 at L1, 0.0002 at Tm3, 0.0001 at
+  T4a, and an all-black clip and an all-white clip give the same activity to four decimals. With the
+  published model's per-type parameters transferred, as R0 was specified, the same cells read 0.086, 0.014
+  and 0.039.
+- A trained row has a failure mode a geometric row does not: on pure rotation M05 refuses 73 percent of
+  columns and answers the rest, where every geometric row refuses all of them, because nothing in its
+  input says the camera did not move.
+
 ## [0.06.000] - 2026-09-22
 
 ### Added

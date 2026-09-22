@@ -45,6 +45,50 @@
    "code_sha256": "3e80ca01cd754a66c6812f62b723dfdb0c73806b2cc5e89e8b4fef9d05a0c848",
    "thresholds": {},
    "clips_scored": 756
+  },
+  "M05": {
+   "path": "evaluation/M05.json",
+   "bytes": 427881,
+   "sha256": "2ce2bd96db89c0b301fb60272d047ba674dbc11ad4883d9d773e5aa1e8d85d4e",
+   "code_sha256": "45f93516dafa74092445d822093935f3826068a48abfdf36e94e3c2cb9d2bdd2",
+   "thresholds": {
+    "tolerance": 1.5,
+    "window": 2
+   },
+   "clips_scored": 756
+  },
+  "M05-N1": {
+   "path": "evaluation/M05-N1.json",
+   "bytes": 431463,
+   "sha256": "f03e9995bdec6e3c4d4aa0d6540115b5eb8bd0ec20158c6dd99f1075ec11312a",
+   "code_sha256": "45f93516dafa74092445d822093935f3826068a48abfdf36e94e3c2cb9d2bdd2",
+   "thresholds": {
+    "tolerance": 1.5,
+    "window": 2
+   },
+   "clips_scored": 756
+  },
+  "M05-N2": {
+   "path": "evaluation/M05-N2.json",
+   "bytes": 435167,
+   "sha256": "d26d7c2b8b93a56fe2c03f7d8865804e840a55ad08b4285a239a4280e10b87de",
+   "code_sha256": "45f93516dafa74092445d822093935f3826068a48abfdf36e94e3c2cb9d2bdd2",
+   "thresholds": {
+    "tolerance": 2.0,
+    "window": 2
+   },
+   "clips_scored": 756
+  },
+  "M05-N3": {
+   "path": "evaluation/M05-N3.json",
+   "bytes": 435337,
+   "sha256": "730a0a6e48a1a88e8582526df864b47d6c6a2e1014a008dd46df1e2b9b0461ae",
+   "code_sha256": "45f93516dafa74092445d822093935f3826068a48abfdf36e94e3c2cb9d2bdd2",
+   "thresholds": {
+    "tolerance": 2.0,
+    "window": 2
+   },
+   "clips_scored": 756
   }
  },
  "source": {

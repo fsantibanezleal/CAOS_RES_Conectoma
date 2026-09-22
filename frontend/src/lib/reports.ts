@@ -245,6 +245,7 @@ export interface EvaluationSummary {
     seconds: number;
   }>;
   against_floor: Record<string, PairedDifference>;
+  against_nulls?: Record<string, PairedDifference>;
 }
 
 export const REPORTS = {

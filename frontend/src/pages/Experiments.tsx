@@ -624,6 +624,43 @@ export default function Experiments() {
           'El intervalo es un bootstrap de 10.000 remuestreos sobre clips de la diferencia pareada, con la semilla registrada en el reporte.',
         )}
       </p>
+      {Object.keys(evaluation.against_nulls ?? {}).length > 0 ? (
+        <>
+          <h3>{t('A connectome row against its own nulls', 'Una fila del conectoma contra sus propios nulos')}</h3>
+          <p>
+            {t(
+              'The same head, the same seeds and the same clips, on a network whose wiring was degree-preservingly rewired, replaced by a size-matched random sparse graph, or had its signs shuffled. A positive difference means the measured wiring did better than the control; an interval that crosses zero means the measurement does not separate them.',
+              'La misma cabeza, las mismas semillas y los mismos clips, sobre una red cuyo cableado fue recableado preservando grados, reemplazado por un grafo disperso aleatorio del mismo tamaño, o con sus signos barajados. Una diferencia positiva significa que el cableado medido superó al control; un intervalo que cruza el cero significa que la medición no los separa.',
+            )}
+          </p>
+          <div className="cx-table-wrap">
+            <table className="cx-table">
+              <thead>
+                <tr>
+                  <th>{t('Comparison', 'Comparación')}</th>
+                  <th className="num">{t('AbsRel difference, paired', 'Diferencia de AbsRel, pareada')}</th>
+                  <th className="num">{t('Clips paired', 'Clips pareados')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(evaluation.against_nulls ?? {}).map(([name, paired]) => (
+                  <tr key={name}>
+                    <td>{name}</td>
+                    <td className="num">{num(-paired.median, 3)} [{num(-paired.high, 3)}, {num(-paired.low, 3)}]</td>
+                    <td className="num">{num(paired.pairs)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="cx-muted">
+            {t(
+              'Reported as the null minus the connectome, so a positive number is the connectome being better.',
+              'Reportado como el nulo menos el conectoma, así que un número positivo es el conectoma siendo mejor.',
+            )}
+          </p>
+        </>
+      ) : null}
       <h3>{t('Per case: AbsRel, median over the six levels', 'Por caso: AbsRel, mediana sobre los seis niveles')}</h3>
       <div className="cx-table-wrap">
         <table className="cx-table">
