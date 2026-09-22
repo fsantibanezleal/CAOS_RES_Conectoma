@@ -32,19 +32,20 @@ from pathlib import Path
 import numpy as np
 
 from conectoma.core.jsonio import write_json
-from conectoma.methods import m01, metrics
+from conectoma.methods import m01, m03, metrics
 from conectoma.vision import cases
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DERIVED = REPO_ROOT / "data" / "derived" / "evaluation"
 MANIFESTS = REPO_ROOT / "data" / "derived" / "manifests"
-CODE = ("readout", "flow_lattice", "sweep", "m01", "metrics")
+CODE = ("readout", "flow_lattice", "sweep", "m01", "emd", "m03", "metrics")
 
 # Each method is a callable (clip, column_spacing_deg, **thresholds) -> per-step arrays. `floor` is not a
 # method: it is the readout applied to the flow the corpus committed, and every flow-based row is reported
 # against it.
 METHODS = {
     "M01": {"call": m01.run, "requires": ("lum",)},
+    "M03": {"call": m03.run, "requires": ("lum",), "calibrate": m03.choose},
     "floor": {"call": m01.floor, "requires": ("flow",)},
 }
 
@@ -127,6 +128,8 @@ def _run_one(method: str, case_id: str, level: int, index: int, root: str,
     # A synthetic or panorama clip records no poses because its camera motion is not measured: it is the
     # case itself, and the registry states it.
     motion = None if "poses" in clip else cases.step_motion(case, level)
+    if "interval_s" not in clip and stamp.get("interval_s") is not None:
+        clip["interval_s"] = float(stamp["interval_s"])
     if motion is None and "poses" not in clip:
         return row | {"skipped": "the clip carries no poses and its case declares no motion"}
     started = time.time()
@@ -180,6 +183,13 @@ def run(root: Path, method: str, *, cases_wanted: list[str] | None = None,
         raise KeyError(f"unknown method {method}; known: {', '.join(sorted(METHODS))}")
     registry, digest = cases.load_cases()
     thresholds = dict(thresholds or {})
+    # a method that must be calibrated is calibrated here, on its own synthetic set, and the calibration
+    # is written beside the report so the numbers can be read with the thing that produced them
+    calibration = None
+    if "calibrate" in METHODS[method] and "gain" not in thresholds:
+        calibration = METHODS[method]["calibrate"]()
+        thresholds |= {"tau_s": calibration["chosen"]["tau_s"], "gain": calibration["chosen"]["gain"],
+                       "rings": calibration["rings"]}
     jobs = []
     for case_id, case in registry["cases"].items():
         if cases_wanted and case_id not in cases_wanted:
@@ -213,6 +223,7 @@ def run(root: Path, method: str, *, cases_wanted: list[str] | None = None,
         "cases_sha256": digest,
         "code_sha256": code_digest(),
         "thresholds": thresholds,
+        "calibration": calibration,
         "clips_scored": len(rows),
         "seconds": round(time.time() - started, 1),
         "cases": _aggregate(rows, registry),
