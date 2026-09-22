@@ -180,7 +180,8 @@ def patches(extent: int = eye.EXTENT) -> tuple[np.ndarray, np.ndarray, np.ndarra
     return members, weights, pixels[members]
 
 
-def flow(lum: np.ndarray, extent: int = eye.EXTENT, refinements: int = REFINEMENTS) -> dict[str, np.ndarray]:
+def flow(lum: np.ndarray, extent: int = eye.EXTENT, refinements: int = REFINEMENTS,
+         initial: np.ndarray | None = None) -> dict[str, np.ndarray]:
     """Flow between consecutive frames, in pixels of the 436-row frame, y down.
 
     The displacement is the one that makes the second frame, sampled where the first frame's columns are
@@ -197,6 +198,10 @@ def flow(lum: np.ndarray, extent: int = eye.EXTENT, refinements: int = REFINEMEN
     A step is taken only when it lowers the residual, halved up to four times otherwise: a column whose
     patch cannot be improved keeps the best displacement it found.
 
+    The refinement starts at zero unless `initial` (steps, 2, columns) says otherwise. Its capture range is
+    about one lattice step, so on a corpus whose columns move several steps between frames it must be
+    started somewhere sensible: `conectoma.methods.sweep` provides that start from the geometry.
+
     Returns the velocity per column and per step, and the confidence: the smaller eigenvalue of the normal
     matrix of the column's patch, zero on an edge and on a flat patch.
     """
@@ -211,7 +216,8 @@ def flow(lum: np.ndarray, extent: int = eye.EXTENT, refinements: int = REFINEMEN
     for step in range(steps):
         target = lum[step][members]                                    # (columns, 7)
         second = lum[step + 1]
-        v = np.zeros((columns, 2))
+        v = (np.zeros((columns, 2)) if initial is None
+             else np.nan_to_num(np.asarray(initial, dtype=np.float64)[step].T.copy()))
         best = np.full(columns, np.inf)
         alive = np.ones(columns, dtype=bool)
         structure = np.zeros(columns)
@@ -230,14 +236,31 @@ def flow(lum: np.ndarray, extent: int = eye.EXTENT, refinements: int = REFINEMEN
                 break
             best = np.where(alive, np.minimum(best, cost), best)
             right = -np.einsum("cni,cn->ci", np.nan_to_num(weighted), np.nan_to_num(residual))
-            step_v = np.zeros_like(v)
-            step_v[alive] = np.linalg.solve(normal[alive], right[alive][..., None])[..., 0]
+            step_v, solved = _solve2(normal, right)
+            step_v[~(alive & solved)] = 0.0
+            alive &= solved
             v = _accept(second, target, patch_pixels, v, step_v, alive, best, extent)
 
         take = alive & (structure > 0)
         velocity[step, :, take] = v[take]
         confidence[step] = structure
     return {"velocity_px": velocity, "confidence": confidence}
+
+
+def _solve2(normal: np.ndarray, right: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Solve a stack of 2 x 2 systems, saying which ones were solvable.
+
+    Explicitly rather than through `np.linalg.solve`, which raises on the first singular matrix in the
+    stack: on real data a column whose patch is flat or one-dimensional produces exactly that, and it is
+    an answer (the aperture problem), not an error.
+    """
+    determinant = normal[:, 0, 0] * normal[:, 1, 1] - normal[:, 0, 1] * normal[:, 1, 0]
+    scale = np.maximum(normal[:, 0, 0] + normal[:, 1, 1], 0.0) ** 2
+    solvable = determinant > 1e-12 * np.maximum(scale, np.finfo(float).tiny)
+    safe = np.where(solvable, determinant, 1.0)
+    out = np.stack([(normal[:, 1, 1] * right[:, 0] - normal[:, 0, 1] * right[:, 1]) / safe,
+                    (normal[:, 0, 0] * right[:, 1] - normal[:, 1, 0] * right[:, 0]) / safe], axis=1)
+    return np.where(solvable[:, None], out, 0.0), solvable
 
 
 def _patch_cost(residual: np.ndarray) -> np.ndarray:

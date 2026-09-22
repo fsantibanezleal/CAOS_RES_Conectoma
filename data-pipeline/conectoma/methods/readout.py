@@ -65,9 +65,22 @@ def column_pixels(extent: int = eye.EXTENT, kernel: int = eye.KERNEL) -> np.ndar
 
 def ray_directions(column_spacing_deg: float, extent: int = eye.EXTENT) -> np.ndarray:
     """(columns, 3) unit viewing direction of each column in pinhole coordinates (x right, y down, z fwd)."""
-    pixels = column_pixels(extent)
-    rays = np.concatenate([pixels, np.full((len(pixels), 1), focal_px(column_spacing_deg))], axis=1)
+    rays = planar_rays(column_spacing_deg, extent)
     return rays / np.linalg.norm(rays, axis=1, keepdims=True)
+
+
+def planar_rays(column_spacing_deg: float, extent: int = eye.EXTENT) -> np.ndarray:
+    """(columns, 3) the same directions scaled so that z is 1: multiplying by a PLANAR depth gives the point.
+
+    The corpus records planar depth, the z coordinate in the camera frame, because that is what TartanAir,
+    Spring and Hypersim all distribute and what the renderer takes the box median of. A distance along the
+    ray is a different number: at the corner of the lattice, with a focal length of
+    218 pixels, the ray is 1.41 times longer than its z. Everything that turns a displacement into a depth
+    uses these rays, so the depth that comes out is the depth the ground truth holds.
+    """
+    pixels = column_pixels(extent)
+    focal = focal_px(column_spacing_deg)
+    return np.concatenate([pixels / focal, np.ones((len(pixels), 1))], axis=1)
 
 
 def pixel_flow(flow_engine: np.ndarray, rows: int = eye.ROWS) -> np.ndarray:
@@ -97,12 +110,14 @@ def triangulate(
     """Distance per column from one step's displacement and the known motion of the camera.
 
     `flow_px` is (2, columns): the displacement of each column between the two frames, in pixels, y down.
-    Returns the distance (metres where the poses are metric), the across-the-line-of-sight baseline, the
-    epipolar deviation in degrees, and the predicted displacement of the fitted distance.
+    Returns the PLANAR depth (metres where the poses are metric, the same quantity the corpus records), the
+    across-the-line-of-sight baseline, the epipolar deviation in degrees, and how far off its epipolar line
+    the measurement fell.
     """
     focal = focal_px(column_spacing_deg)
     pixels = column_pixels(extent)
-    rays = ray_directions(column_spacing_deg, extent)
+    rays = planar_rays(column_spacing_deg, extent)                 # z = 1, so the unknown is planar depth
+    unit = rays / np.linalg.norm(rays, axis=1, keepdims=True)
     moved = rays @ np.asarray(rotation, dtype=np.float64).T        # (columns, 3) = R d
     t = np.asarray(translation, dtype=np.float64)
     seen = pixels + np.asarray(flow_px, dtype=np.float64).T        # where each column's point is next
@@ -115,9 +130,10 @@ def triangulate(
     with np.errstate(divide="ignore", invalid="ignore"):
         distance = np.where(denominator > 0, (a * b).sum(axis=1) / denominator, np.nan)
 
-    # the translation across each column's line of sight: the baseline that makes distance observable
-    along = rays @ t
-    baseline = np.linalg.norm(t[None, :] - along[:, None] * rays, axis=1)
+    # the translation across each column's line of sight: the baseline that makes depth observable. This
+    # one is about the direction only, so it uses the unit ray.
+    along = unit @ t
+    baseline = np.linalg.norm(t[None, :] - along[:, None] * unit, axis=1)
 
     # Where the column's point lands if it is infinitely far (the rotation alone), and the direction the
     # landing point slides along as it comes closer. With s = 1/Z the projection is f (a + s t) / (a + s t)_z
@@ -177,7 +193,8 @@ def unknown(distance_m: np.ndarray, relative_uncertainty: np.ndarray, tolerance:
     bad = ~np.isfinite(distance_m) | (np.asarray(distance_m) <= 0)
     bad |= ~np.isfinite(relative_uncertainty) | (relative_uncertainty > tolerance)
     if confidence is not None:
-        bad |= ~np.isfinite(confidence) | (confidence < min_confidence)
+        # an infinite confidence is a flow that was given rather than estimated, not a broken one
+        bad |= np.isnan(confidence) | (confidence < min_confidence)
     return bad
 
 

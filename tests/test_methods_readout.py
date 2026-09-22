@@ -26,18 +26,31 @@ def project(points: np.ndarray, focal: float) -> np.ndarray:
     return focal * points[:, :2] / points[:, 2:3]
 
 
-def displacement(distance: np.ndarray, rotation: np.ndarray, translation: np.ndarray,
+def displacement(depth: np.ndarray, rotation: np.ndarray, translation: np.ndarray,
                  spacing_deg: float) -> np.ndarray:
-    """The exact pixel displacement of each column's point, (2, columns), y down."""
+    """The exact pixel displacement of each column's point, (2, columns), y down.
+
+    `depth` is planar depth, the z coordinate in the camera frame, which is what the corpus records and
+    what the readout solves for; the rays are scaled so that z is one.
+    """
     focal = readout.focal_px(spacing_deg)
-    rays = readout.ray_directions(spacing_deg)
-    seen = project(rays * np.asarray(distance)[:, None] @ rotation.T + translation, focal)
+    rays = readout.planar_rays(spacing_deg)
+    seen = project(rays * np.asarray(depth)[:, None] @ rotation.T + translation, focal)
     return (seen - readout.column_pixels()).T
 
 
 def test_focal_inverts_the_recorded_column_spacing():
     for focal in (218.0, 895.98, 100.0):
         assert readout.focal_px(cases.column_spacing_deg(focal)) == pytest.approx(focal, rel=1e-12)
+
+
+def test_a_planar_ray_is_the_unit_ray_scaled_to_reach_the_plane():
+    """The two parameterisations differ by 1.41 at the corner of the lattice: the reason both exist."""
+    rays = readout.planar_rays(3.415709)
+    unit = readout.ray_directions(3.415709)
+    assert np.allclose(rays[:, 2], 1.0)
+    assert np.allclose(rays / np.linalg.norm(rays, axis=1, keepdims=True), unit)
+    assert np.linalg.norm(rays, axis=1).max() == pytest.approx(1.41, abs=0.01)
 
 
 def test_rays_point_where_the_lattice_looks():

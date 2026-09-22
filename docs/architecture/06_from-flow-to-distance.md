@@ -1,4 +1,4 @@
-# From motion on the lattice to distance in metres
+# From motion on the lattice to depth in metres
 
 Every motion method in this product ends in the same two steps: measure how the 721 columns' view moved
 between two frames, then turn that movement into a distance using the camera motion the corpus committed
@@ -20,6 +20,12 @@ distance. Written in this product's pinhole coordinates (x right, y down, z forw
 p'(Z) = Z (R d) + t           R, t: the motion from this frame to the next, from the committed poses
 x'(Z) = f p'_x / p'_z         f: the focal length of the 436-row frame the lattice sees
 ```
+
+`Z` is PLANAR depth, the z coordinate in the camera frame, and `d` is the column's ray scaled so that its
+own z is one. That is not a detail: the corpus records planar depth, because TartanAir, Spring and
+Hypersim all distribute it, and solving for distance along the ray instead inflates every off-axis column,
+by 1.41 at the corner of this lattice. The synthetic control (planes at a stated depth, camera translating
+at a stated speed) caught that error before any number left the repository.
 
 The measured displacement gives two equations in the single unknown `Z`, solved together:
 
@@ -101,7 +107,20 @@ which is 8 percent of a lattice step, comes back within 20 percent. The objectiv
 0.95 of the true displacement for that case, so most of what remains is the information the lattice
 carries, not the solver. The tests hold these bounds (`tests/test_methods_flow.py`).
 
-## 3. What the corpus provides and what is assumed
+## 3. What it costs, measured
+
+On a TartanAir forest clip, 32 frames, against the depth the corpus committed:
+
+| Row | Columns it claims | Median relative error |
+|---|---|---|
+| the committed flow, inverted by this readout | 88 percent | 0.9 percent |
+| M01, its own estimate of the flow | 43 percent | 8.1 percent |
+
+The first row is not a method. It is what the readout returns when the flow is exactly right, and it says
+that the arithmetic after the flow costs essentially nothing: a motion method's error IS its flow's error.
+Every flow-based row of the ladder is reported against it.
+
+## 4. What the corpus provides and what is assumed
 
 | Quantity | Where it comes from |
 |---|---|
