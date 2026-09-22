@@ -27,6 +27,7 @@ import hashlib
 import json
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from functools import partial
 from pathlib import Path
 
 import numpy as np
@@ -63,10 +64,14 @@ METHODS = {
     "M02": {"call": None, "requires": (), "stereo": True},      # run from the raw pair, not the lattice clip
     "M03": {"call": m03.run, "requires": ("lum",), "calibrate": m03.choose},
     "M04": {"call": m04.run, "requires": ("lum",)},
-    "M05": {"call": None, "requires": ("lum",), "reservoir": "connectome"},
-    "M05-N1": {"call": None, "requires": ("lum",), "reservoir": "N1"},
-    "M05-N2": {"call": None, "requires": ("lum",), "reservoir": "N2"},
-    "M05-N3": {"call": None, "requires": ("lum",), "reservoir": "N3"},
+    "M05": {"call": None, "requires": ("lum",), "reservoir": "connectome",
+            "calibrate": partial(m05.calibrate_tolerance, arm="connectome")},
+    "M05-N1": {"call": None, "requires": ("lum",), "reservoir": "N1",
+               "calibrate": partial(m05.calibrate_tolerance, arm="N1")},
+    "M05-N2": {"call": None, "requires": ("lum",), "reservoir": "N2",
+               "calibrate": partial(m05.calibrate_tolerance, arm="N2")},
+    "M05-N3": {"call": None, "requires": ("lum",), "reservoir": "N3",
+               "calibrate": partial(m05.calibrate_tolerance, arm="N3")},
     "floor": {"call": m01.floor, "requires": ("flow",)},
 }
 
@@ -255,10 +260,15 @@ def run(root: Path, method: str, *, cases_wanted: list[str] | None = None,
     # a method that must be calibrated is calibrated here, on its own synthetic set, and the calibration
     # is written beside the report so the numbers can be read with the thing that produced them
     calibration = None
-    if "calibrate" in METHODS[method] and "gain" not in thresholds:
-        calibration = METHODS[method]["calibrate"]()
-        thresholds |= {"tau_s": calibration["chosen"]["tau_s"], "gain": calibration["chosen"]["gain"],
-                       "rings": calibration["rings"]}
+    if "calibrate" in METHODS[method] and not thresholds:
+        calibrate = METHODS[method]["calibrate"]
+        calibration = calibrate(root) if METHODS[method].get("reservoir") else calibrate()
+        if METHODS[method].get("reservoir"):
+            thresholds |= {"tolerance": calibration["chosen"]["tolerance"],
+                           "window": calibration["window"]}
+        else:
+            thresholds |= {"tau_s": calibration["chosen"]["tau_s"],
+                           "gain": calibration["chosen"]["gain"], "rings": calibration["rings"]}
     jobs = []
     for case_id, case in registry["cases"].items():
         if cases_wanted and case_id not in cases_wanted:

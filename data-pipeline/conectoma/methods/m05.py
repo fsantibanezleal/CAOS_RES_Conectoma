@@ -30,10 +30,17 @@ from conectoma.methods.readout import COLUMNS
 DEFAULT_TOLERANCE = 0.5      # the head's predicted spread in log depth, chosen on calibration
 
 
+_HEADS: dict[tuple, tuple] = {}
+
+
 def load_head(checkpoint: Path, device: str | None = None):
+    """A trained head, loaded once per process: scoring a case reads the same five heads 756 times."""
     from conectoma.stages.train_readout import load
 
-    return load(checkpoint, device)
+    signature = (str(checkpoint), str(device))
+    if signature not in _HEADS:
+        _HEADS[signature] = load(checkpoint, device)
+    return _HEADS[signature]
 
 
 def cached_activity(root: Path, arm: str, key: str) -> np.ndarray | None:
@@ -141,3 +148,64 @@ def records(derived: Path | None = None) -> list[dict]:
     for path in sorted((derived or DERIVED).glob("*.json")):
         out.append(json.loads(path.read_text(encoding="utf-8")))
     return out
+
+
+# ------------------------------------------------------------------ the threshold, chosen on calibration
+
+TOLERANCE_GRID = (0.2, 0.3, 0.4, 0.5, 0.7, 1.0, 1.5, 2.0)
+
+
+def calibrate_tolerance(root: Path, arm: str = "connectome", window: int = 2,
+                        grid: tuple = TOLERANCE_GRID, clips: int | None = 60,
+                        device: str | None = None) -> dict:
+    """Choose what the row refuses, on the CALIBRATION split, by asking the head to be honest.
+
+    At each candidate tolerance the claimed columns have an observed root mean square error in log depth.
+    A head whose predicted spread means what it says has that error equal to the tolerance it was allowed;
+    below it the row is refusing columns it could have read, above it the row is claiming columns it
+    cannot. The chosen tolerance is the grid point where the two are closest, which is a calibration
+    criterion rather than a knob: no accuracy target is set and no case is touched.
+    """
+    from conectoma.stages.cache_activity import split_clips
+    from conectoma.stages.train_readout import CachedClips
+
+    keys = [p.stem for p in split_clips(Path(root), "calibration", clips)]
+    cached = CachedClips(Path(root), arm, keys)
+    heads = [load_head(path, device) for path in seed_checkpoints(arm, window)]
+    if not heads:
+        raise FileNotFoundError(f"no trained head for arm {arm} at window {window}")
+
+    errors, spreads = [], []
+    for index in range(len(cached)):
+        activity = cached.activity[index].astype(np.float32)
+        truth = cached.depth[index].astype(np.float32)
+        frames = activity.shape[0]
+        rows = np.clip(np.arange(frames)[:, None] - np.arange(window - 1, -1, -1), 0, frames - 1)
+        batch = torch.from_numpy(activity[rows])
+        per_seed_depth, per_seed_spread = [], []
+        for model, _ in heads:
+            with torch.no_grad():
+                read = head_module.predictions(model(batch.to(next(model.parameters()).device)))
+            per_seed_depth.append(read["distance_m"])
+            per_seed_spread.append(read["uncertainty"])
+        depth = np.median(np.stack(per_seed_depth), axis=0)
+        spread = np.median(np.stack(per_seed_spread), axis=0)
+        known = np.isfinite(truth) & (truth > 0) & np.isfinite(depth) & (depth > 0)
+        errors.append(np.log(depth[known]) - np.log(truth[known]))
+        spreads.append(spread[known])
+    error = np.concatenate(errors)
+    spread = np.concatenate(spreads)
+
+    rows = []
+    for tolerance in grid:
+        claimed = spread <= tolerance
+        if claimed.sum() < 100:
+            continue
+        observed = float(np.sqrt(np.mean(error[claimed] ** 2)))
+        rows.append({"tolerance": float(tolerance), "coverage": float(claimed.mean()),
+                     "observed_rms_log_error": observed, "gap": abs(observed - float(tolerance))})
+    if not rows:
+        raise RuntimeError("the calibration split produced no usable column at any tolerance")
+    chosen = min(rows, key=lambda row: row["gap"])
+    return {"arm": arm, "window": window, "clips": len(cached), "columns": int(len(error)),
+            "chosen": chosen, "grid": rows}
