@@ -163,6 +163,26 @@ def check_splits(errs: list[str]) -> int:
     return sum(entry["clips"] for entry in splits["counts"].values())
 
 
+def check_brainclips(errs: list[str]) -> int:
+    """The network's response per case: every declared file matches its bytes and digest."""
+    path = MANIFESTS / "brainclips.json"
+    if not path.exists():
+        return 0
+    manifest = load(path, errs)
+    if manifest is None:
+        return 0
+    cases_path = DERIVED / "vision" / "cases.json"
+    if cases_path.exists():
+        registry = json.loads(cases_path.read_text(encoding="utf-8")).get("cases_sha256")
+        if registry != manifest["source"]["cases_sha256"]:
+            errs.append("brainclips: the responses were computed on a different case registry than this")
+    if not manifest.get("types"):
+        errs.append("brainclips: the manifest names no cell types")
+    for case_id, entry in sorted(manifest["cases"].items()):
+        check_file(entry, DERIVED, f"brainclips/{case_id}", errs)
+    return len(manifest["cases"])
+
+
 def check_evaluation(errs: list[str]) -> int:
     """The scored methods, when any have been committed: each report matches its manifest entry."""
     path = MANIFESTS / "evaluation.json"
@@ -189,14 +209,16 @@ def main() -> int:
     clips = check_eyeclips(errs)
     rendered = check_splits(errs)
     scored = check_evaluation(errs)
+    brains = check_brainclips(errs)
     if errs:
         print("CONTRACT 2 DRIFT:")
         for err in errs:
             print(f"::error::{err}")
         return 1
     print(
-        f"CONTRACT 2 OK: {explorer} explorer artifact, {clips} eye clips, {rendered} split clips, "
-        f"{scored} scored methods; manifests, digests and the split table all agree with the files."
+        f"CONTRACT 2 OK: {explorer} explorer artifact, {clips} eye clips, {brains} brain clips, "
+        f"{rendered} split clips, {scored} scored methods; manifests, digests and the split table "
+        "all agree with the files."
     )
     return 0
 

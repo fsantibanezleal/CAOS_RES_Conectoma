@@ -1,6 +1,7 @@
 import { countProblems, explorerProblems, manifestProblems } from '../lib/contract';
 import { sha256Hex } from '../lib/sha256';
 import type { Explorer, ExplorerManifest } from '../lib/contract.types';
+import { brainProblems, type BrainClip, type BrainManifest } from '../lib/brain';
 import { eyeClipProblems, eyeManifestProblems, type EyeClip, type EyeManifest } from '../lib/eye';
 
 // Every artifact is read from the site root (the build copies data/derived into public/data), with an
@@ -94,5 +95,42 @@ export function loadEyeClip(manifest: EyeManifest, caseId: string): Promise<Veri
   })();
   promise.catch(() => clipCache.delete(caseId));
   clipCache.set(caseId, promise);
+  return promise;
+}
+
+/** The brain artifact's manifest: which cases have a response, their digests, and the pathway's types. */
+export async function loadBrainManifest(): Promise<BrainManifest> {
+  const raw = await getJson<BrainManifest>('manifests/brainclips.json');
+  if (raw?.artifact !== 'brainclips') refuse('The brain manifest', ['it is not a brainclips manifest']);
+  if (!Array.isArray(raw.types) || !raw.types.length) refuse('The brain manifest', ['it names no cell types']);
+  return raw;
+}
+
+export interface VerifiedBrainClip {
+  clip: BrainClip;
+  /** true when the bytes received hash to the manifest's SHA-256 */
+  verified: boolean;
+}
+
+const brainCache = new Map<string, Promise<VerifiedBrainClip>>();
+
+/** What the connectome did with one case, read once, checked against the contract and its digest. */
+export function loadBrainClip(manifest: BrainManifest, caseId: string): Promise<VerifiedBrainClip> {
+  const entry = manifest.cases[caseId];
+  if (!entry) return Promise.reject(new Error(`the brain manifest has no case ${caseId}`));
+  const cached = brainCache.get(caseId);
+  if (cached) return cached;
+  const promise = (async () => {
+    const response = await fetch(DATA + entry.path, { cache: 'no-cache' });
+    if (!response.ok) throw new Error(`${entry.path}: HTTP ${response.status}`);
+    const buffer = await response.arrayBuffer();
+    const verified = (await sha256(buffer)) === entry.sha256;
+    const parsed = JSON.parse(new TextDecoder().decode(buffer)) as BrainClip;
+    const problems = brainProblems(parsed, entry);
+    if (problems.length) refuse(`The brain clip of ${caseId}`, problems);
+    return { clip: parsed, verified };
+  })();
+  promise.catch(() => brainCache.delete(caseId));
+  brainCache.set(caseId, promise);
   return promise;
 }

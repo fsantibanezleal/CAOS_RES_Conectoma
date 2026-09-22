@@ -7,6 +7,7 @@ import { useNumber, useT } from '../lib/i18n';
 import HexFilter, { type Panel } from '../explorer/HexFilter';
 import PartnerList from '../explorer/PartnerList';
 import Placement from '../explorer/Placement';
+import BrainMode from '../eye/BrainMode';
 import EyeMode from '../eye/EyeMode';
 import {
   angleBetween,
@@ -32,19 +33,21 @@ const GROUPS: { id: TypeGroup; en: string; es: string }[] = [
 
 const DEFAULT_TYPE = 'T4a';
 
-type Mode = 'connectome' | 'eye';
+type Mode = 'connectome' | 'eye' | 'brain';
 
 /**
- * The App has two modes, switched in the rail so the page keeps one row of tabs: the connectome explorer
- * (the wiring the network is built from) and the eye's input (what its 721 columns see in each case).
+ * The App has three modes, switched in the rail so the page keeps one row of tabs: the connectome explorer
+ * (the wiring the network is built from), the eye's input (what its 721 columns see in each case), and the
+ * response (what the frozen network DOES with that input, playing).
  */
 export default function AppPage() {
   const t = useT();
   const [params, setParams] = useSearchParams();
-  const mode: Mode = params.get('mode') === 'eye' ? 'eye' : 'connectome';
+  const asked = params.get('mode');
+  const mode: Mode = asked === 'eye' ? 'eye' : asked === 'brain' ? 'brain' : 'connectome';
   const switcher = (
     <div className="cx-segmented cx-mode" role="radiogroup" aria-label={t('App mode', 'Modo de la aplicación')}>
-      {(['connectome', 'eye'] as Mode[]).map((m) => (
+      {(['connectome', 'eye', 'brain'] as Mode[]).map((m) => (
         <button
           key={m}
           type="button"
@@ -53,17 +56,22 @@ export default function AppPage() {
           className={mode === m ? 'active' : ''}
           onClick={() => {
             const next = new URLSearchParams(params);
-            if (m === 'eye') next.set('mode', 'eye');
-            else next.delete('mode');
+            if (m === 'connectome') next.delete('mode');
+            else next.set('mode', m);
             setParams(next, { replace: true });
           }}
         >
-          {m === 'connectome' ? t('Connectome', 'Conectoma') : t('Eye input', 'Entrada del ojo')}
+          {/* three labels share a 224 px rail at the narrow viewport, so they are words, not phrases */}
+          {m === 'connectome' ? t('Wiring', 'Cableado')
+            : m === 'eye' ? t('Eye', 'Ojo')
+            : t('Response', 'Respuesta')}
         </button>
       ))}
     </div>
   );
-  return mode === 'eye' ? <EyeMode switcher={switcher} /> : <ConnectomeMode switcher={switcher} />;
+  if (mode === 'eye') return <EyeMode switcher={switcher} />;
+  if (mode === 'brain') return <BrainMode switcher={switcher} />;
+  return <ConnectomeMode switcher={switcher} />;
 }
 
 function ConnectomeMode({ switcher }: { switcher: ReactNode }) {

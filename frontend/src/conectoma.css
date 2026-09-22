@@ -314,3 +314,67 @@
   .cx-eye-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; grid-template-rows: repeat(3, minmax(0, 1fr)) !important; height: 120vh; flex: 0 0 auto; }
   .cx-eye-charts { height: 60vh; flex: 0 0 auto; }
 }
+
+/* ---------------------------------------------------------------- the response: the pathway, playing */
+/* The stack is a column of stages (lamina, medulla, the direction-selective outputs) with the eye's own
+   input above them, so a reader's eye travels the way the signal does. Every stage's maps share one row
+   height, so a stage with four types does not dwarf one with three. */
+.cx-brain-stage-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-y: auto;
+}
+.cx-brain-eye { flex: 0 0 auto; height: 9rem; display: flex; justify-content: center; }
+.cx-brain-eye .cx-eye { width: 9rem; }
+.cx-brain-stage { flex: 0 0 auto; }
+.cx-brain-stage-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-fg-subtle);
+  margin: 0.1rem 0 0.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+/* The lattice is as wide as it is tall, so a card that is wide and short draws a small patch in a sea of
+   background. Cards are therefore square-ish and the row fits as many as the width allows. */
+.cx-brain-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+  gap: 0.4rem;
+}
+.cx-activity {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  aspect-ratio: 1 / 1.12;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface-2);
+  padding: 0.3rem;
+}
+/* `.cx-eye-canvas` is absolutely positioned (the eye's own view overlays a title and a readout on it), so
+   this wrapper must be its containing block. Without the `position: relative` every activity canvas
+   escapes its card and stacks at the viewport origin, painted on top of the page's own header. */
+.cx-activity-canvas { position: relative; flex: 1 1 auto; min-height: 0; min-width: 0; overflow: hidden; }
+.cx-activity-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  flex: 0 0 auto;
+}
+.cx-activity-head strong { font-size: 0.8rem; }
+.cx-activity-head .cx-muted { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cx-activity-value { font-variant-numeric: tabular-nums; color: var(--color-fg-subtle); }
+.cx-brain-traces { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+/* the colour scale, drawn from the same stops the canvases use, so a reader can check one against the other */
+.cx-legend { display: flex; height: 0.5rem; border-radius: 3px; overflow: hidden; }
+.cx-legend-stop { flex: 1 1 0; }
+
+@media (max-width: 900px) {
+  .cx-brain-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cx-brain-stage-wrap { overflow: visible; }
+}

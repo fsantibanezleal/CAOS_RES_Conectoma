@@ -170,6 +170,21 @@ function paintedCanvases() {
 }
 
 const EYE_TABS = { en: ['Input and ground truth', 'All six levels', 'Over time'], es: ['Entrada y verdad de terreno', 'Los seis niveles', 'En el tiempo'] };
+const BRAIN_TABS = { en: ['The pathway', 'One column over time'], es: ['La vía', 'Una columna en el tiempo'] };
+
+// A cheap signature of what every activity canvas is showing: enough to tell one frame from the next
+// without shipping pixels out of the page.
+function canvasFingerprint() {
+  const canvases = [...document.querySelectorAll('.cx-activity canvas')].slice(0, 4);
+  return canvases.map((canvas) => {
+    const ctx = canvas.getContext('2d');
+    if (!ctx || !canvas.width) return 'x';
+    const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let sum = 0;
+    for (let i = 0; i < data.length; i += 997) sum = (sum + data[i] * (i % 31 + 1)) % 1000000007;
+    return String(sum);
+  }).join('|');
+}
 const EYE_CASES = Array.from({ length: 16 }, (_, i) => `C${String(i + 1).padStart(2, '0')}`);
 
 async function openEye(page, caseId) {
@@ -231,6 +246,48 @@ try {
             await page.screenshot({ path: `${out}/app-eye-${EYE_TABS.en[EYE_TABS[lang].indexOf(tab)].split(' ')[0].toLowerCase()}-${tag}.png` });
           }
           pass(errors.length === 0, `${tag} App eye: no page errors ${JSON.stringify(errors.slice(0, 3))}`);
+          await ctx.close();
+        }
+
+        // ---- App route, response mode: the pathway is drawn, and PLAYING actually moves it
+        {
+          const { ctx, page, errors } = await open(browser, viewport, theme, lang);
+          await page.goto(`${base}/?mode=brain&case=C01`, { waitUntil: 'networkidle' });
+          await page.waitForSelector('.cx-activity canvas[data-painted]', { timeout: 30000 });
+          await page.waitForTimeout(400);
+          for (const tab of BRAIN_TABS[lang]) {
+            await page.getByRole('tab', { name: tab, exact: true }).click();
+            await page.waitForTimeout(400);
+            const m = await page.evaluate(measure);
+            const where = `${tag} App response/${tab}`;
+            pass(m.scrollW <= m.vw, `${where}: no horizontal drag (${m.scrollW} > ${m.vw})`);
+            pass(m.rail && m.rail.scroll <= m.rail.client + 1, `${where}: the rail shows its controls (${JSON.stringify(m.rail)})`);
+            pass(m.navRows === 1 && m.tabRows.every((r) => r === 1), `${where}: chrome on one row (nav ${m.navRows}, tabs ${m.tabRows})`);
+            pass(m.verified === 'true', `${where}: the response verified against its manifest (${m.verified})`);
+          }
+          await page.getByRole('tab', { name: BRAIN_TABS[lang][0], exact: true }).click();
+          await page.waitForTimeout(300);
+          const maps = await page.evaluate(paintedCanvases);
+          const where = `${tag} App response`;
+          pass(maps.length >= 8, `${where}: the pathway draws ${maps.length} maps`);
+          maps.forEach((c, k) => pass(c.columns === 721 && c.colours >= 4,
+            `${where}: map ${k + 1} painted 721 columns in ${c.colours} sampled colours`));
+
+          // The check that matters for an animation: press play and see the drawing CHANGE. A gate that
+          // only looked at one frame would pass a view that never moves, which is exactly the defect
+          // this mode was built to fix.
+          const before = await page.evaluate(canvasFingerprint);
+          await page.getByRole('button', { name: lang === 'es' ? 'Reproducir' : 'Play' }).click();
+          await page.waitForTimeout(1200);
+          const during = await page.evaluate(canvasFingerprint);
+          pass(before !== during, `${where}: playing advances the drawing`);
+          await page.getByRole('button', { name: lang === 'es' ? 'Pausa' : 'Pause' }).click();
+          await page.waitForTimeout(500);
+          const paused = await page.evaluate(canvasFingerprint);
+          await page.waitForTimeout(700);
+          pass(paused === (await page.evaluate(canvasFingerprint)), `${where}: pausing stops it`);
+          await page.screenshot({ path: `${out}/app-response-${tag}.png` });
+          pass(errors.length === 0, `${tag} App response: no page errors ${JSON.stringify(errors.slice(0, 3))}`);
           await ctx.close();
         }
 
