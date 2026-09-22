@@ -561,6 +561,114 @@ export default function Experiments() {
     </section>
   );
 
+  const { evaluation } = reports;
+  const methodNames = Object.keys(evaluation.methods).filter((m) => m !== 'floor');
+  const median = (values: number[]) => {
+    const kept = values.filter((v) => Number.isFinite(v)).sort((a, b) => a - b);
+    return kept.length ? kept[Math.floor(kept.length / 2)] : NaN;
+  };
+  const caseNumber = (method: string, caseId: string, key: 'abs_rel' | 'coverage' | 'refusal_correct') => {
+    const found = evaluation.methods[method]?.cases[caseId];
+    if (!found) return NaN;
+    return median(found.levels.map((level) => level[key] as number));
+  };
+  const caseIds = Object.keys(evaluation.methods.floor?.cases ?? {}).sort();
+  const methodsTab = (
+    <section>
+      <h2>{t('What do the first methods get from the eye?', '¿Qué obtienen los primeros métodos del ojo?')}</h2>
+      <p>
+        {t(
+          'Every method is scored on the same clips, which come from geometry families that are always in the test split, and every number below is the median over that case’s six levels. The row called floor is not a method: it is the flow the corpus committed, put through the same readout, so it says what the arithmetic after the flow costs. A method’s distance from it is the part of the error the method owns.',
+          'Cada método se evalúa sobre los mismos clips, que provienen de familias de geometría siempre en el conjunto de prueba, y cada número es la mediana sobre los seis niveles del caso. La fila llamada piso no es un método: es el flujo que el corpus comprometió, pasado por la misma lectura, así que dice cuánto cuesta la aritmética posterior al flujo. La distancia de un método a ella es la parte del error que le pertenece.',
+        )}
+      </p>
+      <Callout variant="note" title={t('What each row is', 'Qué es cada fila')}>
+        <ul>
+          {Object.entries(evaluation.kind).map(([name, kind]) => (
+            <li key={name}><strong>{name}</strong>: {kind}</li>
+          ))}
+        </ul>
+      </Callout>
+      <div className="cx-table-wrap">
+        <table className="cx-table">
+          <thead>
+            <tr>
+              <th>{t('Method', 'Método')}</th>
+              <th className="num">{t('Clips scored', 'Clips evaluados')}</th>
+              <th className="num">{t('Clips skipped', 'Clips omitidos')}</th>
+              <th className="num">{t('AbsRel minus the floor, paired', 'AbsRel menos el piso, pareado')}</th>
+              <th className="num">{t('Clips paired', 'Clips pareados')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {methodNames.map((name) => {
+              const paired = evaluation.against_floor[name];
+              return (
+                <tr key={name}>
+                  <td>{name}</td>
+                  <td className="num">{num(evaluation.methods[name].clips_scored - evaluation.methods[name].clips_skipped)}</td>
+                  <td className="num">{num(evaluation.methods[name].clips_skipped)}</td>
+                  <td className="num">
+                    {paired ? `${num(paired.median, 3)} [${num(paired.low, 3)}, ${num(paired.high, 3)}]` : '-'}
+                  </td>
+                  <td className="num">{paired ? num(paired.pairs) : '-'}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p className="cx-muted">
+        {t(
+          'The interval is a 10,000-resample bootstrap over clips of the paired difference, seed recorded in the report.',
+          'El intervalo es un bootstrap de 10.000 remuestreos sobre clips de la diferencia pareada, con la semilla registrada en el reporte.',
+        )}
+      </p>
+      <h3>{t('Per case: AbsRel, median over the six levels', 'Por caso: AbsRel, mediana sobre los seis niveles')}</h3>
+      <div className="cx-table-wrap">
+        <table className="cx-table">
+          <thead>
+            <tr>
+              <th>{t('Case', 'Caso')}</th>
+              <th>{t('What it varies', 'Qué varía')}</th>
+              {['floor', ...methodNames].map((name) => <th key={name} className="num">{name}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {caseIds.map((caseId) => {
+              const info = evaluation.methods.floor.cases[caseId];
+              return (
+                <tr key={caseId}>
+                  <td>{caseId} {info.name}</td>
+                  <td className="cx-muted">{info.quantity} ({info.unit})</td>
+                  {['floor', ...methodNames].map((name) => {
+                    const present = evaluation.methods[name]?.cases[caseId];
+                    if (!present || present.levels.every((level) => level.skipped)) {
+                      return <td key={name} className="num cx-muted">-</td>;
+                    }
+                    if (!info.observable) {
+                      const refused = caseNumber(name, caseId, 'refusal_correct');
+                      return <td key={name} className="num">{Number.isFinite(refused) ? t(`refused ${pct(refused, 0)}`, `rechazó ${pct(refused, 0)}`) : '-'}</td>;
+                    }
+                    const value = caseNumber(name, caseId, 'abs_rel');
+                    return <td key={name} className="num">{Number.isFinite(value) ? num(value, 3) : '-'}</td>;
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p className="cx-muted">
+        {t(
+          'A dash is a case the method cannot be run on, and the report says why for each: a source with no second camera, a clip with no flow, a clip with no camera motion, or a case variant that cannot be reproduced on the second camera. The two negative controls are graded by what was refused, not by an error.',
+          'Un guion es un caso en el que el método no puede correr, y el reporte dice por qué en cada uno: una fuente sin segunda cámara, un clip sin flujo, un clip sin movimiento de cámara, o una variante que no puede reproducirse en la segunda cámara. Los dos controles negativos se califican por lo rechazado, no por un error.',
+        )}
+      </p>
+      <SectionRefs ids={['lappalainen2024', 'pick2005']} />
+    </section>
+  );
+
   return (
     <div className="page-body wide prose">
       {head}
@@ -577,6 +685,7 @@ export default function Experiments() {
           { id: 'visual-cns', label: t('Whole visual system', 'Sistema visual completo'), content: whole },
           { id: 'vision-data', label: t('Vision data', 'Datos de visión'), content: visionTab },
           { id: 'cases', label: t('Cases', 'Casos'), content: casesTab },
+          { id: 'methods', label: t('Methods', 'Métodos'), content: methodsTab },
         ]}
       />
     </div>

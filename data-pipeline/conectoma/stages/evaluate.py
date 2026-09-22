@@ -43,6 +43,16 @@ CODE = ("readout", "flow_lattice", "sweep", "m01", "m02", "emd", "m03", "m04", "
 # Each method is a callable (clip, column_spacing_deg, **thresholds) -> per-step arrays. `floor` is not a
 # method: it is the readout applied to the flow the corpus committed, and every flow-based row is reported
 # against it.
+# What a row IS, which the page states beside every number: a method that consumes only what the eye
+# receives, a bound that consumes more, or the readout applied to the flow the corpus committed.
+KINDS = {
+    "M01": "native",
+    "M02": "upper bound: two cameras 0.25 m apart and a full pixel grid",
+    "M03": "native",
+    "M04": "native",
+    "floor": "the committed flow through the same readout",
+}
+
 METHODS = {
     "M01": {"call": m01.run, "requires": ("lum",)},
     "M02": {"call": None, "requires": (), "stereo": True},      # run from the raw pair, not the lattice clip
@@ -274,8 +284,43 @@ def run(root: Path, method: str, *, cases_wanted: list[str] | None = None,
     }
     DERIVED.mkdir(parents=True, exist_ok=True)
     write_json(DERIVED / f"{method}.json", report)
+    write_summary()
     _update_manifest(method, report)
     return report
+
+
+def write_summary() -> dict:
+    """One compact file the web reads: every scored method's per-case numbers, no per-clip rows.
+
+    A full report carries one row per clip, which is what a paired comparison needs and what a page does
+    not. The page gets this projection instead, so a reader downloads kilobytes rather than megabytes, and
+    it is regenerated from the reports themselves, never written by hand.
+    """
+    methods = {}
+    for path in sorted(DERIVED.glob("*.json")):
+        if path.name == "summary.json":
+            continue
+        report = json.loads(path.read_text(encoding="utf-8"))
+        methods[report["method"]] = {
+            "cases": report["cases"],
+            "clips_scored": report["clips_scored"],
+            "clips_skipped": report.get("clips_skipped", 0),
+            "thresholds": report.get("thresholds", {}),
+            "calibration": (report.get("calibration") or {}).get("chosen"),
+            "seconds": report.get("seconds"),
+        }
+    paired = {}
+    for name in methods:
+        if name == "floor" or "floor" not in methods:
+            continue
+        try:
+            paired[name] = compare(name, "floor", "abs_rel")
+        except FileNotFoundError:
+            continue
+    summary = {"artifact": "evaluation-summary", "version": 1, "methods": methods,
+               "against_floor": paired, "kind": KINDS}
+    write_json(DERIVED / "summary.json", summary)
+    return summary
 
 
 def _update_manifest(method: str, report: dict) -> None:

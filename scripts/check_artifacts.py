@@ -172,8 +172,12 @@ def check_evaluation(errs: list[str]) -> int:
     if manifest is None:
         return 0
     cases_path = DERIVED / "vision" / "cases.json"
-    if cases_path.exists() and digest(cases_path) != manifest["source"]["cases_sha256"]:
-        errs.append("evaluation: the reports were scored on a different cases.json than the one on disk")
+    if cases_path.exists():
+        # the registry digest, which is what a report records: the case definitions it scored, not the
+        # bytes of the summary file (those change whenever a rendering is added)
+        registry = json.loads(cases_path.read_text(encoding="utf-8")).get("cases_sha256")
+        if registry != manifest["source"]["cases_sha256"]:
+            errs.append("evaluation: the reports were scored on a different case registry than this one")
     for method, entry in sorted(manifest["methods"].items()):
         check_file(entry, DERIVED, f"evaluation/{method}", errs)
     return len(manifest["methods"])

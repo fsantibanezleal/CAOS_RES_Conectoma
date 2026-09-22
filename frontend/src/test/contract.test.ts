@@ -165,6 +165,14 @@ const FIELDS: Record<keyof typeof REPORTS, Record<string, 'number' | 'string' | 
     ...['train', 'validation', 'calibration', 'test'].flatMap((s) => ['families', 'environments', 'clips', 'frames'].map((k) => [`splits.counts.${s}.${k}`, 'number'])),
     ['cases.count', 'number'], ['cases.renderings', 'number'], ['cases.accepted', 'number'],
   ]),
+  evaluation: Object.fromEntries([
+    ['artifact', 'string'], ['version', 'number'], ['methods', 'object'], ['against_floor', 'object'],
+    ['kind', 'object'],
+    // the floor is the row every flow-based method is read against, so the page needs it present
+    ['methods.floor.cases', 'object'], ['methods.floor.clips_scored', 'number'],
+    ['methods.floor.cases.C01.name', 'string'], ['methods.floor.cases.C01.observable', 'boolean'],
+    ['methods.floor.cases.C01.levels', 'object'],
+  ]),
   cases: Object.fromEntries([
     ['cases_sha256', 'string'], ['render_version', 'number'], ['code_sha256', 'string'], ['cases', 'object'],
     ...Array.from({ length: 16 }, (_, i) => `C${String(i + 1).padStart(2, '0')}`).flatMap((c) => [
