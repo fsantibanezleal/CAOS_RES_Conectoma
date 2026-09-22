@@ -29,7 +29,7 @@
 .cx-rail {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.5rem;
   min-height: 0;
   overflow: hidden; /* sized to show every control; only the partner list inside it scrolls */
 }
@@ -37,7 +37,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  padding: 0.65rem 0.75rem;
+  padding: 0.55rem 0.7rem;
+  flex: 0 0 auto;
   border: 1px solid var(--color-border);
   border-radius: 10px;
   background: var(--color-surface);
@@ -67,8 +68,18 @@
 .cx-segmented button.active { background: var(--color-accent-soft); color: var(--color-fg); font-weight: 600; }
 .cx-check { display: flex; gap: 0.5rem; align-items: flex-start; font-size: 0.8rem; }
 .cx-readout { gap: 0.2rem; font-size: 0.8rem; }
-/* the rail itself never scrolls; where a readout is longer than the rail has room for, it scrolls inside */
-.cx-readout-scroll { flex: 0 1 auto; min-height: 2.2rem; overflow-y: auto; }
+/* The rail itself never scrolls, and its controls are never the thing that gives. Everything below them
+   is text about what is on screen (what the level measured, where the clip came from), so it lives in one
+   block that takes whatever height is left and scrolls inside, down to nothing. Wider font metrics (a
+   Linux runner, a longer translation) then cost that block room and never push a control out of view. */
+.cx-rail-give {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
 .cx-levels button { line-height: 1.25; }
 .cx-readout-row { display: flex; justify-content: space-between; gap: 0.5rem; }
 .cx-readout-row span { color: var(--color-fg-subtle); }

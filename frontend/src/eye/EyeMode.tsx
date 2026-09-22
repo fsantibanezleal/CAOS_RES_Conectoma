@@ -223,7 +223,8 @@ export default function EyeMode({ switcher }: { switcher: ReactNode }) {
           </div>
         </section>
 
-        <section className="cx-rail-section cx-readout cx-readout-scroll" aria-label={t('What this level measured', 'Lo que midió este nivel')}>
+        <div className="cx-rail-give">
+        <section className="cx-rail-section cx-readout" aria-label={t('What this level measured', 'Lo que midió este nivel')}>
           {(MEASURED[caseId] ?? []).map(([key, label, digits]) => {
             const value = measured[key];
             return (
@@ -243,6 +244,7 @@ export default function EyeMode({ switcher }: { switcher: ReactNode }) {
             ? t('Clip verified against its manifest (SHA-256).', 'Clip verificado contra su manifiesto (SHA-256).')
             : t('Clip NOT verified against its manifest.', 'Clip NO verificado contra su manifiesto.')}
         </p>
+        </div>
       </aside>
 
       <section className="cx-main" aria-label={t('What the eye sees', 'Lo que ve el ojo')}>
