@@ -166,10 +166,10 @@ def calibrate_tolerance(root: Path, arm: str = "connectome", window: int = 2,
     cannot. The chosen tolerance is the grid point where the two are closest, which is a calibration
     criterion rather than a knob: no accuracy target is set and no case is touched.
     """
-    from conectoma.stages.cache_activity import split_clips
+    from conectoma.stages.cache_activity import clip_key, split_clips
     from conectoma.stages.train_readout import CachedClips
 
-    keys = [p.stem for p in split_clips(Path(root), "calibration", clips)]
+    keys = [clip_key(p) for p in split_clips(Path(root), "calibration", clips)]
     cached = CachedClips(Path(root), arm, keys)
     heads = [load_head(path, device) for path in seed_checkpoints(arm, window)]
     if not heads:

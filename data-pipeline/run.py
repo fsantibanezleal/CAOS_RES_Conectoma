@@ -477,6 +477,77 @@ def cmd_train_readout(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_train_network(args: argparse.Namespace) -> int:
+    """Train the network itself in a biophysical regime, together with the head that reads it."""
+    from conectoma.stages import train_network
+
+    root = data_root(args.data_root)
+    out_dir = Path(args.out_dir) if args.out_dir else None
+    shared = {"regime": args.regime, "window": args.window, "train_clips": args.train_clips,
+              "out_dir": out_dir}
+    if args.steps is not None:
+        shared["steps"] = args.steps
+    if args.batch is not None:
+        shared["batch"] = args.batch
+    rate = args.network_lr
+    if rate is None:
+        # the first seed resolves the arm's learning rate on the validation split and IS that seed's run
+        chosen = train_network.choose_rate(root, arm=args.arm, seed=args.seeds[0], **shared)
+        rate = chosen["chosen"]
+        print(f"{args.regime} {args.arm}: network lr {rate:g} chosen on validation "
+              f"(silog {chosen['validation_silog']:.4f}); grid "
+              + ", ".join(f"{row['network_learning_rate']:g}:{row['validation_silog']:.4f}"
+                          for row in chosen["grid"]))
+        remaining = args.seeds[1:]
+    else:
+        remaining = args.seeds
+    for seed in remaining:
+        record = train_network.train(root, arm=args.arm, seed=seed, network_learning_rate=rate, **shared)
+        best = record["best"]["validation"]
+        print(f"{args.regime} {args.arm} seed {seed}: {record['network_parameters']} network + "
+              f"{record['head_parameters']} head parameters, {record['seconds']} s "
+              f"({record['seconds_per_step']} s/step), best validation silog {best['silog']:.4f} "
+              f"absrel {best['abs_rel']:.3f} boundary {best['boundary_accuracy']:.3f}")
+    return 0
+
+
+def cmd_cache_trained(args: argparse.Namespace) -> int:
+    """Cache the activity of networks that were TRAINED, one cache per arm and seed."""
+    from conectoma.stages import cache_activity, train_network
+
+    root = data_root(args.data_root)
+    out_dir = Path(args.out_dir) if args.out_dir else None
+    clips = cache_activity.case_clips(root) if args.cases else [
+        (cache_activity.clip_key(path), path) for split in args.splits
+        for path in cache_activity.split_clips(root, split, args.limit)]
+    if not clips:
+        print("no clips to cache")
+        return 1
+    paths = [p for seed in args.seeds
+             for p in [train_network.checkpoint_path(args.regime, args.arm, seed, args.window, out_dir)]
+             if p.exists()]
+    if not paths:
+        print(f"no trained {args.regime} checkpoint for arm {args.arm}")
+        return 1
+    for path in paths:
+        network, _, record = train_network.load(path)
+        stamp = {
+            "cache_version": cache_activity.CACHE_VERSION, "arm": record["arm"], "seed": record["seed"],
+            "regime": record["regime"], "transfer": True, "trained": True,
+            "spec_sha256": record["spec_sha256"], "code_sha256": record["code_sha256"],
+            "dt_s": record["dt_s"], "interval_s": record["interval_s"], "types": record["types"],
+            "description": f"{record['description']}, trained in regime {record['regime']}",
+            "checkpoint": path.name,
+        }
+        key = train_network.cache_arm(record["regime"], record["arm"], record["seed"])
+        report = cache_activity.cache_with(network, stamp, root, clips, key,
+                                           interval_s=record["interval_s"], dt_s=record["dt_s"])
+        print(f"{key}: {report['written']} cached, {report['skipped']} already there, "
+              f"{report['seconds']} s")
+        del network
+    return 0
+
+
 def cmd_export_brainclips(args: argparse.Namespace) -> int:
     """What the connectome does with each case's clip, for the web (contract 2)."""
     from conectoma.stages import export_brainclips
@@ -622,6 +693,35 @@ def main(argv: list[str] | None = None) -> int:
     readout.add_argument("--batch", type=int, default=16, help="clips per step")
     readout.add_argument("--out-dir", default=None, help="where the checkpoints go")
     readout.set_defaults(func=cmd_train_readout)
+
+    netparser = sub.add_parser("train-network",
+                               help="train the network itself in a biophysical regime, with its head")
+    netparser.add_argument("--data-root", default=None, help="directory of the local data cache")
+    netparser.add_argument("--arm", default="connectome", help="connectome, N1, N2 or N3")
+    netparser.add_argument("--seeds", nargs="*", type=int, default=[0, 1, 2, 3, 4],
+                           help="one run per seed; the first also chooses the learning rate")
+    netparser.add_argument("--regime", default="R1", help="R1 (biophysical) or R2 (edge gain)")
+    netparser.add_argument("--window", type=int, default=2, help="frames the head sees at once")
+    netparser.add_argument("--steps", type=int, default=None, help="optimiser steps")
+    netparser.add_argument("--batch", type=int, default=None, help="clips per step, simulated whole")
+    netparser.add_argument("--network-lr", type=float, default=None,
+                           help="skip the validation grid and train at this rate")
+    netparser.add_argument("--train-clips", type=int, default=None,
+                           help="only the first N clips of the train split")
+    netparser.add_argument("--out-dir", default=None, help="where the checkpoints go")
+    netparser.set_defaults(func=cmd_train_network)
+
+    trained = sub.add_parser("cache-trained", help="a TRAINED network's activity, one cache per seed")
+    trained.add_argument("--data-root", default=None, help="directory of the local data cache")
+    trained.add_argument("--arm", default="connectome", help="connectome, N1, N2 or N3")
+    trained.add_argument("--seeds", nargs="*", type=int, default=[0, 1, 2, 3, 4], help="which seeds")
+    trained.add_argument("--regime", default="R1", help="the regime the checkpoints were trained in")
+    trained.add_argument("--window", type=int, default=2, help="the window they were trained at")
+    trained.add_argument("--splits", nargs="*", default=["calibration"], help="which corpus splits")
+    trained.add_argument("--cases", action="store_true", help="cache the case renderings instead")
+    trained.add_argument("--limit", type=int, default=None, help="only the first N clips of each split")
+    trained.add_argument("--out-dir", default=None, help="where the checkpoints are")
+    trained.set_defaults(func=cmd_cache_trained)
 
     brains = sub.add_parser("export-brainclips", help="what the connectome does with each case, for the web")
     brains.add_argument("--data-root", default=None, help="directory of the local data cache")

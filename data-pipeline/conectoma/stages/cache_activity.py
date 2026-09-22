@@ -129,6 +129,32 @@ def cache_path(root: Path, arm: str, key: str) -> Path:
     return root / "activity" / arm / f"{key.replace('/', '_')}.npz"
 
 
+def clip_key(path: Path) -> str:
+    """The cache key of a rendered corpus clip: its whole place in the corpus, not its file name.
+
+    A clip's file name is `clip_000665.npz` and the SAME name occurs in many trajectories: across the
+    three corpus splits, 1,860 rendered clips carry only 981 distinct file names. Keying the cache by the
+    name alone was a silent defect with two consequences, both measured before this function existed:
+
+      - 879 clips never reached the cache at all, because the first writer of a name wins and the stamp of
+        a later clip of the same arm is identical, so it is skipped as already cached. The train split
+        lost 591 of its 1,437 clips, 41 percent.
+      - 199 names occur in more than one split, so a cache read for one split returned another split's
+        clip: 107 validation clips and 106 calibration clips resolved to a TRAIN clip's activity and its
+        depth. U4's leakage gate was green throughout, and correctly so: it proves the split TABLE has no
+        family overlap, and it cannot see a key collapsing distinct clips downstream of it.
+
+    The key is therefore the path below `rendered`, which is the source, environment, difficulty,
+    trajectory and clip that the split table itself is keyed by.
+    """
+    parts = list(Path(path).with_suffix("").parts)
+    if "rendered" in parts:
+        below = parts[parts.index("rendered") + 1:]
+        source = parts[parts.index("rendered") - 1]
+        return "_".join([source, *below])
+    return Path(path).stem
+
+
 def build_arm(arm: str, seed: int = 0, regime: str = "R0", transfer: bool = True):
     """The network of one arm, frozen, on the fastest device available.
 
@@ -173,11 +199,23 @@ def run(root: Path, clips: list, arm: str = "connectome", seed: int = 0, regime:
         "spec_sha256": spec_digest(spec), "code_sha256": code_digest(), "dt_s": dt_s,
         "interval_s": interval_s, "types": output_types(network), "description": description,
     }
+    return cache_with(network, stamp, root, clips, arm, interval_s, dt_s, progress_every)
+
+
+def cache_with(network, stamp: dict, root: Path, clips: list, cache_key: str,
+               interval_s: float = 0.1, dt_s: float = DT_S, progress_every: int = 50) -> dict:
+    """Cache the activity a GIVEN network produces, under `cache_key`, with a stamp the caller owns.
+
+    Split out of `run` so a network that was trained rather than built from a specification, whose
+    activity is its own per seed (U7), writes exactly the same artifact under its own key, and so a cache
+    can still never be read as if it came from another network: the stamp is compared in full.
+    """
+    label = stamp.get("arm", cache_key)
     started = time.time()
     written = skipped = 0
     for index, item in enumerate(clips):
-        key, path = item if isinstance(item, tuple) else (item.stem, item)
-        out = cache_path(root, arm, key)
+        key, path = item if isinstance(item, tuple) else (clip_key(item), item)
+        out = cache_path(root, cache_key, key)
         if out.exists():
             with np.load(out, allow_pickle=True) as existing:
                 if json.loads(str(existing["stamp"])) == stamp:
@@ -200,9 +238,10 @@ def run(root: Path, clips: list, arm: str = "connectome", seed: int = 0, regime:
         if progress_every and (index + 1) % progress_every == 0:
             done = index + 1
             rate = (time.time() - started) / max(done, 1)
-            print(f"{arm}: {done}/{len(clips)} clips, {rate:.2f} s each, "
+            print(f"{label}: {done}/{len(clips)} clips, {rate:.2f} s each, "
                   f"{rate * (len(clips) - done) / 60:.1f} min left", flush=True)
-    return {"arm": arm, "seed": seed, "clips": len(clips), "written": written, "skipped": skipped,
+    return {"arm": label, "cache": cache_key, "seed": stamp.get("seed"),
+            "clips": len(clips), "written": written, "skipped": skipped,
             "seconds": round(time.time() - started, 1), "stamp": stamp}
 
 

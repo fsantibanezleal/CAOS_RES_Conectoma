@@ -33,13 +33,13 @@ from pathlib import Path
 import numpy as np
 
 from conectoma.core.jsonio import write_json
-from conectoma.methods import m01, m02, m03, m04, m05, metrics
+from conectoma.methods import m01, m02, m03, m04, m05, m06, metrics
 from conectoma.vision import cases
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DERIVED = REPO_ROOT / "data" / "derived" / "evaluation"
 MANIFESTS = REPO_ROOT / "data" / "derived" / "manifests"
-CODE = ("readout", "flow_lattice", "sweep", "m01", "m02", "emd", "m03", "m04", "m05",
+CODE = ("readout", "flow_lattice", "sweep", "m01", "m02", "emd", "m03", "m04", "m05", "m06",
         "head", "metrics")
 
 # Each method is a callable (clip, column_spacing_deg, **thresholds) -> per-step arrays. `floor` is not a
@@ -56,6 +56,10 @@ KINDS = {
     "M05-N1": "control for M05: the same wiring degree-preservingly rewired",
     "M05-N2": "control for M05: a size-matched random sparse graph",
     "M05-N3": "control for M05: the same wiring with its signs shuffled",
+    "M06": "native, trained: the measured connectome with its biophysics fitted (regime R1)",
+    "M06-N1": "control for M06: the same wiring degree-preservingly rewired, trained the same way",
+    "M06-N2": "control for M06: a size-matched random sparse graph, trained the same way",
+    "M06-N3": "control for M06: the same wiring with its signs shuffled, trained the same way",
     "floor": "the committed flow through the same readout",
 }
 
@@ -72,6 +76,14 @@ METHODS = {
                "calibrate": partial(m05.calibrate_tolerance, arm="N2")},
     "M05-N3": {"call": None, "requires": ("lum",), "reservoir": "N3",
                "calibrate": partial(m05.calibrate_tolerance, arm="N3")},
+    "M06": {"call": None, "requires": ("lum",), "trained": "connectome",
+            "calibrate": partial(m06.calibrate_tolerance, arm="connectome")},
+    "M06-N1": {"call": None, "requires": ("lum",), "trained": "N1",
+               "calibrate": partial(m06.calibrate_tolerance, arm="N1")},
+    "M06-N2": {"call": None, "requires": ("lum",), "trained": "N2",
+               "calibrate": partial(m06.calibrate_tolerance, arm="N2")},
+    "M06-N3": {"call": None, "requires": ("lum",), "trained": "N3",
+               "calibrate": partial(m06.calibrate_tolerance, arm="N3")},
     "floor": {"call": m01.floor, "requires": ("flow",)},
 }
 
@@ -159,11 +171,13 @@ def _run_one(method: str, case_id: str, level: int, index: int, root: str,
     if motion is None and "poses" not in clip:
         return row | {"skipped": "the clip carries no poses and its case declares no motion"}
     started = time.time()
-    if METHODS[method].get("reservoir"):
-        arm = METHODS[method]["reservoir"]
+    if METHODS[method].get("reservoir") or METHODS[method].get("trained"):
+        trained = METHODS[method].get("trained")
+        arm = trained or METHODS[method]["reservoir"]
         key = f"case_{case_id}_L{level}_{index:02d}"
+        module = m06 if trained else m05
         try:
-            result = m05.run(clip, spacing, root=Path(root), arm=arm, key=key, **thresholds)
+            result = module.run(clip, spacing, root=Path(root), arm=arm, key=key, **thresholds)
         except FileNotFoundError as missing:
             return row | {"skipped": str(missing)}
     elif METHODS[method].get("stereo"):
@@ -262,8 +276,9 @@ def run(root: Path, method: str, *, cases_wanted: list[str] | None = None,
     calibration = None
     if "calibrate" in METHODS[method] and not thresholds:
         calibrate = METHODS[method]["calibrate"]
-        calibration = calibrate(root) if METHODS[method].get("reservoir") else calibrate()
-        if METHODS[method].get("reservoir"):
+        network_row = METHODS[method].get("reservoir") or METHODS[method].get("trained")
+        calibration = calibrate(root) if network_row else calibrate()
+        if network_row:
             thresholds |= {"tolerance": calibration["chosen"]["tolerance"],
                            "window": calibration["window"]}
         else:
