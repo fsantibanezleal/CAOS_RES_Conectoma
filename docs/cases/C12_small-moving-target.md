@@ -30,6 +30,16 @@ column the target fills at each size.
 ## Measured per level
 
 <!-- measured: generated from data/derived/vision/cases.json by `run.py case-docs`; do not edit -->
+| level | clips | frame interval (ms) | target radius (mm) | figure share | nearest depth (m) |
+|---|---|---|---|---|---|
+| 2.00 degrees | 8 of 8 | 10.0 | 0.349 | 0.000119 | 0.00104 |
+| 4.00 degrees | 8 of 8 | 10.0 | 0.698 | 0.000463 | 0.00104 |
+| 6.00 degrees | 8 of 8 | 10.0 | 1.05 | 0.00103 | 0.00104 |
+| 8.00 degrees | 8 of 8 | 10.0 | 1.40 | 0.00186 | 0.00104 |
+| 12.0 degrees | 8 of 8 | 10.0 | 2.09 | 0.00424 | 0.00104 |
+| 16.0 degrees | 8 of 8 | 10.0 | 2.78 | 0.00762 | 0.00104 |
+
+Medians over the clips of each level. Drawn: `20272918`, `20272919`, `20272920`, `20272921`, `20272922`, `20272923`, `20272924`, `20272925`.
 <!-- /measured -->
 
 ## Caveats

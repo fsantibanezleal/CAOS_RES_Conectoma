@@ -37,6 +37,16 @@ Depth (exact), flow (exact) and figure-ground, the nearer planes being the figur
 ## Measured per level
 
 <!-- measured: generated from data/derived/vision/cases.json by `run.py case-docs`; do not edit -->
+| level | clips | frame interval (ms) | nearest to farthest plane (m) | flow per frame (engine units) | figure share |
+|---|---|---|---|---|---|
+| 0.5 m | 8 of 8 | 100 | 0.5 to 2.00 | 4.23 | 0.455 |
+| 1.00 m | 8 of 8 | 100 | 1.00 to 4.00 | 2.11 | 0.451 |
+| 2.00 m | 8 of 8 | 100 | 2.00 to 8.00 | 1.06 | 0.453 |
+| 4.00 m | 8 of 8 | 100 | 4.00 to 16.0 | 0.528 | 0.462 |
+| 8.00 m | 8 of 8 | 100 | 8.00 to 32.0 | 0.264 | 0.452 |
+| 16.0 m | 8 of 8 | 100 | 16.0 to 64.0 | 0.132 | 0.455 |
+
+Medians over the clips of each level. Drawn: `20275918`, `20275919`, `20275920`, `20275921`, `20275922`, `20275923`, `20275924`, `20275925`.
 <!-- /measured -->
 
 ## Caveats

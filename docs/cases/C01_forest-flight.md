@@ -41,6 +41,16 @@ scenes are static, so there is no figure to grade.
 ## Measured per level
 
 <!-- measured: generated from data/derived/vision/cases.json by `run.py case-docs`; do not edit -->
+| level | clips | frame interval (ms) | speed (m/s) | frame rate (Hz) | median depth (m) | flow per frame (engine units) |
+|---|---|---|---|---|---|---|
+| 0.5 times the recorded speed | 8 of 8 | 200 | 1.59 | 5.00 | 9.78 | 8.44 |
+| 1.00 times the recorded speed | 8 of 8 | 100 | 3.17 | 10.0 | 9.78 | 8.44 |
+| 2.00 times the recorded speed | 8 of 8 | 50.0 | 6.35 | 20.0 | 9.78 | 8.44 |
+| 4.00 times the recorded speed | 8 of 8 | 25.0 | 12.7 | 40.0 | 9.78 | 8.44 |
+| 8.00 times the recorded speed | 8 of 8 | 12.5 | 25.4 | 80.0 | 9.78 | 8.44 |
+| 16.0 times the recorded speed | 8 of 8 | 6.25 | 50.8 | 160 | 9.78 | 8.44 |
+
+Medians over the clips of each level. Drawn: `SeasonalForestWinter/hard/P000/001001`, `SeasonalForestAutumn/hard/P002/001042`, `SeasonalForestWinterNight/hard/P002/000479`, `SeasonalForestSpring/hard/P000/001389`, `SeasonalForestSummerNight/easy/P000/002020`, `SeasonalForestWinter/easy/P002/001100`, `SeasonalForestAutumn/easy/P002/000617`, `SeasonalForestWinterNight/easy/P002/002468`.
 <!-- /measured -->
 
 ## Caveats

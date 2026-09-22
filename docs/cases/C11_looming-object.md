@@ -36,6 +36,16 @@ Depth, as range in metres, and figure-ground, the disk being the figure.
 ## Measured per level
 
 <!-- measured: generated from data/derived/vision/cases.json by `run.py case-docs`; do not edit -->
+| level | clips | frame interval (ms) | approach speed (mm/s) | angular size, first to last frame (deg) | figure share | nearest depth (m) |
+|---|---|---|---|---|---|---|
+| 10.0 l/v in ms | 8 of 8 | 10.0 | 200 | 3.58 to 90.0 | 0.0223 | 0.00104 |
+| 20.0 l/v in ms | 8 of 8 | 10.0 | 100 | 6.94 to 90.0 | 0.0372 | 0.00104 |
+| 40.0 l/v in ms | 8 of 8 | 10.0 | 50.0 | 13.0 to 90.0 | 0.0644 | 0.00104 |
+| 80.0 l/v in ms | 8 of 8 | 10.0 | 25.0 | 23.2 to 90.0 | 0.108 | 0.00104 |
+| 160 l/v in ms | 8 of 8 | 10.0 | 12.5 | 37.6 to 90.0 | 0.165 | 0.00104 |
+| 320 l/v in ms | 8 of 8 | 10.0 | 6.25 | 53.9 to 90.0 | 0.228 | 0.00104 |
+
+Medians over the clips of each level. Drawn: `20271918`, `20271919`, `20271920`, `20271921`, `20271922`, `20271923`, `20271924`, `20271925`.
 <!-- /measured -->
 
 ## Caveats

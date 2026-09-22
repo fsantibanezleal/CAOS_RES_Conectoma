@@ -406,3 +406,17 @@ def test_the_committed_summary_is_the_registry_rendered_in_full():
             assert level["accepted"] == level["clips"] == len(case["items"]), (case_id, level["value"])
         if case["source"] in ("tartanair", "panorama"):
             assert case["family"] in registry["cases"][case_id]["family"]
+
+
+def test_a_uniform_image_is_dropped_from_every_level():
+    """A narrow crop can land on a surface with no structure; single images are dropped, not rejected."""
+    rng = np.random.default_rng(9)
+    clip = {"lum": rng.random((4, 721), dtype=np.float32), "depth": rng.random((4, 721), dtype=np.float32),
+            "boundary": np.zeros((4, 721), np.uint8), "frames": np.array([0, 5, 10, 15], dtype=np.int32)}
+    clip["lum"][2] = 1.0
+    uniform = cases._uniform_frames(clip)
+    assert uniform.tolist() == [False, False, True, False]
+    kept = cases._keep_frames(clip, ~uniform)
+    assert kept["frames"].tolist() == [0, 5, 15]
+    assert kept["lum"].shape == (3, 721) and kept["boundary"].shape == (3, 721)
+    assert not cases._uniform_frames(kept).any()

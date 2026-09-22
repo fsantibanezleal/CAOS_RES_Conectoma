@@ -34,6 +34,16 @@ is valid where Sintel marks a pixel neither occluded in the next frame nor inval
 ## Measured per level
 
 <!-- measured: generated from data/derived/vision/cases.json by `run.py case-docs`; do not edit -->
+| level | clips | frame interval (ms) | RMS contrast | column spacing (deg) | flow per frame (engine units) |
+|---|---|---|---|---|---|
+| 1.00 factor on contrast about the mean | 6 of 6 | 41.7 | 0.36 | 0.881 | 1.48 |
+| 0.7 factor on contrast about the mean | 6 of 6 | 41.7 | 0.251 | 0.881 | 1.48 |
+| 0.5 factor on contrast about the mean | 6 of 6 | 41.7 | 0.179 | 0.881 | 1.48 |
+| 0.35 factor on contrast about the mean | 6 of 6 | 41.7 | 0.125 | 0.881 | 1.48 |
+| 0.25 factor on contrast about the mean | 6 of 6 | 41.7 | 0.0891 | 0.881 | 1.48 |
+| 0.15 factor on contrast about the mean | 6 of 6 | 41.7 | 0.0534 | 0.881 | 1.48 |
+
+Medians over the clips of each level. Drawn: `ambush_2`, `bamboo_1`, `bandage_1`, `cave_4`, `market_2`, `mountain_1`.
 <!-- /measured -->
 
 ## Caveats

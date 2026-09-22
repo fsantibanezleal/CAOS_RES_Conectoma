@@ -21,7 +21,7 @@
    flex item with min-height 0, so the stage gets what the viewport leaves and the drawings size to it. */
 .cx-app {
   display: grid;
-  grid-template-columns: 264px minmax(0, 1fr);
+  grid-template-columns: var(--cx-rail-width, 264px) minmax(0, 1fr);
   gap: 1rem;
   min-height: 0;
   height: 100%;
@@ -67,6 +67,9 @@
 .cx-segmented button.active { background: var(--color-accent-soft); color: var(--color-fg); font-weight: 600; }
 .cx-check { display: flex; gap: 0.5rem; align-items: flex-start; font-size: 0.8rem; }
 .cx-readout { gap: 0.2rem; font-size: 0.8rem; }
+/* the rail itself never scrolls; where a readout is longer than the rail has room for, it scrolls inside */
+.cx-readout-scroll { flex: 0 1 auto; min-height: 2.2rem; overflow-y: auto; }
+.cx-levels button { line-height: 1.25; }
 .cx-readout-row { display: flex; justify-content: space-between; gap: 0.5rem; }
 .cx-readout-row span { color: var(--color-fg-subtle); }
 .cx-readout-row strong { text-align: right; font-variant-numeric: tabular-nums; }
@@ -249,7 +252,9 @@
 }
 .cx-play[aria-pressed='true'] { background: var(--color-accent-soft); }
 
-.cx-eye-pair { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0.75rem; }
+.cx-eye-stage { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+/* two square lattices side by side never fill a wide stage: the time course takes the band they leave */
+.cx-eye-pair { flex: 0 1 auto; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0.75rem; aspect-ratio: 2 / 1.06; margin: 0 auto; width: 100%; max-width: calc((100vh - 16rem) * 2); }
 .cx-eye { position: relative; min-width: 0; min-height: 0; }
 .cx-eye-canvas { position: absolute; inset: 0; display: block; touch-action: none; }
 .cx-eye-title,
@@ -273,21 +278,28 @@
   flex: 1 1 auto;
   min-height: 0;
   display: grid;
-  grid-template-columns: repeat(var(--cx-grid-cols, 6), minmax(0, 1fr));
-  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: repeat(var(--cx-grid-cols, 3), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--cx-grid-rows, 2), minmax(0, 1fr));
   gap: 0.4rem;
 }
-.cx-eye-charts { flex: 1 1 auto; min-height: 0; display: grid; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); gap: 0.6rem; }
+.cx-eye-charts { flex: 1 1 auto; min-height: 7rem; display: grid; grid-template-rows: minmax(0, 1fr); gap: 0.6rem; }
+.cx-show button { padding: 0.2rem 0.5rem; font-size: 0.78rem; }
 .cx-timecourse { position: relative; min-height: 0; min-width: 0; overflow: hidden; }
 .cx-timecourse .u-legend { font-size: 0.75rem; color: var(--color-fg-subtle); }
 .cx-timecourse .u-legend th { font-weight: 500; }
+
+/* a narrower viewport gives the rail less, so the instrument keeps the room it needs to be read */
+@media (max-width: 1440px) {
+  .cx-app { --cx-rail-width: 224px; }
+}
 
 @media (max-width: 900px) {
   .cx-app { grid-template-columns: minmax(0, 1fr); height: auto; }
   .cx-filter-stage { height: 60vh; flex: 0 0 auto; }
   .cx-placement-stage { height: 70vh; flex: 0 0 auto; }
   .cx-partners { max-height: 40vh; }
-  .cx-eye-pair { grid-template-columns: minmax(0, 1fr); height: 110vh; flex: 0 0 auto; }
-  .cx-eye-grid { --cx-grid-cols: 3 !important; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(4, minmax(0, 1fr)); height: 130vh; flex: 0 0 auto; }
-  .cx-eye-charts { height: 90vh; flex: 0 0 auto; }
+  .cx-eye-pair { grid-template-columns: minmax(0, 1fr); height: 110vh; flex: 0 0 auto; aspect-ratio: auto; max-width: none; }
+  .cx-eye-stage { height: auto; }
+  .cx-eye-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; grid-template-rows: repeat(3, minmax(0, 1fr)) !important; height: 120vh; flex: 0 0 auto; }
+  .cx-eye-charts { height: 60vh; flex: 0 0 auto; }
 }

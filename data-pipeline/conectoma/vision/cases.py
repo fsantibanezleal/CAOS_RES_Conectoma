@@ -207,20 +207,47 @@ def _tartanair_levels(case: dict, key: str, root: Path, seed: int) -> list[dict]
     return out
 
 
+def _uniform_frames(clip: dict) -> np.ndarray:
+    """Frames whose 721 columns all carry the same luminance: nothing to see, whatever the value."""
+    lum = clip["lum"]
+    return lum.max(axis=-1) == lum.min(axis=-1)
+
+
+def _keep_frames(clip: dict, keep: np.ndarray) -> dict:
+    """The clip with only the frames `keep` marks (single images: the frame numbers are ids)."""
+    out = dict(clip)
+    for key, value in clip.items():
+        if key != "frames" and getattr(value, "ndim", 0) and len(value) == len(keep):
+            out[key] = value[keep]
+    out["frames"] = clip["frames"][keep]
+    return out
+
+
 def _hypersim_levels(case: dict, scene: str, root: Path) -> list[dict]:
     from conectoma.vision import hypersim
 
     camera = hypersim.cameras()[scene]
     source = render.load_hypersim_clip(root / "vision/hypersim/data" / scene / "cam_00.zip", camera)
-    out = []
+    rendered = []
     for level in case["variant"]["levels"]:
         fraction = 1.0 if level == "full" else hypersim.crop_for_vertical_fov(camera, float(level))
         clip = render.lattice_clip(render.crop_centre(source, fraction))
         fov = hypersim.vertical_fov_deg(camera, fraction)
         focal = (eye.ROWS / 2) / math.tan(math.radians(fov) / 2)
-        out.append(_level(clip, None, vertical_fov_deg=fov, crop_fraction=fraction,
-                          column_spacing_deg=column_spacing_deg(focal)))
-    return out
+        rendered.append((clip, fov, fraction, column_spacing_deg(focal)))
+    # A narrow crop can land on a surface with no structure at all (a lit wall, a blown-out window): the
+    # image is uniform and shows nothing, and two uniform images are identical wherever they come from.
+    # These are single images, not a video, so such an image is dropped from every level of the scene
+    # rather than the scene being rejected, and every level keeps the same images.
+    uniform = np.zeros(len(rendered[0][0]["frames"]), dtype=bool)
+    for clip, *_ in rendered:
+        uniform |= _uniform_frames(clip)
+    if uniform.all():
+        raise ValueError(f"{scene}: every image is uniform at some level")
+    keep = ~uniform
+    return [_level(_keep_frames(clip, keep), None, vertical_fov_deg=fov, crop_fraction=fraction,
+                   column_spacing_deg=spacing, images_dropped_uniform=int(uniform.sum()))
+            for clip, fov, fraction, spacing in rendered]
 
 
 def _spring_levels(case: dict, key: str, root: Path) -> list[dict]:

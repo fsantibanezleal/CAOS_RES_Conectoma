@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useSearchParams } from 'react-router';
 import { Tabs } from '@fasl-work/caos-app-shell';
 import { loadEyeClip, loadEyeManifest, type VerifiedClip } from '../api/artifacts';
@@ -25,6 +25,21 @@ export default function EyeMode({ switcher }: { switcher: ReactNode }) {
   const [loaded, setLoaded] = useState<VerifiedClip | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
+  // the six panels are square, the stage is not: the column count that makes the cells squarest fills it.
+  // The grid mounts with its tab panel, so the observer is attached by the ref itself, not by an effect.
+  const [columns, setColumns] = useState(3);
+  const watcher = useRef<ResizeObserver | null>(null);
+  const grid = useCallback((element: HTMLDivElement | null) => {
+    watcher.current?.disconnect();
+    if (!element) return;
+    watcher.current = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      if (width > 0 && height > 0) {
+        setColumns(Math.min(6, Math.max(2, Math.round(Math.sqrt((6 * width) / height)))));
+      }
+    });
+    watcher.current.observe(element);
+  }, []);
 
   const requested = params.get('case') ?? DEFAULT_CASE;
   const caseId = manifest && manifest.cases[requested] ? requested : DEFAULT_CASE;
@@ -105,45 +120,58 @@ export default function EyeMode({ switcher }: { switcher: ReactNode }) {
     return acc;
   }, {});
   const time = interval ? `${num(frame * interval, interval < 0.1 ? 3 : 2)} s` : t(`image ${frame + 1}`, `imagen ${frame + 1}`);
-
-  const stage = (
-    <div className="cx-eye-pair">
-      <EyeLattice manifest={manifest} clip={clip} level={level} frame={frame} view="lum"
-        title={t('Input: what the columns receive', 'Entrada: lo que reciben las columnas')} />
-      <EyeLattice manifest={manifest} clip={clip} level={level} frame={frame} view={target}
-        title={t(`Ground truth: ${layerName[target]}`, `Verdad de terreno: ${layerName[target]}`)} />
+  // the comparison views show one layer at a time, so each panel is large enough to read
+  const show = params.get('show') === 'target' ? 'target' : 'input';
+  const shown: View = show === 'input' ? 'lum' : target;
+  const showToggle = (
+    <div className="cx-segmented cx-show" role="radiogroup" aria-label={t('Layer', 'Capa')}>
+      {(['input', 'target'] as const).map((which) => (
+        <button key={which} type="button" role="radio" aria-checked={show === which}
+          className={show === which ? 'active' : ''}
+          onClick={() => update({ show: which === 'input' ? null : which })}>
+          {which === 'input' ? t('Input', 'Entrada') : t('Ground truth', 'Verdad')}
+        </button>
+      ))}
     </div>
   );
 
-  const strip = (
-    <div className="cx-strip" aria-live="polite">
-      <span><strong>{caseId}</strong> {name(caseId)}</span>
-      <span>{t('level', 'nivel')} <strong>{levelIndex + 1}</strong> {t('of 6', 'de 6')}: <strong>{labels[levelIndex]}</strong></span>
-      <span>{t('frame', 'cuadro')} <strong>{frame + 1}</strong> / {frames} ({time})</span>
-      <span className="cx-muted">{/^\d+$/.test(clip.item) ? t('seed', 'semilla') : t('clip', 'clip')} <code>{clip.item}</code></span>
+  const stage = (
+    <div className="cx-eye-stage">
+      <div className="cx-eye-pair">
+        <EyeLattice manifest={manifest} clip={clip} level={level} frame={frame} view="lum"
+          title={t('Input: what the columns receive', 'Entrada: lo que reciben las columnas')} />
+        <EyeLattice manifest={manifest} clip={clip} level={level} frame={frame} view={target}
+          title={t(`Ground truth: ${layerName[target]}`, `Verdad de terreno: ${layerName[target]}`)} />
+      </div>
+      <div className="cx-eye-charts">
+        <TimeCourse clip={clip} levels={levels} labels={labels} view={shown} frame={frame}
+          onFrame={(f) => update({ frame: String(f) })} />
+      </div>
     </div>
   );
 
   const acrossLevels = (
-    <div className="cx-eye-grid" style={{ ['--cx-grid-cols' as string]: 6 }}>
-      {levels.map((lv, i) => (
-        <EyeLattice key={`in-${i}`} manifest={manifest} clip={clip} level={lv} frame={frame} view="lum" compact
-          title={labels[i]} />
-      ))}
-      {levels.map((lv, i) => (
-        <EyeLattice key={`gt-${i}`} manifest={manifest} clip={clip} level={lv} frame={frame} view={target} compact
-          title={`${layerName[target]}, ${labels[i]}`} />
-      ))}
-    </div>
+    <>
+      <div
+        className="cx-eye-grid"
+        ref={grid}
+        style={{ ['--cx-grid-cols' as string]: columns, ['--cx-grid-rows' as string]: Math.ceil(6 / columns) }}
+      >
+        {levels.map((lv, i) => (
+          <EyeLattice key={`${show}-${i}`} manifest={manifest} clip={clip} level={lv} frame={frame}
+            view={shown} compact title={labels[i]} />
+        ))}
+      </div>
+    </>
   );
 
   const overTime = (
-    <div className="cx-eye-charts">
-      <TimeCourse clip={clip} levels={levels} labels={labels} view="lum" frame={frame}
-        onFrame={(f) => update({ frame: String(f) })} />
-      <TimeCourse clip={clip} levels={levels} labels={labels} view={target} frame={frame}
-        onFrame={(f) => update({ frame: String(f) })} />
-    </div>
+    <>
+      <div className="cx-eye-charts cx-eye-charts-tall">
+        <TimeCourse clip={clip} levels={levels} labels={labels} view={shown} frame={frame}
+          onFrame={(f) => update({ frame: String(f) })} />
+      </div>
+    </>
   );
 
   return (
@@ -181,7 +209,11 @@ export default function EyeMode({ switcher }: { switcher: ReactNode }) {
             ))}
           </div>
 
-          <label className="cx-label" htmlFor="cx-frame">{t('Frame', 'Cuadro')}: <strong>{frame + 1}</strong> / {frames}</label>
+          {showToggle}
+
+          <label className="cx-label" htmlFor="cx-frame">
+            {t('Frame', 'Cuadro')}: <strong>{frame + 1}</strong> / {frames} ({time})
+          </label>
           <div className="cx-frame-row">
             <button type="button" className="cx-play" aria-pressed={playing} onClick={() => setPlaying(!playing)}>
               {playing ? t('Pause', 'Pausa') : t('Play', 'Reproducir')}
@@ -191,7 +223,7 @@ export default function EyeMode({ switcher }: { switcher: ReactNode }) {
           </div>
         </section>
 
-        <section className="cx-rail-section cx-readout" aria-label={t('What this level measured', 'Lo que midió este nivel')}>
+        <section className="cx-rail-section cx-readout cx-readout-scroll" aria-label={t('What this level measured', 'Lo que midió este nivel')}>
           {(MEASURED[caseId] ?? []).map(([key, label, digits]) => {
             const value = measured[key];
             return (
@@ -206,7 +238,7 @@ export default function EyeMode({ switcher }: { switcher: ReactNode }) {
         </section>
 
         <p className="cx-provenance" data-verified={loaded.verified ? 'true' : 'false'}>
-          {clip.license}.{' '}
+          {/^\d+$/.test(clip.item) ? t('Seed', 'Semilla') : t('Clip', 'Clip')} {clip.item}. {clip.license}.{' '}
           {loaded.verified
             ? t('Clip verified against its manifest (SHA-256).', 'Clip verificado contra su manifiesto (SHA-256).')
             : t('Clip NOT verified against its manifest.', 'Clip NO verificado contra su manifiesto.')}
@@ -217,9 +249,9 @@ export default function EyeMode({ switcher }: { switcher: ReactNode }) {
         <Tabs
           ariaLabel={t('Eye views', 'Vistas del ojo')}
           tabs={[
-            { id: 'eye', label: t('Input and ground truth', 'Entrada y verdad de terreno'), content: <>{stage}{strip}</> },
-            { id: 'levels', label: t('All six levels', 'Los seis niveles'), content: <>{acrossLevels}{strip}</> },
-            { id: 'time', label: t('Over time', 'En el tiempo'), content: <>{overTime}{strip}</> },
+            { id: 'eye', label: t('Input and ground truth', 'Entrada y verdad de terreno'), content: stage },
+            { id: 'levels', label: t('All six levels', 'Los seis niveles'), content: acrossLevels },
+            { id: 'time', label: t('Over time', 'En el tiempo'), content: overTime },
           ]}
         />
       </section>

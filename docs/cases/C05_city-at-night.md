@@ -36,6 +36,16 @@ Metric depth, segment boundaries and flow.
 ## Measured per level
 
 <!-- measured: generated from data/derived/vision/cases.json by `run.py case-docs`; do not edit -->
+| level | clips | frame interval (ms) | SNR at mean luminance | photons per column per s | mean luminance | luminance SD |
+|---|---|---|---|---|---|---|
+| none (no noise) | 8 of 8 | 100 | n/a | n/a | 0.152 | 0.142 |
+| 10,000 photons per column per frame at luminance 1 | 8 of 8 | 100 | 38.9 | 100,000 | 0.152 | 0.142 |
+| 1,000 photons per column per frame at luminance 1 | 8 of 8 | 100 | 12.3 | 10,000 | 0.152 | 0.143 |
+| 100 photons per column per frame at luminance 1 | 8 of 8 | 100 | 3.89 | 1,000 | 0.151 | 0.147 |
+| 10.0 photons per column per frame at luminance 1 | 8 of 8 | 100 | 1.23 | 100 | 0.151 | 0.185 |
+| 1.00 photons per column per frame at luminance 1 | 8 of 8 | 100 | 0.389 | 10.0 | 0.132 | 0.339 |
+
+Medians over the clips of each level. Drawn: `HongKong/hard/P002/000260`, `HongKong/easy/P000/000495`, `HongKong/easy/P001/000194`, `HongKong/hard/P000/000076`, `HongKong/easy/P000/000154`, `HongKong/hard/P001/000287`, `HongKong/easy/P001/000615`, `HongKong/easy/P002/000494`.
 <!-- /measured -->
 
 ## Caveats

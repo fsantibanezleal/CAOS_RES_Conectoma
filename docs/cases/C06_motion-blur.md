@@ -36,6 +36,16 @@ Metric depth, segment boundaries and flow.
 ## Measured per level
 
 <!-- measured: generated from data/derived/vision/cases.json by `run.py case-docs`; do not edit -->
+| level | clips | frame interval (ms) | blur (px, median) | luminance SD | flow per frame (engine units) |
+|---|---|---|---|---|---|
+| 0 ms | 8 of 8 | 100 | 0 | 0.235 | 6.55 |
+| 10.0 ms | 8 of 8 | 100 | 2.87 | 0.235 | 6.55 |
+| 20.0 ms | 8 of 8 | 100 | 5.75 | 0.234 | 6.55 |
+| 40.0 ms | 8 of 8 | 100 | 11.5 | 0.234 | 6.55 |
+| 80.0 ms | 8 of 8 | 100 | 23.0 | 0.232 | 6.55 |
+| 160 ms | 8 of 8 | 100 | 46.0 | 0.227 | 6.55 |
+
+Medians over the clips of each level. Drawn: `Office/hard/P005/000461`, `Office/easy/P004/000899`, `Office/easy/P001/000129`, `Office/easy/P002/000549`, `Office/hard/P002/000112`, `Office/easy/P001/000420`, `Office/easy/P006/000778`, `Office/hard/P002/000366`.
 <!-- /measured -->
 
 ## Caveats

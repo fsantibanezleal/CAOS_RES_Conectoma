@@ -12,7 +12,8 @@
 //               cover at least half the viewport (their union box, not the stretched svg element).
 //   doc routes  the page mounted with its own heading; full width; one tab row; no horizontal drag; the
 //               Experiments and Benchmark tables are filled from the reports, not left loading.
-//   eye mode    the same App floors on each of its three tabs, every lattice canvas holding a picture
+//   eye mode    the same App floors on each of its three tabs (the six level panels take the column count
+//               that makes them squarest, so they fill the stage), every lattice canvas holding a picture
 //               (colours sampled inside the box it declares it painted), and at one size every one of the
 //               sixteen cases loads a clip verified against its manifest and draws all its lattices.
 //   modal       each architecture diagram is inlined, sized, in the reader's language, and drawn in the
@@ -122,7 +123,8 @@ function measure() {
     const [x0, y0, x1, y1] = canvas.dataset.painted.split(',').map(Number);
     drawn.push(clip({ left: box.left + x0, top: box.top + y0, right: box.left + x1, bottom: box.top + y1 }, box));
   }
-  for (const over of document.querySelectorAll('.cx-timecourse .u-over')) drawn.push(over.getBoundingClientRect());
+  // a chart's canvas is drawn edge to edge (grid, axes, series), so the canvas is what the reader sees
+  for (const canvas of document.querySelectorAll('.cx-timecourse canvas')) drawn.push(canvas.getBoundingClientRect());
   drawn.splice(0, drawn.length, ...drawn.filter((r) => r.right > r.left && r.bottom > r.top));
   let viz = 0;
   if (drawn.length) {
@@ -290,7 +292,7 @@ try {
         const canvases = await page.evaluate(paintedCanvases);
         const where = `eye ${caseId} ${tab}`;
         pass(verified === 'true', `${where}: clip verified (${verified})`);
-        pass(canvases.length === (tab === 'All six levels' ? 12 : 2), `${where}: ${canvases.length} lattices drawn`);
+        pass(canvases.length === (tab === 'All six levels' ? 6 : 2), `${where}: ${canvases.length} lattices drawn`);
         pass(canvases.every((c) => c.columns === 721 && c.colours >= 4),
           `${where}: every lattice holds a picture (${canvases.map((c) => c.colours).join(', ')} colours)`);
       }

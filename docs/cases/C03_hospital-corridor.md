@@ -32,6 +32,16 @@ Metric depth, segment boundaries and flow.
 ## Measured per level
 
 <!-- measured: generated from data/derived/vision/cases.json by `run.py case-docs`; do not edit -->
+| level | clips | frame interval (ms) | mean luminance | luminance SD | median depth (m) |
+|---|---|---|---|---|---|
+| 1.00 relative illuminance | 8 of 8 | 100 | 0.394 | 0.225 | 2.35 |
+| 0.5 relative illuminance | 8 of 8 | 100 | 0.197 | 0.112 | 2.35 |
+| 0.25 relative illuminance | 8 of 8 | 100 | 0.0986 | 0.0562 | 2.35 |
+| 0.125 relative illuminance | 8 of 8 | 100 | 0.0493 | 0.0281 | 2.35 |
+| 0.0625 relative illuminance | 8 of 8 | 100 | 0.0247 | 0.014 | 2.35 |
+| 0.0312 relative illuminance | 8 of 8 | 100 | 0.0123 | 0.00702 | 2.35 |
+
+Medians over the clips of each level. Drawn: `Hospital/hard/P004/000250`, `Hospital/hard/P002/000269`, `Hospital/hard/P009/000206`, `Hospital/hard/P010/000176`, `Hospital/hard/P003/001208`, `Hospital/hard/P010/000562`, `Hospital/hard/P000/000325`, `Hospital/easy/P004/000378`.
 <!-- /measured -->
 
 ## Caveats

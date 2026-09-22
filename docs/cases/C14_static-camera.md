@@ -31,6 +31,16 @@ true zero.
 ## Measured per level
 
 <!-- measured: generated from data/derived/vision/cases.json by `run.py case-docs`; do not edit -->
+| level | clips | frame interval (ms) | SNR at mean luminance | mean luminance | luminance SD |
+|---|---|---|---|---|---|
+| none (no noise) | 8 of 8 | 100 | n/a | 0.532 | 0.131 |
+| 10,000 photons per column per frame at luminance 1 | 8 of 8 | 100 | 72.9 | 0.532 | 0.131 |
+| 1,000 photons per column per frame at luminance 1 | 8 of 8 | 100 | 23.1 | 0.532 | 0.133 |
+| 100 photons per column per frame at luminance 1 | 8 of 8 | 100 | 7.29 | 0.532 | 0.15 |
+| 10.0 photons per column per frame at luminance 1 | 8 of 8 | 100 | 2.31 | 0.524 | 0.247 |
+| 1.00 photons per column per frame at luminance 1 | 8 of 8 | 100 | 0.729 | 0.408 | 0.491 |
+
+Medians over the clips of each level. Drawn: `GreatMarsh/easy/P002/004804`, `GreatMarsh/hard/P007/002511`, `GreatMarsh/hard/P009/000632`, `GreatMarsh/hard/P002/000877`, `GreatMarsh/hard/P006/000408`, `GreatMarsh/easy/P009/001208`, `GreatMarsh/easy/P008/001208`, `GreatMarsh/easy/P001/006462`.
 <!-- /measured -->
 
 ## Caveats

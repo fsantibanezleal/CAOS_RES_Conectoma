@@ -1,0 +1,417 @@
+{
+ "config_sha256": "ce9856db1d69ee0a2b0c879d474e87fa2b77d3d1c72d043e2f82ae45bdf3ffff",
+ "unit": "geometry family",
+ "families": {
+  "AbandonedCable": {
+   "members": [
+    "AbandonedCable"
+   ],
+   "split": "train"
+  },
+  "AbandonedFactory": {
+   "members": [
+    "AbandonedFactory",
+    "AbandonedFactory2"
+   ],
+   "split": "train"
+  },
+  "AbandonedSchool": {
+   "members": [
+    "AbandonedSchool"
+   ],
+   "split": "train"
+  },
+  "AmericanDiner": {
+   "members": [
+    "AmericanDiner"
+   ],
+   "split": "train"
+  },
+  "AmusementPark": {
+   "members": [
+    "AmusementPark"
+   ],
+   "split": "train"
+  },
+  "AncientTowns": {
+   "members": [
+    "AncientTowns"
+   ],
+   "split": "train"
+  },
+  "Antiquity3D": {
+   "members": [
+    "Antiquity3D"
+   ],
+   "split": "train"
+  },
+  "Apocalyptic": {
+   "members": [
+    "Apocalyptic"
+   ],
+   "split": "train"
+  },
+  "ArchVizTinyHouse": {
+   "members": [
+    "ArchVizTinyHouseDay",
+    "ArchVizTinyHouseNight"
+   ],
+   "split": "calibration"
+  },
+  "BrushifyMoon": {
+   "members": [
+    "BrushifyMoon"
+   ],
+   "split": "test"
+  },
+  "CarWelding": {
+   "members": [
+    "CarWelding"
+   ],
+   "split": "calibration"
+  },
+  "CastleFortress": {
+   "members": [
+    "CastleFortress"
+   ],
+   "split": "train"
+  },
+  "CoalMine": {
+   "members": [
+    "CoalMine"
+   ],
+   "split": "train"
+  },
+  "ConstructionSite": {
+   "members": [
+    "ConstructionSite"
+   ],
+   "split": "train"
+  },
+  "CountryHouse": {
+   "members": [
+    "CountryHouse"
+   ],
+   "split": "train"
+  },
+  "Cyberpunk": {
+   "members": [
+    "CyberPunkDowntown",
+    "Cyberpunk"
+   ],
+   "split": "test"
+  },
+  "DesertGasStation": {
+   "members": [
+    "DesertGasStation"
+   ],
+   "split": "train"
+  },
+  "Downtown": {
+   "members": [
+    "Downtown"
+   ],
+   "split": "train"
+  },
+  "EndofTheWorld": {
+   "members": [
+    "EndofTheWorld"
+   ],
+   "split": "train"
+  },
+  "FactoryWeather": {
+   "members": [
+    "FactoryWeather"
+   ],
+   "split": "train"
+  },
+  "Fantasy": {
+   "members": [
+    "Fantasy"
+   ],
+   "split": "train"
+  },
+  "ForestEnv": {
+   "members": [
+    "ForestEnv"
+   ],
+   "split": "validation"
+  },
+  "Gascola": {
+   "members": [
+    "Gascola"
+   ],
+   "split": "train"
+  },
+  "GothicIsland": {
+   "members": [
+    "GothicIsland"
+   ],
+   "split": "test"
+  },
+  "GreatMarsh": {
+   "members": [
+    "GreatMarsh"
+   ],
+   "split": "test"
+  },
+  "HQWesternSaloon": {
+   "members": [
+    "HQWesternSaloon"
+   ],
+   "split": "train"
+  },
+  "HongKong": {
+   "members": [
+    "HongKong"
+   ],
+   "split": "test"
+  },
+  "Hospital": {
+   "members": [
+    "Hospital"
+   ],
+   "split": "test"
+  },
+  "House": {
+   "members": [
+    "House"
+   ],
+   "split": "train"
+  },
+  "IndustrialHangar": {
+   "members": [
+    "IndustrialHangar"
+   ],
+   "split": "train"
+  },
+  "Japanese": {
+   "members": [
+    "JapaneseAlley",
+    "JapaneseCity"
+   ],
+   "split": "train"
+  },
+  "MiddleEast": {
+   "members": [
+    "MiddleEast"
+   ],
+   "split": "validation"
+  },
+  "ModUrbanCity": {
+   "members": [
+    "ModUrbanCity"
+   ],
+   "split": "train"
+  },
+  "ModernCityDowntown": {
+   "members": [
+    "ModernCityDowntown"
+   ],
+   "split": "train"
+  },
+  "ModularNeighborhood": {
+   "members": [
+    "ModularNeighborhood",
+    "ModularNeighborhoodIntExt"
+   ],
+   "split": "train"
+  },
+  "NordicHarbor": {
+   "members": [
+    "NordicHarbor"
+   ],
+   "split": "train"
+  },
+  "Ocean": {
+   "members": [
+    "Ocean"
+   ],
+   "split": "train"
+  },
+  "Office": {
+   "members": [
+    "Office"
+   ],
+   "split": "test"
+  },
+  "OldBrickHouse": {
+   "members": [
+    "OldBrickHouseDay",
+    "OldBrickHouseNight"
+   ],
+   "split": "train"
+  },
+  "OldIndustrialCity": {
+   "members": [
+    "OldIndustrialCity"
+   ],
+   "split": "train"
+  },
+  "OldScandinavia": {
+   "members": [
+    "OldScandinavia"
+   ],
+   "split": "calibration"
+  },
+  "OldTown": {
+   "members": [
+    "OldTownFall",
+    "OldTownNight",
+    "OldTownSummer",
+    "OldTownWinter"
+   ],
+   "split": "train"
+  },
+  "PolarSciFi": {
+   "members": [
+    "PolarSciFi"
+   ],
+   "split": "train"
+  },
+  "Prison": {
+   "members": [
+    "Prison"
+   ],
+   "split": "train"
+  },
+  "Restaurant": {
+   "members": [
+    "Restaurant"
+   ],
+   "split": "train"
+  },
+  "RetroOffice": {
+   "members": [
+    "RetroOffice"
+   ],
+   "split": "validation"
+  },
+  "Rome": {
+   "members": [
+    "Rome"
+   ],
+   "split": "validation"
+  },
+  "Ruins": {
+   "members": [
+    "Ruins"
+   ],
+   "split": "train"
+  },
+  "SeasideTown": {
+   "members": [
+    "SeasideTown"
+   ],
+   "split": "test"
+  },
+  "SeasonalForest": {
+   "members": [
+    "SeasonalForestAutumn",
+    "SeasonalForestSpring",
+    "SeasonalForestSummerNight",
+    "SeasonalForestWinter",
+    "SeasonalForestWinterNight"
+   ],
+   "split": "test"
+  },
+  "Sewerage": {
+   "members": [
+    "Sewerage"
+   ],
+   "split": "validation"
+  },
+  "ShoreCaves": {
+   "members": [
+    "ShoreCaves"
+   ],
+   "split": "calibration"
+  },
+  "Slaughter": {
+   "members": [
+    "Slaughter"
+   ],
+   "split": "calibration"
+  },
+  "SoulCity": {
+   "members": [
+    "SoulCity"
+   ],
+   "split": "train"
+  },
+  "Supermarket": {
+   "members": [
+    "Supermarket"
+   ],
+   "split": "calibration"
+  },
+  "TerrainBlending": {
+   "members": [
+    "TerrainBlending"
+   ],
+   "split": "validation"
+  },
+  "UrbanConstruction": {
+   "members": [
+    "UrbanConstruction"
+   ],
+   "split": "train"
+  },
+  "VictorianStreet": {
+   "members": [
+    "VictorianStreet"
+   ],
+   "split": "test"
+  },
+  "WaterMill": {
+   "members": [
+    "WaterMillDay",
+    "WaterMillNight"
+   ],
+   "split": "train"
+  },
+  "WesternDesertTown": {
+   "members": [
+    "WesternDesertTown"
+   ],
+   "split": "train"
+  }
+ },
+ "counts": {
+  "train": {
+   "families": 38,
+   "environments": 46,
+   "clips": 1437,
+   "frames": 45984
+  },
+  "validation": {
+   "families": 6,
+   "environments": 6,
+   "clips": 196,
+   "frames": 6272
+  },
+  "calibration": {
+   "families": 6,
+   "environments": 7,
+   "clips": 227,
+   "frames": 7264
+  },
+  "test": {
+   "families": 10,
+   "environments": 15,
+   "clips": 379,
+   "frames": 12128
+  }
+ },
+ "environments_indexed": 74,
+ "environments_fetched": 74,
+ "leakage": {
+  "checked": [
+   "family",
+   "environment",
+   "identical frames (SHA-1 of the 721 luminances)"
+  ],
+  "frames_hashed": 71648,
+  "problems": []
+ }
+}

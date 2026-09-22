@@ -40,6 +40,16 @@ labelled instance is figure) and the NYU40 label of each column.
 ## Measured per level
 
 <!-- measured: generated from data/derived/vision/cases.json by `run.py case-docs`; do not edit -->
+| level | clips | frame interval (ms) | vertical field (deg) | column spacing (deg) | figure share | median depth (m) |
+|---|---|---|---|---|---|---|
+| full | 8 of 8 | n/a (single images) | 46.8 | 1.48 | 0.362 | 6.01 |
+| 40.0 degrees (vertical) | 8 of 8 | n/a (single images) | 40.0 | 1.24 | 0.38 | 6.29 |
+| 32.0 degrees (vertical) | 8 of 8 | n/a (single images) | 32.0 | 0.98 | 0.392 | 6.69 |
+| 24.0 degrees (vertical) | 8 of 8 | n/a (single images) | 24.0 | 0.726 | 0.403 | 7.36 |
+| 18.0 degrees (vertical) | 8 of 8 | n/a (single images) | 18.0 | 0.541 | 0.399 | 7.63 |
+| 12.0 degrees (vertical) | 8 of 8 | n/a (single images) | 12.0 | 0.359 | 0.382 | 7.95 |
+
+Medians over the clips of each level. Drawn: `ai_053_010`, `ai_051_001`, `ai_037_009`, `ai_030_001`, `ai_054_007`, `ai_008_007`, `ai_048_008`, `ai_023_005`.
 <!-- /measured -->
 
 ## Caveats
@@ -48,3 +58,6 @@ labelled instance is figure) and the NYU40 label of each column.
 - Single images have no frame interval; they are not a video, and their frame numbers are ids.
 - The requirement on labels selects annotated scenes, which is the point; it is declared in the registry
   and applies to this case only.
+- A narrow crop can land on a surface with no structure at all (a lit wall, a blown-out window), and that
+  image shows nothing. These are single images, not a video, so such an image is dropped from every level of
+  its scene, which keeps all six levels on the same images; the table records how many were dropped.

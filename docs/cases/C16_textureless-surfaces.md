@@ -28,6 +28,16 @@ Depth, flow and figure-ground, all exact; the calibration of uncertainty as cont
 ## Measured per level
 
 <!-- measured: generated from data/derived/vision/cases.json by `run.py case-docs`; do not edit -->
+| level | clips | frame interval (ms) | texture contrast | RMS contrast | flow per frame (engine units) | figure share |
+|---|---|---|---|---|---|---|
+| 0.5 RMS contrast | 8 of 8 | 100 | 0.5 | 0.324 | 1.06 | 0.453 |
+| 0.2 RMS contrast | 8 of 8 | 100 | 0.2 | 0.132 | 1.06 | 0.453 |
+| 0.1 RMS contrast | 8 of 8 | 100 | 0.1 | 0.0657 | 1.06 | 0.453 |
+| 0.05 RMS contrast | 8 of 8 | 100 | 0.05 | 0.0328 | 1.06 | 0.453 |
+| 0.02 RMS contrast | 8 of 8 | 100 | 0.02 | 0.0131 | 1.06 | 0.453 |
+| 0 RMS contrast | 8 of 8 | 100 | 0 | 0 | 1.06 | 0.453 |
+
+Medians over the clips of each level. Drawn: `20276918`, `20276919`, `20276920`, `20276921`, `20276922`, `20276923`, `20276924`, `20276925`.
 <!-- /measured -->
 
 ## Caveats

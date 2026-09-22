@@ -49,11 +49,11 @@ export default function EyeLattice({ manifest, clip, level, frame, view, title, 
 
   // world extent of the lattice in pixels, with a hexagon's reach on every side
   const fit = useMemo(() => {
-    const reserve = compact ? 18 : 44;
+    const reserve = compact ? 0 : 44;   // a compact panel's title is an overlay, not a band
     const spanX = Math.max(...cols) - Math.min(...cols) + 2 * R * STRETCH;
     const spanY = Math.max(...rows) - Math.min(...rows) + 2 * R;
     const scale = Math.max(Math.min(size.width / spanX, (size.height - reserve) / spanY), 0.01);
-    return { scale, cx: size.width / 2, cy: (size.height - reserve) / 2 + (compact ? 16 : 22) };
+    return { scale, cx: size.width / 2, cy: (size.height - reserve) / 2 + (compact ? 0 : 22) };
   }, [cols, rows, size, compact]);
 
   useEffect(() => {

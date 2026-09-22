@@ -32,6 +32,16 @@ static).
 ## Measured per level
 
 <!-- measured: generated from data/derived/vision/cases.json by `run.py case-docs`; do not edit -->
+| level | clips | frame interval (ms) | speed (m/s) | frame rate (Hz) | median depth (m) | flow per frame (engine units) |
+|---|---|---|---|---|---|---|
+| 0.5 times the recorded speed | 8 of 8 | 200 | 1.08 | 5.00 | 3.81 | 8.15 |
+| 1.00 times the recorded speed | 8 of 8 | 100 | 2.16 | 10.0 | 3.81 | 8.15 |
+| 2.00 times the recorded speed | 8 of 8 | 50.0 | 4.31 | 20.0 | 3.81 | 8.15 |
+| 4.00 times the recorded speed | 8 of 8 | 25.0 | 8.63 | 40.0 | 3.81 | 8.15 |
+| 8.00 times the recorded speed | 8 of 8 | 12.5 | 17.3 | 80.0 | 3.81 | 8.15 |
+| 16.0 times the recorded speed | 8 of 8 | 6.25 | 34.5 | 160 | 3.81 | 8.15 |
+
+Medians over the clips of each level. Drawn: `VictorianStreet/easy/P003/000477`, `VictorianStreet/easy/P000/000616`, `VictorianStreet/easy/P004/000097`, `VictorianStreet/easy/P005/000101`, `VictorianStreet/hard/P001/000087`, `VictorianStreet/easy/P006/000489`, `VictorianStreet/hard/P000/000118`, `VictorianStreet/hard/P005/000202`.
 <!-- /measured -->
 
 ## Caveats

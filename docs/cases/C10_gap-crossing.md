@@ -35,6 +35,16 @@ less than its depth does, which is the point of the case.
 ## Measured per level
 
 <!-- measured: generated from data/derived/vision/cases.json by `run.py case-docs`; do not edit -->
+| level | clips | frame interval (ms) | eye to near edge, first to last frame (mm) | figure share | median depth (m) | column spacing (deg) |
+|---|---|---|---|---|---|---|
+| 1.00 mm | 8 of 8 | 10.0 | 8.20 to 2.10 | 0.027 | 0.00192 | 4.24 |
+| 2.00 mm | 8 of 8 | 10.0 | 8.20 to 2.10 | 0.0263 | 0.00192 | 4.24 |
+| 3.00 mm | 8 of 8 | 10.0 | 8.20 to 2.10 | 0.0249 | 0.00192 | 4.24 |
+| 4.00 mm | 8 of 8 | 10.0 | 8.20 to 2.10 | 0.023 | 0.00192 | 4.24 |
+| 5.00 mm | 8 of 8 | 10.0 | 8.20 to 2.10 | 0.0214 | 0.00192 | 4.24 |
+| 6.00 mm | 8 of 8 | 10.0 | 8.20 to 2.10 | 0.0199 | 0.00192 | 4.24 |
+
+Medians over the clips of each level. Drawn: `20270918`, `20270919`, `20270920`, `20270921`, `20270922`, `20270923`, `20270924`, `20270925`.
 <!-- /measured -->
 
 ## Caveats

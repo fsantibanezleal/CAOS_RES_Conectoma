@@ -42,6 +42,16 @@ Flow, and the calibration of a method's uncertainty on depth: high uncertainty i
 ## Measured per level
 
 <!-- measured: generated from data/derived/vision/cases.json by `run.py case-docs`; do not edit -->
+| level | clips | frame interval (ms) | turn per frame (deg) | flow per frame (engine units) | median depth (m) |
+|---|---|---|---|---|---|
+| 0 deg/s | 8 of 8 | 100 | 0 | 0 | 9.38 |
+| 15.0 deg/s | 8 of 8 | 100 | 1.50 | 2.57 | 10.3 |
+| 30.0 deg/s | 8 of 8 | 100 | 3.00 | 5.13 | 11.1 |
+| 60.0 deg/s | 8 of 8 | 100 | 6.00 | 10.1 | 9.24 |
+| 120 deg/s | 8 of 8 | 100 | 12.0 | 20.0 | 8.98 |
+| 240 deg/s | 8 of 8 | 100 | 24.0 | 39.2 | 8.99 |
+
+Medians over the clips of each level. Drawn: `BrushifyMoon/hard/P004/002991`, `BrushifyMoon/hard/P004/000986`, `BrushifyMoon/easy/P005/000577`, `BrushifyMoon/hard/P003/002170`, `BrushifyMoon/hard/P005/000280`, `BrushifyMoon/hard/P003/000713`, `BrushifyMoon/hard/P001/000643`, `BrushifyMoon/easy/P004/001833`.
 <!-- /measured -->
 
 ## Caveats

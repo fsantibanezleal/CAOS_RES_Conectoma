@@ -161,8 +161,10 @@ the same luminance). That last rule was added when the leakage gate failed on on
 splits: it was black, the same zero in all 721 columns, in 5 of the 2,244 TartanAir clips (two of them
 black for 31 and 32 of their 32 frames), a render in which the camera saw nothing. Those clips are
 rejected; frames that are nearly uniform but not blank (a camera in heavy weather) are content and stay.
-A synthetic scene may be blank on purpose (C16 at zero texture contrast). The tests build clips that
-break each rule.
+A synthetic scene may be blank on purpose (C16 at zero texture contrast). Hypersim's images are not a video,
+so where a narrow crop of C04 lands on a surface with no structure the image is dropped from every level of
+that scene rather than the scene being rejected, and every level keeps the same images. The tests build clips
+that break each rule.
 
 ## 7. Splits by geometry, not by name
 
@@ -175,6 +177,16 @@ environment appears in two splits, or if two frames with identical lattice lumin
 values) do. Sintel, Spring, FlyGym, the panoramas and the synthetic cases are test only; Hypersim uses its
 official scene split, test partition only. The assignment and the check are committed in
 `data/derived/vision/splits.json` and `tartanair-clips.csv`.
+
+| Split | Families | Environments | Clips | Frames |
+|---|---|---|---|---|
+| train | 38 | 46 | 1,437 | 45,984 |
+| validation | 6 | 6 | 196 | 6,272 |
+| calibration | 6 | 7 | 227 | 7,264 |
+| test | 10 | 15 | 379 | 12,128 |
+
+Of the 2,244 clips fetched, 2,239 pass contract 1; the 5 rejected hold blank frames. The leakage test finds
+no family, environment or identical frame in two splits over 71,648 hashed frames.
 
 ## 8. The cases
 

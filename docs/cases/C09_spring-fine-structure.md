@@ -37,6 +37,16 @@ motion, is carried with each clip; it is sparse and is not graded here.
 ## Measured per level
 
 <!-- measured: generated from data/derived/vision/cases.json by `run.py case-docs`; do not edit -->
+| level | clips | frame interval (ms) | column spacing (deg) | focal at 436 rows (px) | median depth (m) | sky share |
+|---|---|---|---|---|---|---|
+| 436 rows the 1080-row frame is resampled to (the lattice sees 391 of 436) | 8 of 8 | n/a (single images) | 0.708 | 1,093 | 9.93 | 0 |
+| 520 rows the 1080-row frame is resampled to (the lattice sees 391 of 436) | 8 of 8 | n/a (single images) | 0.594 | 1,303 | 7.92 | 0 |
+| 620 rows the 1080-row frame is resampled to (the lattice sees 391 of 436) | 8 of 8 | n/a (single images) | 0.498 | 1,554 | 7.87 | 0 |
+| 740 rows the 1080-row frame is resampled to (the lattice sees 391 of 436) | 8 of 8 | n/a (single images) | 0.417 | 1,855 | 7.81 | 0 |
+| 880 rows the 1080-row frame is resampled to (the lattice sees 391 of 436) | 8 of 8 | n/a (single images) | 0.351 | 2,206 | 8.58 | 0 |
+| 1,080 rows the 1080-row frame is resampled to (the lattice sees 391 of 436) | 8 of 8 | n/a (single images) | 0.286 | 2,707 | 8.15 | 0 |
+
+Medians over the clips of each level. Drawn: `0008/clip_0118`, `0044/clip_0038`, `0015/clip_0051`, `0024/clip_0001`, `0039/clip_0043`, `0017/clip_0009`, `0016/clip_0197`, `0011/clip_0056`.
 <!-- /measured -->
 
 ## Caveats
