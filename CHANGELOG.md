@@ -3,6 +3,63 @@
 All notable changes to this project are documented here. Format: Keep a Changelog, newest on top.
 Versions use the `X.XX.XXX` display form; the semver form (zeros dropped) appears in manifests.
 
+## [0.06.000] - 2026-09-22
+
+### Added
+
+- The first four methods (U5), each consuming what the eye receives unless it says otherwise, and each
+  scored by one stage on the same clips. **M01**, depth from motion parallax: a sweep along each column's
+  epipolar line, because the corpus's columns move 39 pixels between frames at the median and 96 at the
+  ninth decile, three and seven lattice steps, far beyond a differential estimator's capture range; then a
+  two-dimensional refinement whose deviation from that line finds independently moving objects without
+  knowing any depth. **M02**, semi-global matching on the TartanAir stereo pair (baseline 0.25 m, verified
+  at the source), labelled an upper bound everywhere because it consumes a full pixel grid from two
+  cameras. **M03**, the Hassenstein-Reichardt correlator on the lattice, pooled over neighbours and
+  calibrated on a synthetic set of its own. **M04**, the published fifty-model ensemble, frozen, with the
+  flow decoder it was trained with, read through the same inversion as M01.
+- The readout every motion method shares: the exact decomposition of Longuet-Higgins and Prazdny (1980)
+  from the committed poses, the baseline each column has across its line of sight (which makes the
+  uncertainty grow with the square of depth and makes pure rotation and the focus of expansion
+  unanswerable), and the epipolar deviation that tests rigidity without a depth.
+- The stage that scores a method, with the metrics defined in one place and their conventions stated:
+  coverage beside every number, RMSE in metres only where the source is metric, the scale-invariant error
+  transcribed from section 3.2 of Eigen et al. 2014 with lambda 1 in log units. A case where depth cannot
+  be observed is graded by what the method REFUSED. Comparisons are paired on the clip and bootstrapped
+  over clips. A clip a method cannot run on is reported as skipped with the reason.
+- The floor: the flow the corpus committed, put through the same readout. It recovers the committed depth
+  to 0.9 percent over 88 percent of columns, so the arithmetic after the flow costs almost nothing and a
+  method's distance from the floor is the part of the error it owns.
+- A Methods tab on Experiments reading a compact projection of the reports, stating what each row IS
+  beside every number, and the case pages for the four methods in `docs/methods/`.
+
+### Found
+
+- **Paired against the floor in AbsRel**, over every case and level: M02 +0.004 [0.000, 0.008], M01 +0.265
+  [0.239, 0.280], M04 +0.894 [0.865, 0.957], M03 +0.898 [0.852, 0.982]. The published network, used as a
+  metric flow source outside the frame rate and scene statistics it was trained on, lands inside the
+  interval of an untrained correlator with one fitted gain.
+- The corpus records PLANAR depth while the readout was first written to solve for distance along the ray,
+  which inflates every off-axis column by up to 1.41 at the corner of the lattice. The synthetic control
+  caught it before any number was published.
+- A gradient read over a 13-pixel lattice step under-reads the slope: one linear solve returned a velocity
+  12 to 24 percent too large. The estimator refines by warping with the interpolant's own gradient, and
+  interpolates at the columns' real (truncated) pixel positions, where a column now returns its own value
+  to 1e-16 rather than to 2.3e-2.
+- A single column's correlator response fits nothing: one gain from it explains less than the mean does
+  (r2 -0.14). Pooled over neighbours it fits (r2 0.33, 0.50, 0.60 after one, two and three rings), which
+  is what the fly's wide-field cells do, at the cost of a depth smoothed over that neighbourhood. The gain
+  fitted at one contrast is more than three times wrong at another.
+- Below about a fifth of a lattice step a displacement is read too small and its depth too large: a plane
+  at 8 m with a 0.1 m baseline moves 2.7 pixels and comes back at 10.9 m. The reported uncertainty uses a
+  flow noise of 0.8 pixels and predicts that error.
+
+### Changed
+
+- The right camera of the 48 TartanAir clips the cases draw is fetched by `run.py fetch-stereo` (0.87 GB,
+  nothing committed), and a synthetic or panorama case now declares its camera motion in the registry
+  rather than carrying poses, with a test that checks each declaration against the flow that case's own
+  rendering committed.
+
 ## [0.05.000] - 2026-09-22
 
 ### Added

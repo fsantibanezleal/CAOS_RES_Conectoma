@@ -1,0 +1,54 @@
+{
+ "artifact": "evaluation",
+ "version": 1,
+ "methods": {
+  "M01": {
+   "path": "evaluation/M01.json",
+   "bytes": 434468,
+   "sha256": "89739408a3d5a8b8716bd607f7a7670a7a705163eec3f83d8cd5412df5202ea8",
+   "code_sha256": "4cd2a740de2a4f32042d3375968b066a977011a32eb3fb21455e242e9d27e559",
+   "thresholds": {},
+   "clips_scored": 756
+  },
+  "floor": {
+   "path": "evaluation/floor.json",
+   "bytes": 414600,
+   "sha256": "520a549d278c0e36c0982b4239fb5a8cfc1e2fcf714f43bad4982d287bcb1968",
+   "code_sha256": "3e80ca01cd754a66c6812f62b723dfdb0c73806b2cc5e89e8b4fef9d05a0c848",
+   "thresholds": {},
+   "clips_scored": 756
+  },
+  "M03": {
+   "path": "evaluation/M03.json",
+   "bytes": 430096,
+   "sha256": "01f8c7f461a27ef16c29e36b136cf211312c79b37567a1777f72607d7ce14096",
+   "code_sha256": "3e80ca01cd754a66c6812f62b723dfdb0c73806b2cc5e89e8b4fef9d05a0c848",
+   "thresholds": {
+    "tau_s": 0.1,
+    "gain": -2588.884029066625,
+    "rings": 3
+   },
+   "clips_scored": 756
+  },
+  "M02": {
+   "path": "evaluation/M02.json",
+   "bytes": 310913,
+   "sha256": "fd96c6d3726ac3c8cc7de9d98611cd439b349d08f917dc4f718608c5f6a8939c",
+   "code_sha256": "3e80ca01cd754a66c6812f62b723dfdb0c73806b2cc5e89e8b4fef9d05a0c848",
+   "thresholds": {},
+   "clips_scored": 756
+  },
+  "M04": {
+   "path": "evaluation/M04.json",
+   "bytes": 435035,
+   "sha256": "2f64eef9895f0324c668dc6a988ba83b6f574e03fc339777262bf88069d7c965",
+   "code_sha256": "3e80ca01cd754a66c6812f62b723dfdb0c73806b2cc5e89e8b4fef9d05a0c848",
+   "thresholds": {},
+   "clips_scored": 756
+  }
+ },
+ "source": {
+  "cases": "cases.json",
+  "cases_sha256": "b73e721a163475c2ca9d3e7ffce9af2a3a93026f9579a9c158723f0b0680ea00"
+ }
+}
