@@ -163,19 +163,36 @@ def check_splits(errs: list[str]) -> int:
     return sum(entry["clips"] for entry in splits["counts"].values())
 
 
+def check_evaluation(errs: list[str]) -> int:
+    """The scored methods, when any have been committed: each report matches its manifest entry."""
+    path = MANIFESTS / "evaluation.json"
+    if not path.exists():
+        return 0                      # no method has been scored yet, which is not drift
+    manifest = load(path, errs)
+    if manifest is None:
+        return 0
+    cases_path = DERIVED / "vision" / "cases.json"
+    if cases_path.exists() and digest(cases_path) != manifest["source"]["cases_sha256"]:
+        errs.append("evaluation: the reports were scored on a different cases.json than the one on disk")
+    for method, entry in sorted(manifest["methods"].items()):
+        check_file(entry, DERIVED, f"evaluation/{method}", errs)
+    return len(manifest["methods"])
+
+
 def main() -> int:
     errs: list[str] = []
     explorer = check_explorer(errs)
     clips = check_eyeclips(errs)
     rendered = check_splits(errs)
+    scored = check_evaluation(errs)
     if errs:
         print("CONTRACT 2 DRIFT:")
         for err in errs:
             print(f"::error::{err}")
         return 1
     print(
-        f"CONTRACT 2 OK: {explorer} explorer artifact, {clips} eye clips, {rendered} split clips; "
-        "manifests, digests and the split table all agree with the files on disk."
+        f"CONTRACT 2 OK: {explorer} explorer artifact, {clips} eye clips, {rendered} split clips, "
+        f"{scored} scored methods; manifests, digests and the split table all agree with the files."
     )
     return 0
 

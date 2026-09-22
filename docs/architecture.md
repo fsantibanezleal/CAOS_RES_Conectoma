@@ -16,6 +16,9 @@
   motion method shares, what a column cannot measure (pure rotation, the focus of expansion), finding a
   moving object without knowing any distance, and the flow estimator on the hexagonal lattice with its
   measured accuracy
+- [07, how a method is scored](architecture/07_how-a-method-is-scored.md): the metrics and the conventions
+  behind them, the floor every flow-based row is read against, the cases where refusing IS the right
+  answer, the motion a case declares when it records no poses, and why a comparison is paired on the clip
 - [08, the data contracts](architecture/08_data-contracts.md): connectome and vision ingestion, the
   connectome specification, and the artifact contract the web consumes
 

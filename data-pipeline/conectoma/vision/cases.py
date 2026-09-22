@@ -363,3 +363,31 @@ def statistics(clip: dict) -> dict:
     if "flow" in clip:
         stats["engine_flow_per_frame"] = _flow_speed(clip) if "flow_valid" in clip else None
     return stats
+
+
+# ------------------------------------------------------------------------- the motion a case declares
+
+
+def step_motion(case: dict, level: int) -> tuple[np.ndarray, np.ndarray] | None:
+    """The camera motion between two frames of this case's level, in pinhole camera coordinates.
+
+    TartanAir clips carry the poses the release recorded, so nothing is declared for them. The synthetic
+    and panorama cases have no recorded poses because their motion is not measured: it IS the case. This
+    function states it, in the same frame `decode.relative_motion` returns (x right, y down, z forward, the
+    rotation and translation taking a point from this frame's camera to the next one's), so a method reads
+    the two the same way. Returns None for a case whose motion is not declared here.
+
+    A test checks each of these against the flow the rendering committed, so a sign error cannot survive.
+    """
+    from conectoma.vision import synthetic
+
+    transform = case["variant"].get("transform")
+    if transform in ("planes", "texture"):
+        # the camera slides along its own x axis at a fixed speed: points move the other way
+        return np.eye(3), np.array([-PLANES_SPEED_M_S * TARTANAIR_INTERVAL_S, 0.0, 0.0])
+    if transform == "rotation":
+        rate = float(case["variant"]["levels"][level])
+        return synthetic.yaw(math.radians(rate) * TARTANAIR_INTERVAL_S), np.zeros(3)
+    if transform == "static":
+        return np.eye(3), np.zeros(3)
+    return None

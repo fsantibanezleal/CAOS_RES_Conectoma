@@ -55,14 +55,18 @@ MIN_PARALLAX_PX = 1.0        # a displacement smaller than this has no direction
 REFINEMENTS = 3              # two-dimensional steps from the sweep's answer
 
 
-def run(clip: dict, column_spacing_deg: float, *, flow_noise_px: float = FLOW_NOISE_PX,
+def run(clip: dict, column_spacing_deg: float, *, motion: tuple | None = None,
+        flow_noise_px: float = FLOW_NOISE_PX,
         tolerance: float = UNCERTAINTY_TOLERANCE, match_tolerance: float = MATCH_TOLERANCE,
         max_deviation_deg: float = MAX_DEVIATION_DEG, min_parallax_px: float = MIN_PARALLAX_PX,
         nearest_m: float = sweep.NEAREST_M, levels: int | None = None,
         refinements: int = REFINEMENTS) -> dict[str, np.ndarray]:
-    """Run M01 on a rendered clip (contract 1), one row per consecutive pair of frames."""
-    lum, poses, steps = _clip_arrays(clip)
-    motions = readout.relative_motions(poses)
+    """Run M01 on a rendered clip (contract 1), one row per consecutive pair of frames.
+
+    `motion` is the (rotation, translation) of one step, for a clip whose camera motion is declared by its
+    case rather than recorded in poses (`conectoma.vision.cases.step_motion`).
+    """
+    lum, motions, steps = _clip_motions(clip, motion)
     distance = np.full((steps, readout.COLUMNS), np.nan)
     uncertainty = np.full((steps, readout.COLUMNS), np.inf)
     match = np.full((steps, readout.COLUMNS), np.inf)
@@ -72,6 +76,10 @@ def run(clip: dict, column_spacing_deg: float, *, flow_noise_px: float = FLOW_NO
 
     for step in range(steps):
         rotation, translation = motions[step]
+        if not np.any(translation):
+            # no translation at all: every column's sweep would be flat, because every depth predicts the
+            # same landing point. That is the whole of cases C13 and C14, and the answer is not a number.
+            continue
         found = sweep.sweep(lum[step], lum[step + 1], rotation, translation, column_spacing_deg,
                             nearest_m, levels)
         start = sweep.landing_flow(found["inverse_distance"], rotation, translation, column_spacing_deg)
@@ -97,15 +105,15 @@ def run(clip: dict, column_spacing_deg: float, *, flow_noise_px: float = FLOW_NO
     return _result(distance, refused, independent, uncertainty, match, deviation)
 
 
-def floor(clip: dict, column_spacing_deg: float, *, flow_noise_px: float = FLOW_NOISE_PX,
+def floor(clip: dict, column_spacing_deg: float, *, motion: tuple | None = None,
+          flow_noise_px: float = FLOW_NOISE_PX,
           tolerance: float = UNCERTAINTY_TOLERANCE, max_deviation_deg: float = MAX_DEVIATION_DEG,
           min_parallax_px: float = MIN_PARALLAX_PX) -> dict[str, np.ndarray]:
     """The same inversion on the flow the corpus committed: the best any flow-based row could do."""
     if "flow" not in clip:
         raise KeyError("this clip carries no committed flow, so it has no floor")
-    lum, poses, steps = _clip_arrays(clip)
+    lum, motions, steps = _clip_motions(clip, motion)
     committed = readout.pixel_flow(clip["flow"])
-    motions = readout.relative_motions(poses)
     distance = np.full((steps, readout.COLUMNS), np.nan)
     uncertainty = np.full((steps, readout.COLUMNS), np.inf)
     refused = np.ones((steps, readout.COLUMNS), dtype=bool)
@@ -127,14 +135,22 @@ def floor(clip: dict, column_spacing_deg: float, *, flow_noise_px: float = FLOW_
     return _result(distance, refused, independent, uncertainty, np.zeros_like(uncertainty), deviation)
 
 
-def _clip_arrays(clip: dict) -> tuple[np.ndarray, np.ndarray, int]:
+def _clip_motions(clip: dict, motion: tuple | None) -> tuple[np.ndarray, list, int]:
+    """The luminances and the camera motion of every step, from the clip's poses or from `motion`."""
     lum = np.asarray(clip["lum"], dtype=np.float64)
-    poses = np.asarray(clip["poses"], dtype=np.float64)
     if lum.ndim != 2 or lum.shape[1] != readout.COLUMNS:
         raise ValueError(f"expected (frames, {readout.COLUMNS}) luminances, got {lum.shape}")
-    if len(poses) != len(lum):
-        raise ValueError(f"{len(lum)} frames but {len(poses)} poses")
-    return lum, poses, len(lum) - 1
+    steps = len(lum) - 1
+    if "poses" in clip:
+        poses = np.asarray(clip["poses"], dtype=np.float64)
+        if len(poses) != len(lum):
+            raise ValueError(f"{len(lum)} frames but {len(poses)} poses")
+        return lum, readout.relative_motions(poses), steps
+    if motion is None:
+        raise KeyError("this clip carries no poses and its case declares no motion")
+    rotation, translation = motion
+    return lum, [(np.asarray(rotation, dtype=np.float64),
+                  np.asarray(translation, dtype=np.float64))] * steps, steps
 
 
 def _result(distance, refused, independent, uncertainty, match, deviation) -> dict[str, np.ndarray]:
