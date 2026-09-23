@@ -88,6 +88,12 @@ METHODS = {
 }
 
 
+# Which row each trained row is the next regime of. The pair is stated rather than derived from the
+# names, because "the row before" is a claim about the protocol (same wiring, same head, same seeds, one
+# more thing allowed to train) and not a string operation.
+REGIME_PREDECESSOR = {"M06": "M05", "M06-N1": "M05-N1", "M06-N2": "M05-N2", "M06-N3": "M05-N3"}
+
+
 def code_digest() -> str:
     digest = hashlib.sha256()
     for name in CODE:
@@ -368,8 +374,18 @@ def write_summary() -> dict:
                 against_nulls[f"{name} vs {null}"] = compare(name, null, "abs_rel")
             except FileNotFoundError:
                 continue
+    # A regime's claim is also a paired difference: M06 is the same wiring and the same head as M05, with
+    # the biophysics allowed to move, so what it bought is M06 minus M05 on the same clips, arm by arm.
+    against_regimes = {}
+    for name, before in REGIME_PREDECESSOR.items():
+        if name in methods and before in methods:
+            try:
+                against_regimes[f"{name} vs {before}"] = compare(name, before, "abs_rel")
+            except FileNotFoundError:
+                continue
     summary = {"artifact": "evaluation-summary", "version": 1, "methods": methods,
-               "against_floor": paired, "against_nulls": against_nulls, "kind": KINDS}
+               "against_floor": paired, "against_nulls": against_nulls,
+               "against_regimes": against_regimes, "kind": KINDS}
     write_json(DERIVED / "summary.json", summary)
     return summary
 

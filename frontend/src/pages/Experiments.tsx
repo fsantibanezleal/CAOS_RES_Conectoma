@@ -661,6 +661,43 @@ export default function Experiments() {
           </p>
         </>
       ) : null}
+      {Object.keys(evaluation.against_regimes ?? {}).length > 0 ? (
+        <>
+          <h3>{t('What the regime bought', 'Qué compró el régimen')}</h3>
+          <p>
+            {t(
+              'The same wiring, the same head and the same seeds as the row before it, with one more thing allowed to train inside the network. Each arm is compared with its own predecessor, so the difference is what training that quantity bought on that wiring, and a null arm that gains as much as the measured one is saying that the gain is not about the connectome.',
+              'El mismo cableado, la misma cabeza y las mismas semillas que la fila anterior, con una cosa más que puede entrenarse dentro de la red. Cada brazo se compara con su propio predecesor, de modo que la diferencia es lo que compró entrenar esa cantidad sobre ese cableado, y un brazo nulo que gana tanto como el medido está diciendo que la ganancia no es del conectoma.',
+            )}
+          </p>
+          <div className="cx-table-wrap">
+            <table className="cx-table">
+              <thead>
+                <tr>
+                  <th>{t('Comparison', 'Comparación')}</th>
+                  <th className="num">{t('AbsRel difference, paired', 'Diferencia de AbsRel, pareada')}</th>
+                  <th className="num">{t('Clips paired', 'Clips pareados')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(evaluation.against_regimes ?? {}).map(([name, paired]) => (
+                  <tr key={name}>
+                    <td>{name}</td>
+                    <td className="num">{num(-paired.median, 3)} [{num(-paired.high, 3)}, {num(-paired.low, 3)}]</td>
+                    <td className="num">{num(paired.pairs)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="cx-muted">
+            {t(
+              'Reported as the earlier row minus the later one, so a positive number is the later regime being better.',
+              'Reportado como la fila anterior menos la posterior, así que un número positivo es el régimen posterior siendo mejor.',
+            )}
+          </p>
+        </>
+      ) : null}
       <h3>{t('Per case: AbsRel, median over the six levels', 'Por caso: AbsRel, mediana sobre los seis niveles')}</h3>
       <div className="cx-table-wrap">
         <table className="cx-table">
