@@ -16,4 +16,26 @@ verdict: every requirement, its gate, and the gate's result.
 
 ## Convergence
 
-Recorded when the unit closes, one line per requirement: its gate and the gate's result.
+The verdict, one line per requirement, recorded when the unit closed (local gates; CI and the live gate
+are recorded in the pull request).
+
+| Requirement | Gate | Result |
+|---|---|---|
+| R-001 every case at both ends | `tests/test_export_chain.py::test_the_chain_carries_every_case_at_both_ends` | pass, 16 cases, 0 missing |
+| R-002 the scored readout | `tests/test_export_chain.py::test_the_readout_is_the_scored_readout` | pass |
+| R-003 both regimes | `tests/test_export_chain.py::test_both_regimes_are_carried` | pass |
+| R-004 a missing readout is named | `tests/test_export_chain.py::test_a_missing_readout_is_named` | pass |
+| R-005 manifest and digests | `scripts/check_artifacts.py` | pass, 16 chain clips |
+| R-006 within 6 MB | `tests/test_export_chain.py::test_the_chain_stays_within_its_budget` | pass, 4.8 MB |
+| R-010 the specification's own circuit | `tests/test_export_chain.py::test_the_circuit_is_the_specifications_own` | pass, 90 connections |
+| R-011 drive | `frontend/src/test/chain.test.ts` | pass |
+| R-012 no motion field below 0.1 | `frontend/src/test/chain.test.ts` | pass, measured 0.012 |
+| R-020 four maps | `frontend/e2e/fit.mjs` | pass at every size, theme and language |
+| R-021 play changes, pause stops | `frontend/e2e/fit.mjs` | pass |
+| R-022 a pointed column everywhere | `frontend/e2e/fit.mjs` | pass |
+| R-023 opens on the liveliest step | `frontend/src/test/chain.test.ts` | pass |
+| R-024 opens paused | `frontend/e2e/fit.mjs` | pass |
+| R-025 the switch keeps the step | `frontend/e2e/fit.mjs` | pass |
+| R-026 decodes what the pipeline encoded | `frontend/src/test/chain.test.ts` with the shared fixture | pass |
+
+The local fit gate: 1,747 checks passed, 0 failed. Nothing is unmet.

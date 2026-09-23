@@ -257,7 +257,8 @@ try {
         {
           const { ctx, page, errors } = await open(browser, viewport, theme, lang);
           await page.goto(`${base}/?mode=brain&case=C01`, { waitUntil: 'networkidle' });
-          await page.waitForSelector('.cx-activity canvas[data-painted]', { timeout: 30000 });
+          // the chain is the Response mode's first view now, so it is what has to have painted
+          await page.waitForSelector('.cx-chain-map canvas[data-painted]', { timeout: 30000 });
           await page.waitForTimeout(400);
           for (const tab of BRAIN_TABS[lang]) {
             await page.getByRole('tab', { name: tab, exact: true }).click();

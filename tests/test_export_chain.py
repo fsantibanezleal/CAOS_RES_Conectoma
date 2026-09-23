@@ -115,7 +115,8 @@ def a_registry(tmp_path: Path, monkeypatch, frames: int = 5):
     reports = tmp_path / "reports"
     reports.mkdir()
     for row, tolerance in (("M05", 2.0), ("M06", 1.5)):
-        (reports / f"{row}.json").write_text(json.dumps({"thresholds": {"tolerance": tolerance, "window": 2}}))
+        thresholds = {"thresholds": {"tolerance": tolerance, "window": 2}}
+        (reports / f"{row}.json").write_text(json.dumps(thresholds))
     monkeypatch.setattr(export_chain, "circuit", lambda: {"nodes": [], "edges": [], "source": "test"})
     monkeypatch.setattr(export_chain, "direction_selectivity", lambda: {"largest": 0.0})
     return reports, truth
@@ -129,7 +130,8 @@ def test_the_readout_is_the_scored_readout(tmp_path, monkeypatch):
     def readout(row, clip, spacing, root, key, thresholds):
         seen.append((row, thresholds["tolerance"], thresholds["window"], key))
         steps = len(clip["lum"]) - 1
-        return {"distance_m": np.full((steps, COLUMNS), np.nan), "distance_all_m": np.full((steps, COLUMNS), 3.0),
+        return {"distance_m": np.full((steps, COLUMNS), np.nan),
+                "distance_all_m": np.full((steps, COLUMNS), 3.0),
                 "unknown": np.ones((steps, COLUMNS), bool), "uncertainty": np.full((steps, COLUMNS), 2.5),
                 "seeds": 5}
 

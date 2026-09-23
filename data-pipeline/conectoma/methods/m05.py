@@ -74,7 +74,8 @@ def run_on_activity(model, activity: np.ndarray, record: dict, tolerance: float 
         "distance_m": np.where(refused, np.nan, distance).astype(np.float32),
         # the head's answer BEFORE this row's refusal, for a comparison at matched coverage: the refusal
         # threshold is what such a comparison neutralises, so it must not have been applied already
-        "distance_all_m": np.where(np.isfinite(distance) & (distance > 0), distance, np.nan).astype(np.float32),
+        "distance_all_m": np.where(np.isfinite(distance) & (distance > 0), distance,
+                                   np.nan).astype(np.float32),
         "unknown": refused,
         "moving": np.zeros((steps, COLUMNS), dtype=bool),      # a reservoir row claims no motion mask
         "uncertainty": spread.astype(np.float32),

@@ -47,7 +47,8 @@ DERIVED = REPO_ROOT / "data" / "derived" / "chain"
 MANIFESTS = REPO_ROOT / "data" / "derived" / "manifests"
 REPORTS = REPO_ROOT / "data" / "derived" / "evaluation"
 SPEC = REPO_ROOT / "data" / "derived" / "connectome" / "malecns-optic-lobe-r.json"
-CHARACTERISATION = REPO_ROOT / "data" / "derived" / "connectome" / "malecns-optic-lobe-r.characterization.json"
+CHARACTERISATION = (REPO_ROOT / "data" / "derived" / "connectome"
+                    / "malecns-optic-lobe-r.characterization.json")
 
 ROWS = ("M05", "M06")
 DEPTH_LO_M = 0.1

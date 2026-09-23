@@ -2,7 +2,9 @@
 
 The App has three modes. The first is the wiring the network is built from, the second is what the eye's
 721 columns receive in a case, and the third, this one, is what the measured connectome DOES with that
-input while it plays.
+input while it plays. Its first view, the chain, is on [its own page](10_the-chain.md): the network's
+answer beside the input and the truth, and the circuit carrying the signal. This page is the pathway view
+and the playback both share.
 
 It exists because the product was missing the thing it is about. The eye view could advance its frames,
 but it did so by writing each frame into the URL, one router navigation per frame at five to ten frames a
