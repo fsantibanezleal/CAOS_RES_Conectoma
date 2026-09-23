@@ -47,6 +47,10 @@ models/*.pth
 # trained readout checkpoints: the RECORD of each run is committed (what it scored, on which cache, with
 # which statistics), the weights are not. `run.py train-readout` rebuilds them from the cache.
 data/derived/readout/*.pt
+# The trained networks of U7: 11 MB each, twenty of them. Their run records (the JSON beside each) are
+# committed, so what a checkpoint is and what it scored is in the repository; the weights are rebuilt by
+# `run.py train-network`, which the record has every parameter of.
+data/derived/network/*.pt
 *.dll
 *.so
 *.dylib

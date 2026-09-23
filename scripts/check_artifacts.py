@@ -135,6 +135,12 @@ def check_splits(errs: list[str]) -> int:
     }
     environments: dict[str, set[str]] = {split: set() for split in splits["counts"]}
     families: dict[str, set[str]] = {split: set() for split in splits["counts"]}
+    # Every clip must reach the activity cache under a key of its OWN. The cache is keyed by the clip's
+    # place in the corpus, and this is the check that the place is unique: keying it by the file name
+    # instead collapsed 1,860 clips onto 981 names, dropped 879 of them, and made 107 validation and 106
+    # calibration clips resolve to a TRAIN clip. The family-level leakage test above was green throughout,
+    # because a key collision happens downstream of it.
+    cache_keys: dict[str, str] = {}
     with table_path.open(encoding="utf-8", newline="") as handle:
         for row in csv.DictReader(handle):
             split, family = row["split"], row["family"]
@@ -146,6 +152,11 @@ def check_splits(errs: list[str]) -> int:
                     f"splits: clip {row['key']} is in {split} but its family {family} "
                     f"is in {of_family.get(family)}"
                 )
+            place = f"{row['environment']}_{row['difficulty']}_{row['trajectory']}"
+            key = f"tartanair_{place}_clip_{int(row['start']):06d}"
+            if key in cache_keys:
+                errs.append(f"splits: clips {cache_keys[key]} and {row['key']} share the cache key {key}")
+            cache_keys[key] = row["key"]
             counted[split]["clips"] += 1
             counted[split]["frames"] += int(row["frames"])
             environments[split].add(row["environment"])

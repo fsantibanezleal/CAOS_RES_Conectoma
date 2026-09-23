@@ -3,6 +3,45 @@
 All notable changes to this project are documented here. Format: Keep a Changelog, newest on top.
 Versions use the `X.XX.XXX` display form; the semver form (zeros dropped) appears in manifests.
 
+## [0.09.000] - 2026-09-23
+
+### Added
+
+- **M06, the connectome with its biophysics trained** (regime R1): the same measured wiring, the same
+  signs and the same synapse counts as M05, with 8,409 parameters (a resting potential and a time
+  constant per cell type, a synaptic strength per connected type pair) fitted together with the readout,
+  against the same three nulls trained the same way and the same five seeds. `run.py train-network` and
+  `run.py cache-trained`, twenty networks, and their run records committed.
+- **A comparison at matched coverage.** Every trained row also reports its error over a FIXED share of
+  the lattice, ranked by what the row itself says its uncertainty is, at a quarter, a half and three
+  quarters, and the comparisons between trained rows are read there. All three shares are kept and shown
+  on the Experiments page, because the ranking between two rows can depend on where it is read.
+- **What the regime bought**, as a paired difference arm by arm: M06 against M05 on the same clips, and
+  each null against its own predecessor, which is what says whether a gain is about the connectome at all.
+
+### Fixed
+
+- **The corpus activity cache was keyed by the clip's file name, which is not unique.** Across the three
+  corpus splits 1,860 rendered clips carry only 981 distinct names, so 879 clips never reached the cache
+  (the train split lost 591 of 1,437, 41 percent) and 199 names occur in more than one split, which made
+  107 validation clips and 106 calibration clips resolve to a TRAIN clip's activity and its depth. U4's
+  leakage gate was green throughout and correctly so: it proves the split table has no family overlap and
+  cannot see a key collision downstream of it. The key is now the clip's place in the corpus and
+  `scripts/check_artifacts.py` re-derives every key from the committed table and refuses a collision.
+- **U6's numbers are republished from the corrected corpus.** The four R0 arms were re-cached over all
+  1,860 clips and M05's twenty heads retrained. Read at matched coverage, the measured wiring now beats
+  its degree-preserving rewiring (+0.010 over the better half of the lattice) where U6 reported the
+  rewiring slightly ahead, and it is beaten by a size-matched random sparse graph (-0.015) where U6
+  reported it clearly ahead. Both of U6's headline signs were wrong, for two independent reasons.
+- **A paired AbsRel between rows that refuse different amounts was not a comparison.** On the cases the
+  arms' median coverage runs from 0.40 to 0.72 and their AbsRel ranking followed that spread rather than
+  their accuracy.
+
+### Changed
+
+- The activity cache writes in batches of four clips: 8.1 clips per second against 5.8 at batch one, and
+  the two agree to the float16 quantum of the artifact.
+
 ## [0.08.000] - 2026-09-22
 
 ### Added
