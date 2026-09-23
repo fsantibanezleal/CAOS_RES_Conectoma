@@ -194,6 +194,43 @@ def check_brainclips(errs: list[str]) -> int:
     return len(manifest["cases"])
 
 
+def check_chain(errs: list[str]) -> int:
+    """What the network concludes per case, and the circuit: every file matches its bytes and digest.
+
+    Also the two things a reader could be misled by if they drifted: the readout must have been scored
+    with a tolerance the committed evaluation report still records, and the chain must stay inside the
+    size budget it was designed to (6 MB), so the site does not quietly grow.
+    """
+    path = MANIFESTS / "chain.json"
+    if not path.exists():
+        return 0
+    manifest = load(path, errs)
+    if manifest is None:
+        return 0
+    cases_path = DERIVED / "vision" / "cases.json"
+    if cases_path.exists():
+        registry = json.loads(cases_path.read_text(encoding="utf-8")).get("cases_sha256")
+        if registry != manifest["source"]["cases_sha256"]:
+            errs.append("chain: the readouts were exported on a different case registry than this")
+    for row, entry in sorted(manifest.get("rows", {}).items()):
+        report = DERIVED / "evaluation" / f"{row}.json"
+        if "thresholds" not in entry or not report.exists():
+            continue
+        scored = json.loads(report.read_text(encoding="utf-8")).get("thresholds", {})
+        if scored.get("tolerance") != entry["thresholds"].get("tolerance"):
+            errs.append(f"chain: {row} was exported at tolerance {entry['thresholds'].get('tolerance')}, "
+                        f"its report now records {scored.get('tolerance')}; re-run export-chain")
+    total = 0
+    for case_id, entry in sorted(manifest["cases"].items()):
+        check_file(entry, DERIVED, f"chain/{case_id}", errs)
+        total += entry.get("bytes", 0)
+    check_file(manifest["circuit"], DERIVED, "chain/circuit", errs)
+    total += manifest["circuit"].get("bytes", 0)
+    if total > 6_000_000:
+        errs.append(f"chain: {total / 1e6:.2f} MB, over its 6 MB budget")
+    return len(manifest["cases"])
+
+
 def check_evaluation(errs: list[str]) -> int:
     """The scored methods, when any have been committed: each report matches its manifest entry."""
     path = MANIFESTS / "evaluation.json"
@@ -221,6 +258,7 @@ def main() -> int:
     rendered = check_splits(errs)
     scored = check_evaluation(errs)
     brains = check_brainclips(errs)
+    chains = check_chain(errs)
     if errs:
         print("CONTRACT 2 DRIFT:")
         for err in errs:
@@ -228,6 +266,7 @@ def main() -> int:
         return 1
     print(
         f"CONTRACT 2 OK: {explorer} explorer artifact, {clips} eye clips, {brains} brain clips, "
+        f"{chains} chain clips, "
         f"{rendered} split clips, {scored} scored methods; manifests, digests and the split table "
         "all agree with the files."
     )
