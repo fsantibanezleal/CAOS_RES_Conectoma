@@ -2,6 +2,7 @@ import { countProblems, explorerProblems, manifestProblems } from '../lib/contra
 import { sha256Hex } from '../lib/sha256';
 import type { Explorer, ExplorerManifest } from '../lib/contract.types';
 import { brainProblems, type BrainClip, type BrainManifest } from '../lib/brain';
+import { chainProblems, circuitProblems, type ChainClip, type ChainManifest, type Circuit } from '../lib/chain';
 import { eyeClipProblems, eyeManifestProblems, type EyeClip, type EyeManifest } from '../lib/eye';
 
 // Every artifact is read from the site root (the build copies data/derived into public/data), with an
@@ -134,3 +135,54 @@ export function loadBrainClip(manifest: BrainManifest, caseId: string): Promise<
   brainCache.set(caseId, promise);
   return promise;
 }
+
+/** The chain artifact's manifest: which cases carry a readout, the encodings, and the circuit's digest. */
+export async function loadChainManifest(): Promise<ChainManifest> {
+  const raw = await getJson<ChainManifest>('manifests/chain.json');
+  if (raw?.artifact !== 'chain') refuse('The chain manifest', ['it is not a chain manifest']);
+  if (!raw.encoding?.depth || !raw.circuit) refuse('The chain manifest', ['it declares no encoding or circuit']);
+  return raw;
+}
+
+async function verifiedJson<T>(path: string, sha: string): Promise<{ data: T; verified: boolean }> {
+  const response = await fetch(DATA + path, { cache: 'no-cache' });
+  if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
+  const buffer = await response.arrayBuffer();
+  const verified = (await sha256(buffer)) === sha;
+  return { data: JSON.parse(new TextDecoder().decode(buffer)) as T, verified };
+}
+
+const chainCache = new Map<string, Promise<{ clip: ChainClip; verified: boolean }>>();
+
+/** What the network concluded from one case, read once, checked against the contract and its digest. */
+export function loadChainClip(manifest: ChainManifest, caseId: string): Promise<{ clip: ChainClip; verified: boolean }> {
+  const entry = manifest.cases[caseId];
+  if (!entry) return Promise.reject(new Error(`the chain manifest has no case ${caseId}`));
+  const cached = chainCache.get(caseId);
+  if (cached) return cached;
+  const promise = (async () => {
+    const { data, verified } = await verifiedJson<ChainClip>(entry.path, entry.sha256);
+    const problems = chainProblems(data, entry);
+    if (problems.length) refuse(`The chain of ${caseId}`, problems);
+    return { clip: data, verified };
+  })();
+  promise.catch(() => chainCache.delete(caseId));
+  chainCache.set(caseId, promise);
+  return promise;
+}
+
+let circuitCache: Promise<{ circuit: Circuit; verified: boolean }> | null = null;
+
+/** The measured circuit between the pathway's cell types, checked against its digest. */
+export function loadCircuit(manifest: ChainManifest): Promise<{ circuit: Circuit; verified: boolean }> {
+  if (circuitCache) return circuitCache;
+  circuitCache = (async () => {
+    const { data, verified } = await verifiedJson<Circuit>(manifest.circuit.path, manifest.circuit.sha256);
+    const problems = circuitProblems(data);
+    if (problems.length) refuse('The circuit', problems);
+    return { circuit: data, verified };
+  })();
+  circuitCache.catch(() => { circuitCache = null; });
+  return circuitCache;
+}
+

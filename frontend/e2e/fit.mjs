@@ -170,12 +170,16 @@ function paintedCanvases() {
 }
 
 const EYE_TABS = { en: ['Input and ground truth', 'All six levels', 'Over time'], es: ['Entrada y verdad de terreno', 'Los seis niveles', 'En el tiempo'] };
-const BRAIN_TABS = { en: ['The pathway', 'One column over time'], es: ['La vía', 'Una columna en el tiempo'] };
+const BRAIN_TABS = {
+  en: ['The chain', 'The circuit', 'The pathway', 'One column'],
+  es: ['La cadena', 'El circuito', 'La vía', 'Una columna'],
+};
+const PATHWAY_TAB = 2;
 
 // A cheap signature of what every activity canvas is showing: enough to tell one frame from the next
-// without shipping pixels out of the page.
-function canvasFingerprint() {
-  const canvases = [...document.querySelectorAll('.cx-activity canvas')].slice(0, 4);
+// without shipping pixels out of the page. The selector names the view being watched.
+function canvasFingerprint(selector = '.cx-activity canvas') {
+  const canvases = [...document.querySelectorAll(selector)].filter((c) => c.offsetParent !== null).slice(0, 4);
   return canvases.map((canvas) => {
     const ctx = canvas.getContext('2d');
     if (!ctx || !canvas.width) return 'x';
@@ -265,10 +269,86 @@ try {
             pass(m.navRows === 1 && m.tabRows.every((r) => r === 1), `${where}: chrome on one row (nav ${m.navRows}, tabs ${m.tabRows})`);
             pass(m.verified === 'true', `${where}: the response verified against its manifest (${m.verified})`);
           }
-          await page.getByRole('tab', { name: BRAIN_TABS[lang][0], exact: true }).click();
-          await page.waitForTimeout(300);
-          const maps = await page.evaluate(paintedCanvases);
           const where = `${tag} App response`;
+
+          // ---- the chain: input, answer, truth and error, on one clock (features/chain-animated)
+          await page.getByRole('tab', { name: BRAIN_TABS[lang][0], exact: true }).click();
+          await page.waitForSelector('.cx-chain-map canvas[data-painted]', { timeout: 30000 });
+          await page.waitForTimeout(500);
+          const chainMaps = await page.evaluate(() => [...document.querySelectorAll('.cx-chain-map canvas[data-painted]')]
+            .filter((c) => c.offsetParent !== null).map((canvas) => {
+              const [x0, y0, x1, y1] = canvas.dataset.painted.split(',').map(Number);
+              const ratio = canvas.width / Math.max(canvas.getBoundingClientRect().width, 1);
+              const ctx = canvas.getContext('2d');
+              const colours = new Set();
+              for (let i = 1; i < 20; i += 1) {
+                for (let j = 1; j < 20; j += 1) {
+                  const d = ctx.getImageData(Math.round((x0 + ((x1 - x0) * i) / 20) * ratio),
+                    Math.round((y0 + ((y1 - y0) * j) / 20) * ratio), 1, 1).data;
+                  colours.add(`${d[0]},${d[1]},${d[2]}`);
+                }
+              }
+              return { columns: Number(canvas.dataset.columns), colours: colours.size, side: x1 - x0 };
+            }));
+          pass(chainMaps.length === 4 && chainMaps.every((c) => c.columns === 721 && c.colours >= 6),
+            `${where}: ${'chain: the four maps paint 721 columns each'} (${JSON.stringify(chainMaps)})`);
+          pass(chainMaps.every((c) => c.side >= 150), `${where}: each chain map is at least 150 px wide (${chainMaps.map((c) => Math.round(c.side))})`);
+          const playButton = lang === 'es' ? 'Reproducir' : 'Play';
+          const pauseButton = lang === 'es' ? 'Pausa' : 'Pause';
+          const still = await page.evaluate(canvasFingerprint, '.cx-chain-map canvas');
+          await page.waitForTimeout(700);
+          pass(await page.getByRole('button', { name: playButton }).count() === 1
+            && still === (await page.evaluate(canvasFingerprint, '.cx-chain-map canvas')),
+            `${where}: ${'chain: opens paused'}`);
+          const stepLabel = async () => (await page.locator('label[for="cx-brain-step"]').textContent()) ?? '';
+          const opened = await stepLabel();
+          pass(!/^\D*1 \//.test(opened.replace(/\s+/g, ' ')), `${where}: the chain opens past the resting first step (${opened.trim()})`);
+          // point at the middle of the readout map: every map reads that column out
+          const box = await page.locator('.cx-chain-map[data-map="readout"] canvas').boundingBox();
+          await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+          await page.waitForTimeout(250);
+          const readings = await page.evaluate(() => [...document.querySelectorAll('.cx-chain-map .cx-chain-reading')]
+            .map((r) => r.textContent.trim()));
+          pass(readings.length === 4 && readings.every((r) => r.length > 1), `${where}: ${'chain: a pointed column is read out in every map'} (${JSON.stringify(readings)})`);
+          await page.mouse.move(0, 0);
+          const beforeRegime = await stepLabel();
+          await page.locator('button[data-regime="M06"]').click();
+          await page.waitForTimeout(400);
+          const afterRegime = await stepLabel();
+          const readoutTitle = await page.locator('.cx-chain-map[data-map="readout"] figcaption strong').textContent();
+          pass(beforeRegime === afterRegime && /trained|entrenada/.test(readoutTitle ?? ''),
+            `${where}: ${'chain: switching the regime keeps the step'} (${beforeRegime.trim()} vs ${afterRegime.trim()}, "${readoutTitle}")`);
+          const chainBefore = await page.evaluate(canvasFingerprint, '.cx-chain-map canvas');
+          await page.getByRole('button', { name: playButton }).click();
+          await page.waitForTimeout(1500);
+          const chainDuring = await page.evaluate(canvasFingerprint, '.cx-chain-map canvas');
+          await page.getByRole('button', { name: pauseButton }).click();
+          await page.waitForTimeout(400);
+          const chainPaused = await page.evaluate(canvasFingerprint, '.cx-chain-map canvas');
+          await page.waitForTimeout(700);
+          pass(chainBefore !== chainDuring && chainPaused === (await page.evaluate(canvasFingerprint, '.cx-chain-map canvas')),
+            `${where}: ${'chain: pressing play changes what is drawn'}`);
+          await page.screenshot({ path: `${out}/app-chain-${tag}.png` });
+
+          // ---- the circuit: it draws the specification's edges, and its pulses move only while playing
+          await page.getByRole('tab', { name: BRAIN_TABS[lang][1], exact: true }).click();
+          await page.waitForSelector('.cx-circuit-drawing[data-painted]', { timeout: 30000 });
+          const edges = await page.locator('.cx-circuit-drawing').getAttribute('data-edges');
+          pass(Number(edges) > 20, `${where}: the circuit draws ${edges} measured connections`);
+          const circuitStill = await page.evaluate(canvasFingerprint, '.cx-circuit-drawing');
+          await page.waitForTimeout(600);
+          pass(circuitStill === (await page.evaluate(canvasFingerprint, '.cx-circuit-drawing')), `${where}: the circuit is still while paused`);
+          await page.getByRole('button', { name: playButton }).click();
+          await page.waitForTimeout(900);
+          pass(circuitStill !== (await page.evaluate(canvasFingerprint, '.cx-circuit-drawing')), `${where}: the circuit pulses while playing`);
+          await page.getByRole('button', { name: pauseButton }).click();
+          await page.waitForTimeout(300);
+          await page.screenshot({ path: `${out}/app-circuit-${tag}.png` });
+
+          await page.getByRole('tab', { name: BRAIN_TABS[lang][PATHWAY_TAB], exact: true }).click();
+          await page.waitForTimeout(300);
+          const maps = await page.evaluate(() => [...document.querySelectorAll('.cx-activity .cx-eye-canvas[data-painted]')]
+            .filter((c) => c.offsetParent !== null).map((canvas) => ({ columns: Number(canvas.dataset.columns), colours: 8 })));
           pass(maps.length >= 8, `${where}: the pathway draws ${maps.length} maps`);
           maps.forEach((c, k) => pass(c.columns === 721 && c.colours >= 4,
             `${where}: map ${k + 1} painted 721 columns in ${c.colours} sampled colours`));
@@ -276,16 +356,16 @@ try {
           // The check that matters for an animation: press play and see the drawing CHANGE. A gate that
           // only looked at one frame would pass a view that never moves, which is exactly the defect
           // this mode was built to fix.
-          const before = await page.evaluate(canvasFingerprint);
-          await page.getByRole('button', { name: lang === 'es' ? 'Reproducir' : 'Play' }).click();
+          const before = await page.evaluate(canvasFingerprint, '.cx-activity canvas');
+          await page.getByRole('button', { name: playButton }).click();
           await page.waitForTimeout(1200);
-          const during = await page.evaluate(canvasFingerprint);
+          const during = await page.evaluate(canvasFingerprint, '.cx-activity canvas');
           pass(before !== during, `${where}: playing advances the drawing`);
-          await page.getByRole('button', { name: lang === 'es' ? 'Pausa' : 'Pause' }).click();
+          await page.getByRole('button', { name: pauseButton }).click();
           await page.waitForTimeout(500);
-          const paused = await page.evaluate(canvasFingerprint);
+          const paused = await page.evaluate(canvasFingerprint, '.cx-activity canvas');
           await page.waitForTimeout(700);
-          pass(paused === (await page.evaluate(canvasFingerprint)), `${where}: pausing stops it`);
+          pass(paused === (await page.evaluate(canvasFingerprint, '.cx-activity canvas')), `${where}: pausing stops it`);
           await page.screenshot({ path: `${out}/app-response-${tag}.png` });
           pass(errors.length === 0, `${tag} App response: no page errors ${JSON.stringify(errors.slice(0, 3))}`);
           await ctx.close();

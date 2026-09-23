@@ -1,11 +1,19 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useSearchParams } from 'react-router';
 import { Tabs } from '@fasl-work/caos-app-shell';
-import { loadBrainClip, loadBrainManifest, loadEyeClip, loadEyeManifest } from '../api/artifacts';
+import {
+  loadBrainClip, loadBrainManifest, loadChainClip, loadChainManifest, loadCircuit, loadEyeClip, loadEyeManifest,
+} from '../api/artifacts';
 import { decodeLevel, STAGES, type BrainClip, type BrainManifest, type DecodedActivity } from '../lib/brain';
+import {
+  decodeChainLevel, depthCode, depthRange, frameOfRow, liveliestStep, livelinessOverSteps, readoutIndex, rowOfFrame,
+  type ChainClip, type ChainManifest, type Circuit, type Row,
+} from '../lib/chain';
 import { COLUMNS, decodeLevel as decodeEyeLevel, type EyeClip, type EyeManifest } from '../lib/eye';
 import { useNumber, useT } from '../lib/i18n';
 import ActivityLattice from './ActivityLattice';
+import ChainView from './ChainView';
+import CircuitView from './CircuitView';
 import EyeLattice from './EyeLattice';
 import SeriesChart from './SeriesChart';
 import { signedStops } from './colour';
@@ -14,7 +22,12 @@ import { usePlayback } from './usePlayback';
 const SPEEDS = [0.25, 0.5, 1, 2, 4];
 
 /**
- * What the measured connectome DOES with what the eye receives, playing.
+ * What the measured connectome DOES with what the eye receives, playing, and what it CONCLUDES.
+ *
+ * Four views on one clock. The chain (the default): the eye's input, the network's depth readout, the truth
+ * and the error, so a reader sees the answer being produced. The circuit: the measured wiring between the
+ * pathway's cell types, each a live miniature of its map, each connection pulsing with its drive. The
+ * pathway: every type's map. One column: what one column's cells did over the clip.
  *
  * The eye's input and the network's pathway advance on one clock: the lamina, the medulla types that feed
  * motion detection, and the direction-selective outputs, each on the same hexagonal lattice the column
@@ -26,19 +39,27 @@ export default function BrainMode({ switcher }: { switcher: ReactNode }) {
   const t = useT();
   const num = useNumber();
   const [params, setParams] = useSearchParams();
-  const [manifests, setManifests] = useState<{ brain: BrainManifest; eye: EyeManifest } | null>(null);
-  const [loaded, setLoaded] = useState<{ brain: BrainClip; eye: EyeClip; verified: boolean } | null>(null);
+  const [manifests, setManifests] = useState<{ brain: BrainManifest; eye: EyeManifest; chain: ChainManifest } | null>(null);
+  const [loaded, setLoaded] = useState<{
+    brain: BrainClip; eye: EyeClip; chain: ChainClip | null; verified: boolean;
+  } | null>(null);
+  const [circuit, setCircuit] = useState<Circuit | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [hovered, setHovered] = useState<number | null>(null);
   const [speed, setSpeed] = useState(1);
 
   const caseId = params.get('case') ?? 'C01';
   const level = params.get('level') ?? '0';
+  const regime: Row = params.get('regime') === 'M06' ? 'M06' : 'M05';
 
   useEffect(() => {
     let live = true;
-    Promise.all([loadBrainManifest(), loadEyeManifest()])
-      .then(([brain, eye]) => live && setManifests({ brain, eye }))
+    Promise.all([loadBrainManifest(), loadEyeManifest(), loadChainManifest()])
+      .then(([brain, eye, chain]) => {
+        if (!live) return;
+        setManifests({ brain, eye, chain });
+        loadCircuit(chain).then((c) => live && setCircuit(c.circuit)).catch((e) => live && setError(String(e)));
+      })
       .catch((e) => live && setError(String(e)));
     return () => { live = false; };
   }, []);
@@ -47,9 +68,12 @@ export default function BrainMode({ switcher }: { switcher: ReactNode }) {
     if (!manifests) return undefined;
     let live = true;
     setLoaded(null);
-    Promise.all([loadBrainClip(manifests.brain, caseId), loadEyeClip(manifests.eye, caseId)])
-      .then(([brain, eye]) => live && setLoaded({
-        brain: brain.clip, eye: eye.clip, verified: brain.verified && eye.verified,
+    const chainPromise = manifests.chain.cases[caseId]
+      ? loadChainClip(manifests.chain, caseId) : Promise.resolve(null);
+    Promise.all([loadBrainClip(manifests.brain, caseId), loadEyeClip(manifests.eye, caseId), chainPromise])
+      .then(([brain, eye, chain]) => live && setLoaded({
+        brain: brain.clip, eye: eye.clip, chain: chain?.clip ?? null,
+        verified: brain.verified && eye.verified && (chain ? chain.verified : true),
       }))
       .catch((e) => live && setError(String(e)));
     return () => { live = false; };
@@ -66,8 +90,23 @@ export default function BrainMode({ switcher }: { switcher: ReactNode }) {
     [loaded, chosen],
   );
 
+  const chain = useMemo(
+    () => (loaded?.chain && manifests && loaded.chain.levels[chosen]
+      ? decodeChainLevel(loaded.chain, chosen, manifests.chain) : null),
+    [loaded, chosen, manifests],
+  );
+  const lively = useMemo(
+    () => (activity ? livelinessOverSteps(activity.values, activity.centre, activity.spread, activity.steps) : []),
+    [activity],
+  );
+
   const detail = loaded?.brain.levels[chosen];
   const steps = activity?.steps ?? 0;
+  // per eye frame: how far the pathway is from rest, sampled where each frame begins; memoised, so the time
+  // course's data keeps its identity between renders and the chart is not rebuilt on every frame
+  const livelyPerFrame = useMemo(() => (detail
+    ? Array.from({ length: detail.frames }, (_, f) => lively[rowOfFrame(f, detail.steps_per_frame, detail.stride, steps)] ?? Number.NaN)
+    : []), [detail, lively, steps]);
   const stepSeconds = detail?.step_s ?? 0.06;
   const clock = usePlayback(steps, stepSeconds, {
     speed,
@@ -77,6 +116,22 @@ export default function BrainMode({ switcher }: { switcher: ReactNode }) {
       setParams(next, { replace: true });
     },
   });
+
+  // Open on the step where the pathway moves most, once per clip, unless the link names a step: the first
+  // step is the network at rest and every map on it is flat.
+  const opened = useRef<string | null>(null);
+  const setFrameRef = useRef(clock.setFrame);
+  setFrameRef.current = clock.setFrame;
+  useEffect(() => {
+    if (!activity) return;
+    const key = `${caseId}|${chosen}`;
+    if (opened.current === key) return;
+    opened.current = key;
+    const asked = params.get('step');
+    const start = asked !== null && Number.isFinite(Number(asked))
+      ? Number(asked) : liveliestStep(activity.values, activity.centre, activity.spread, activity.steps);
+    setFrameRef.current(start);
+  }, [activity, caseId, chosen, params]);
 
   const update = (changes: Record<string, string | null>) => {
     const next = new URLSearchParams(params);
@@ -114,8 +169,7 @@ export default function BrainMode({ switcher }: { switcher: ReactNode }) {
     output: t('T4 and T5: direction selective', 'T4 y T5: selectivas a la dirección'),
   };
   // the frame of the eye that this simulated step belongs to
-  const frame = Math.min(Math.floor((clock.frame * detail.stride) / detail.steps_per_frame),
-                         detail.frames - 1);
+  const frame = frameOfRow(clock.frame, detail.steps_per_frame, detail.stride, detail.frames);
   const seconds = clock.frame * stepSeconds;
 
   const eyePanel = (
@@ -165,6 +219,48 @@ export default function BrainMode({ switcher }: { switcher: ReactNode }) {
     </div>
   );
 
+
+  const chainPanel = chain ? (
+    <ChainView
+      manifest={manifests.eye}
+      eyeLevel={eyeLevel}
+      frame={frame}
+      chain={chain}
+      regime={regime}
+      hovered={hovered}
+      onHover={setHovered}
+      onFrame={(f) => clock.setFrame(rowOfFrame(f, detail.steps_per_frame, detail.stride, steps))}
+      liveliness={livelyPerFrame}
+    />
+  ) : (
+    <p className="cx-muted">{t('This case has no readout in the chain artifact.', 'Este caso no tiene lectura en el artefacto de la cadena.')}</p>
+  );
+
+  const headRow = chain?.rows[regime];
+  const headRange = chain && headRow ? depthRange(chain.truth, headRow.depth) : null;
+  const headBase = chain ? readoutIndex(frame, chain.steps) * COLUMNS : 0;
+  const head = chain && headRow && headRange ? {
+    code: (c: number) => (headRow.depth[headBase + c] > 0 ? depthCode(headRow.depth[headBase + c], headRange) : null),
+    label: regime === 'M05' ? t('depth, frozen', 'profundidad, congelada') : t('depth, trained', 'profundidad, entrenada'),
+  } : null;
+
+  const circuitPanel = circuit ? (
+    <CircuitView
+      circuit={circuit}
+      manifest={manifests.eye}
+      values={activity.values}
+      centre={activity.centre}
+      spread={activity.spread}
+      step={clock.frame}
+      lum={eyeLevel.lum}
+      frame={frame}
+      playing={clock.playing}
+      head={head}
+    />
+  ) : (
+    <p className="cx-muted">{t('Loading the circuit...', 'Cargando el circuito...')}</p>
+  );
+
   const outputs = types.filter((type) => STAGES[type]?.stage === 'output');
   const traces = hovered != null && hovered >= 0 ? outputs.map((type) => ({
     label: type,
@@ -210,6 +306,17 @@ export default function BrainMode({ switcher }: { switcher: ReactNode }) {
                 className={one === chosen ? 'active' : ''}
                 onClick={() => update({ level: one, step: null })}>
                 {String(loaded.brain.levels[one].value)}
+              </button>
+            ))}
+          </div>
+
+          <span className="cx-label">{t('Readout from', 'Lectura de')}</span>
+          <div className="cx-segmented" role="radiogroup" aria-label={t('Readout from', 'Lectura de')}>
+            {(['M05', 'M06'] as Row[]).map((one) => (
+              <button key={one} type="button" role="radio" aria-checked={one === regime}
+                className={one === regime ? 'active' : ''} data-regime={one}
+                onClick={() => update({ regime: one === 'M05' ? null : one, step: String(clock.frame) })}>
+                {one === 'M05' ? t('frozen', 'congelada') : t('trained', 'entrenada')}
               </button>
             ))}
           </div>
@@ -272,8 +379,10 @@ export default function BrainMode({ switcher }: { switcher: ReactNode }) {
         <Tabs
           ariaLabel={t('Response views', 'Vistas de la respuesta')}
           tabs={[
+            { id: 'chain', label: t('The chain', 'La cadena'), content: chainPanel },
+            { id: 'circuit', label: t('The circuit', 'El circuito'), content: circuitPanel },
             { id: 'pathway', label: t('The pathway', 'La vía'), content: pathway },
-            { id: 'traces', label: t('One column over time', 'Una columna en el tiempo'), content: overTime },
+            { id: 'traces', label: t('One column', 'Una columna'), content: overTime },
           ]}
         />
       </section>
