@@ -152,7 +152,8 @@ def check_splits(errs: list[str]) -> int:
                     f"splits: clip {row['key']} is in {split} but its family {family} "
                     f"is in {of_family.get(family)}"
                 )
-            key = f"tartanair_{row['environment']}_{row['difficulty']}_{row['trajectory']}_clip_"                   f"{int(row['start']):06d}"
+            place = f"{row['environment']}_{row['difficulty']}_{row['trajectory']}"
+            key = f"tartanair_{place}_clip_{int(row['start']):06d}"
             if key in cache_keys:
                 errs.append(f"splits: clips {cache_keys[key]} and {row['key']} share the cache key {key}")
             cache_keys[key] = row["key"]
