@@ -33,13 +33,13 @@ from pathlib import Path
 import numpy as np
 
 from conectoma.core.jsonio import write_json
-from conectoma.methods import m01, m02, m03, m04, m05, metrics
+from conectoma.methods import m01, m02, m03, m04, m05, m06, metrics
 from conectoma.vision import cases
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DERIVED = REPO_ROOT / "data" / "derived" / "evaluation"
 MANIFESTS = REPO_ROOT / "data" / "derived" / "manifests"
-CODE = ("readout", "flow_lattice", "sweep", "m01", "m02", "emd", "m03", "m04", "m05",
+CODE = ("readout", "flow_lattice", "sweep", "m01", "m02", "emd", "m03", "m04", "m05", "m06",
         "head", "metrics")
 
 # Each method is a callable (clip, column_spacing_deg, **thresholds) -> per-step arrays. `floor` is not a
@@ -56,6 +56,10 @@ KINDS = {
     "M05-N1": "control for M05: the same wiring degree-preservingly rewired",
     "M05-N2": "control for M05: a size-matched random sparse graph",
     "M05-N3": "control for M05: the same wiring with its signs shuffled",
+    "M06": "native, trained: the measured connectome with its biophysics fitted (regime R1)",
+    "M06-N1": "control for M06: the same wiring degree-preservingly rewired, trained the same way",
+    "M06-N2": "control for M06: a size-matched random sparse graph, trained the same way",
+    "M06-N3": "control for M06: the same wiring with its signs shuffled, trained the same way",
     "floor": "the committed flow through the same readout",
 }
 
@@ -72,8 +76,36 @@ METHODS = {
                "calibrate": partial(m05.calibrate_tolerance, arm="N2")},
     "M05-N3": {"call": None, "requires": ("lum",), "reservoir": "N3",
                "calibrate": partial(m05.calibrate_tolerance, arm="N3")},
+    "M06": {"call": None, "requires": ("lum",), "trained": "connectome",
+            "calibrate": partial(m06.calibrate_tolerance, arm="connectome")},
+    "M06-N1": {"call": None, "requires": ("lum",), "trained": "N1",
+               "calibrate": partial(m06.calibrate_tolerance, arm="N1")},
+    "M06-N2": {"call": None, "requires": ("lum",), "trained": "N2",
+               "calibrate": partial(m06.calibrate_tolerance, arm="N2")},
+    "M06-N3": {"call": None, "requires": ("lum",), "trained": "N3",
+               "calibrate": partial(m06.calibrate_tolerance, arm="N3")},
     "floor": {"call": m01.floor, "requires": ("flow",)},
 }
+
+
+# Which row each trained row is the next regime of. The pair is stated rather than derived from the
+# names, because "the row before" is a claim about the protocol (same wiring, same head, same seeds, one
+# more thing allowed to train) and not a string operation.
+REGIME_PREDECESSOR = {"M06": "M05", "M06-N1": "M05-N1", "M06-N2": "M05-N2", "M06-N3": "M05-N3"}
+
+# What a comparison between two trained rows is read on. Not `abs_rel`, which is the error over whatever
+# each row chose to claim: measured on the cases, the arms' median coverage runs from 0.40 to 0.72 and
+# their AbsRel ranking follows that spread, so the difference between two rows is mostly the difference
+# between their calibrated thresholds. `abs_rel_at_50` is the error over the better half of what each row
+# could answer, ranked by its own predicted uncertainty, which is the same question for every row. Both
+# are written into every report, and the comparison against the FLOOR stays on `abs_rel`, because a
+# geometric row refuses for structural reasons rather than by a threshold.
+COMPARISON_KEY = "abs_rel_at_50"
+# And the whole curve beside it, because the ranking can depend on where it is read: on the cases the
+# measured wiring is ahead of a random sparse graph over its most confident quarter of columns and behind
+# it over its better half, which is a fact about the two rows' error-versus-coverage profiles and not a
+# detail to choose between.
+COMPARISON_KEYS = tuple(f"abs_rel_at_{int(c * 100)}" for c in metrics.MATCHED_COVERAGES)
 
 
 def code_digest() -> str:
@@ -100,6 +132,10 @@ def score_clip(clip: dict, result: dict, case: dict, metric_units: bool = True) 
     out: dict = {"steps": int(steps)}
     if observable(case):
         out |= metrics.depth_metrics(truth, result["distance_m"], claimed, metric_units)
+        # and the same error at a fixed share of columns, for rows that predict their own uncertainty:
+        # two rows that refuse different amounts cannot be compared on the error of what each kept
+        if "distance_all_m" in result and "uncertainty" in result:
+            out |= metrics.matched_coverage(truth, result["distance_all_m"], result["uncertainty"])
     out |= {f"refusal_{k}": v for k, v in
             metrics.refusal(result["unknown"], observable(case)).items()}
 
@@ -159,11 +195,13 @@ def _run_one(method: str, case_id: str, level: int, index: int, root: str,
     if motion is None and "poses" not in clip:
         return row | {"skipped": "the clip carries no poses and its case declares no motion"}
     started = time.time()
-    if METHODS[method].get("reservoir"):
-        arm = METHODS[method]["reservoir"]
+    if METHODS[method].get("reservoir") or METHODS[method].get("trained"):
+        trained = METHODS[method].get("trained")
+        arm = trained or METHODS[method]["reservoir"]
         key = f"case_{case_id}_L{level}_{index:02d}"
+        module = m06 if trained else m05
         try:
-            result = m05.run(clip, spacing, root=Path(root), arm=arm, key=key, **thresholds)
+            result = module.run(clip, spacing, root=Path(root), arm=arm, key=key, **thresholds)
         except FileNotFoundError as missing:
             return row | {"skipped": str(missing)}
     elif METHODS[method].get("stereo"):
@@ -262,8 +300,9 @@ def run(root: Path, method: str, *, cases_wanted: list[str] | None = None,
     calibration = None
     if "calibrate" in METHODS[method] and not thresholds:
         calibrate = METHODS[method]["calibrate"]
-        calibration = calibrate(root) if METHODS[method].get("reservoir") else calibrate()
-        if METHODS[method].get("reservoir"):
+        network_row = METHODS[method].get("reservoir") or METHODS[method].get("trained")
+        calibration = calibrate(root) if network_row else calibrate()
+        if network_row:
             thresholds |= {"tolerance": calibration["chosen"]["tolerance"],
                            "window": calibration["window"]}
         else:
@@ -350,11 +389,32 @@ def write_summary() -> dict:
         controls = [null for null in methods if null.startswith(f"{name}-N")]
         for null in sorted(controls):
             try:
-                against_nulls[f"{name} vs {null}"] = compare(name, null, "abs_rel")
+                against_nulls[f"{name} vs {null}"] = compare(name, null, COMPARISON_KEY)
             except FileNotFoundError:
                 continue
+    # A regime's claim is also a paired difference: M06 is the same wiring and the same head as M05, with
+    # the biophysics allowed to move, so what it bought is M06 minus M05 on the same clips, arm by arm.
+    against_regimes = {}
+    for name, before in REGIME_PREDECESSOR.items():
+        if name in methods and before in methods:
+            try:
+                against_regimes[f"{name} vs {before}"] = compare(name, before, COMPARISON_KEY)
+            except FileNotFoundError:
+                continue
+    by_coverage: dict[str, dict] = {}
+    for label, comparison in list(against_nulls.items()) + list(against_regimes.items()):
+        first, second = comparison["first"], comparison["second"]
+        row = {}
+        for key in COMPARISON_KEYS:
+            try:
+                row[key] = compare(first, second, key)
+            except FileNotFoundError:
+                continue
+        if row:
+            by_coverage[label] = row
     summary = {"artifact": "evaluation-summary", "version": 1, "methods": methods,
-               "against_floor": paired, "against_nulls": against_nulls, "kind": KINDS}
+               "against_floor": paired, "against_nulls": against_nulls,
+               "against_regimes": against_regimes, "by_coverage": by_coverage, "kind": KINDS}
     write_json(DERIVED / "summary.json", summary)
     return summary
 

@@ -125,8 +125,61 @@ def activity_of(network, lum: np.ndarray, interval_s: float, dt_s: float = DT_S,
     return held[repeats - 1:: repeats][: len(lum)].astype(np.float16)
 
 
+def activity_of_batch(network, lums: list, interval_s: float, dt_s: float = DT_S,
+                      types: list[str] | None = None) -> list:
+    """`activity_of` for several clips of the SAME length at once, which is what the GPU is for.
+
+    Caching the corpus is one forward pass per clip, and a forward pass at batch one leaves the card
+    mostly idle: measured on this machine, 5.1 clips per second at batch one against 7.9 at batch eight.
+    Over the four arms of the corpus and the twenty trained networks of U7 that is the difference between
+    an afternoon and an evening. The arithmetic is the engine's own, unchanged; only the batch differs.
+    """
+    from flyvis.utils.activity_utils import LayerActivity
+
+    repeats = max(int(round(float(interval_s) / dt_s)), 1)
+    device = next(network.parameters()).device
+    wanted = types or output_types(network)
+    frames = len(lums[0])
+    if any(len(one) != frames for one in lums):
+        raise ValueError("a batch of clips must have the same number of frames")
+    movie = torch.from_numpy(
+        np.repeat(np.stack([np.asarray(one, dtype=np.float32) for one in lums]), repeats, axis=1))
+    with torch.no_grad():
+        states = network.simulate(movie[:, :, None, :].to(device), dt_s)
+        layers = LayerActivity(states, network.connectome, use_central=False)
+        stack = torch.stack([getattr(layers, name) for name in wanted], dim=2)
+    held = stack.detach().cpu().numpy()[:, repeats - 1 :: repeats][:, :frames]
+    return [one.astype(np.float16) for one in held]
+
+
 def cache_path(root: Path, arm: str, key: str) -> Path:
     return root / "activity" / arm / f"{key.replace('/', '_')}.npz"
+
+
+def clip_key(path: Path) -> str:
+    """The cache key of a rendered corpus clip: its whole place in the corpus, not its file name.
+
+    A clip's file name is `clip_000665.npz` and the SAME name occurs in many trajectories: across the
+    three corpus splits, 1,860 rendered clips carry only 981 distinct file names. Keying the cache by the
+    name alone was a silent defect with two consequences, both measured before this function existed:
+
+      - 879 clips never reached the cache at all, because the first writer of a name wins and the stamp of
+        a later clip of the same arm is identical, so it is skipped as already cached. The train split
+        lost 591 of its 1,437 clips, 41 percent.
+      - 199 names occur in more than one split, so a cache read for one split returned another split's
+        clip: 107 validation clips and 106 calibration clips resolved to a TRAIN clip's activity and its
+        depth. U4's leakage gate was green throughout, and correctly so: it proves the split TABLE has no
+        family overlap, and it cannot see a key collapsing distinct clips downstream of it.
+
+    The key is therefore the path below `rendered`, which is the source, environment, difficulty,
+    trajectory and clip that the split table itself is keyed by.
+    """
+    parts = list(Path(path).with_suffix("").parts)
+    if "rendered" in parts:
+        below = parts[parts.index("rendered") + 1:]
+        source = parts[parts.index("rendered") - 1]
+        return "_".join([source, *below])
+    return Path(path).stem
 
 
 def build_arm(arm: str, seed: int = 0, regime: str = "R0", transfer: bool = True):
@@ -173,11 +226,42 @@ def run(root: Path, clips: list, arm: str = "connectome", seed: int = 0, regime:
         "spec_sha256": spec_digest(spec), "code_sha256": code_digest(), "dt_s": dt_s,
         "interval_s": interval_s, "types": output_types(network), "description": description,
     }
+    return cache_with(network, stamp, root, clips, arm, interval_s, dt_s, progress_every)
+
+
+def cache_with(network, stamp: dict, root: Path, clips: list, cache_key: str,
+               interval_s: float = 0.1, dt_s: float = DT_S, progress_every: int = 50,
+               batch: int = 4) -> dict:
+    """Cache the activity a GIVEN network produces, under `cache_key`, with a stamp the caller owns.
+
+    Split out of `run` so a network that was trained rather than built from a specification, whose
+    activity is its own per seed (U7), writes exactly the same artifact under its own key, and so a cache
+    can still never be read as if it came from another network: the stamp is compared in full.
+    """
+    label = stamp.get("arm", cache_key)
     started = time.time()
     written = skipped = 0
+    pending: list[tuple] = []          # clips of one length, waiting to be simulated together
+
+    def flush() -> None:
+        nonlocal written, pending
+        if not pending:
+            return
+        activities = activity_of_batch(network, [one[1] for one in pending], interval_s, dt_s)
+        for (out, _, frame_numbers, depth, boundary), activity in zip(pending, activities, strict=True):
+            out.parent.mkdir(parents=True, exist_ok=True)
+            partial = out.with_name(out.stem + ".partial.npz")
+            arrays = {"activity": activity, "depth": depth.astype(np.float16), "frames": frame_numbers}
+            if boundary is not None:
+                arrays["boundary"] = boundary.astype(np.uint8)
+            np.savez_compressed(partial, stamp=json.dumps(stamp), **arrays)
+            os.replace(partial, out)
+            written += 1
+        pending = []
+
     for index, item in enumerate(clips):
-        key, path = item if isinstance(item, tuple) else (item.stem, item)
-        out = cache_path(root, arm, key)
+        key, path = item if isinstance(item, tuple) else (clip_key(item), item)
+        out = cache_path(root, cache_key, key)
         if out.exists():
             with np.load(out, allow_pickle=True) as existing:
                 if json.loads(str(existing["stamp"])) == stamp:
@@ -185,24 +269,22 @@ def run(root: Path, clips: list, arm: str = "connectome", seed: int = 0, regime:
                     continue
         with np.load(path, allow_pickle=True) as clip:
             lum = np.asarray(clip["lum"], dtype=np.float32)
-            frames = np.asarray(clip["frames"])
+            frame_numbers = np.asarray(clip["frames"])
             depth = np.asarray(clip["depth"], dtype=np.float32)
             boundary = np.asarray(clip["boundary"]) if "boundary" in clip.files else None
-        activity = activity_of(network, lum, interval_s, dt_s)
-        out.parent.mkdir(parents=True, exist_ok=True)
-        partial = out.with_name(out.stem + ".partial.npz")
-        arrays = {"activity": activity, "depth": depth.astype(np.float16), "frames": frames}
-        if boundary is not None:
-            arrays["boundary"] = boundary.astype(np.uint8)
-        np.savez_compressed(partial, stamp=json.dumps(stamp), **arrays)
-        os.replace(partial, out)
-        written += 1
+        if pending and len(pending[0][1]) != len(lum):
+            flush()                                     # a batch is one clip length at a time
+        pending.append((out, lum, frame_numbers, depth, boundary))
+        if len(pending) >= max(batch, 1):
+            flush()
         if progress_every and (index + 1) % progress_every == 0:
             done = index + 1
             rate = (time.time() - started) / max(done, 1)
-            print(f"{arm}: {done}/{len(clips)} clips, {rate:.2f} s each, "
+            print(f"{label}: {done}/{len(clips)} clips, {rate:.2f} s each, "
                   f"{rate * (len(clips) - done) / 60:.1f} min left", flush=True)
-    return {"arm": arm, "seed": seed, "clips": len(clips), "written": written, "skipped": skipped,
+    flush()
+    return {"arm": label, "cache": cache_key, "seed": stamp.get("seed"),
+            "clips": len(clips), "written": written, "skipped": skipped,
             "seconds": round(time.time() - started, 1), "stamp": stamp}
 
 

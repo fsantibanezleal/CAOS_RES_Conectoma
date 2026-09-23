@@ -66,6 +66,45 @@ def depth_metrics(truth: np.ndarray, estimate: np.ndarray, claimed: np.ndarray,
     return out
 
 
+MATCHED_COVERAGES = (0.25, 0.50, 0.75)
+
+
+def matched_coverage(truth: np.ndarray, estimate: np.ndarray, uncertainty: np.ndarray,
+                     coverages: tuple = MATCHED_COVERAGES) -> dict[str, float]:
+    """AbsRel at a FIXED share of columns, ranked by the method's own predicted uncertainty.
+
+    A method that refuses more columns gets a better error on the ones it keeps, and the arms of this
+    product's comparisons refuse different amounts: measured on the cases, the median coverage runs from
+    0.40 on a sign-shuffled control to 0.72 on the trained connectome, and the ranking of their AbsRel
+    follows that spread rather than their accuracy. A paired difference between two such rows is
+    comparing two different questions.
+
+    This is the standard remedy from the depth literature: order the columns by what the method itself
+    says its uncertainty is, keep the same FRACTION for every row, and read the error there. At a given
+    coverage every row is answering the same question, so the difference between them is theirs.
+
+    `estimate` is the depth BEFORE the row's own refusal, because the refusal threshold is exactly what is
+    being neutralised. A column with no finite estimate or no truth is not rankable and is excluded before
+    the fraction is taken, so `abs_rel_at_50` means "the better half of what this row could answer".
+    """
+    truth = np.asarray(truth, dtype=np.float64)
+    estimate = np.asarray(estimate, dtype=np.float64)
+    uncertainty = np.asarray(uncertainty, dtype=np.float64)
+    usable = (np.isfinite(truth) & (truth > 0) & np.isfinite(estimate) & (estimate > 0)
+              & np.isfinite(uncertainty))
+    out: dict[str, float] = {"columns_rankable": int(usable.sum())}
+    if not usable.any():
+        return out | {f"abs_rel_at_{int(c * 100)}": float("nan") for c in coverages}
+    d, z, s = truth[usable], estimate[usable], uncertainty[usable]
+    order = np.argsort(s, kind="stable")
+    error = np.abs(d - z) / d
+    ranked = error[order]
+    for coverage in coverages:
+        keep = max(int(round(coverage * ranked.size)), 1)
+        out[f"abs_rel_at_{int(coverage * 100)}"] = float(np.mean(ranked[:keep]))
+    return out
+
+
 def align_inverse_depth(truth: np.ndarray, estimate: np.ndarray, claimed: np.ndarray) -> np.ndarray:
     """A relative-depth estimate scaled and shifted, in inverse depth, to fit the truth (least squares).
 

@@ -124,6 +124,9 @@ def run(clip: dict, column_spacing_deg: float, *, root: Path, arm: str = "connec
     refused = np.stack([one["unknown"] for one in per_seed]).mean(axis=0) > 0.5
     return {
         "distance_m": np.where(refused, np.nan, median).astype(np.float32),
+        # what this row would have answered everywhere, for a comparison at matched coverage: the
+        # refusal threshold is the thing such a comparison neutralises, so it cannot be applied first
+        "distance_all_m": median.astype(np.float32),
         "unknown": refused | ~np.isfinite(median),
         "moving": np.zeros_like(refused),
         "uncertainty": np.median(spread, axis=0).astype(np.float32),
@@ -166,10 +169,10 @@ def calibrate_tolerance(root: Path, arm: str = "connectome", window: int = 2,
     cannot. The chosen tolerance is the grid point where the two are closest, which is a calibration
     criterion rather than a knob: no accuracy target is set and no case is touched.
     """
-    from conectoma.stages.cache_activity import split_clips
+    from conectoma.stages.cache_activity import clip_key, split_clips
     from conectoma.stages.train_readout import CachedClips
 
-    keys = [p.stem for p in split_clips(Path(root), "calibration", clips)]
+    keys = [clip_key(p) for p in split_clips(Path(root), "calibration", clips)]
     cached = CachedClips(Path(root), arm, keys)
     heads = [load_head(path, device) for path in seed_checkpoints(arm, window)]
     if not heads:

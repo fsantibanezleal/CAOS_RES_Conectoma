@@ -384,6 +384,37 @@ activity that is not tuned to motion, the biophysical regime (M06) is where tuni
 claim for the measured wiring has to come from a task result that separates from the controls, because
 tuning at rest does not.
 
+## Training a regime that trains something
+
+R0 is read through a cache, because nothing inside the network moves and a clip's activity is a property
+of the clip. R1 and R2 cannot be: the gradient crosses the network and the whole time axis, so every
+optimiser step simulates clips from scratch. `conectoma/stages/train_network.py` is that stage, and three
+things about it are measured rather than assumed.
+
+**The batch is set by memory, not by preference.** On an 8 GB laptop card, whole 32-frame clips at batch 2
+peak at 4.36 GB and sustain 108 supervised frames per second; the engine's own batch of 4 peaks at 8.41 GB,
+spills, and falls to 65.9. Clips are simulated whole, from the grey steady state, so no gradient begins
+from a mid-motion state the network never reached.
+
+**A rate on the network has to be relative to what it moves.** Adam takes a step of the size of the
+learning rate whatever the gradient is, and R1's three trainable groups differ by eighty times: resting
+potentials have a median magnitude of 0.502, time constants 0.050, synaptic strengths 0.0063. At one
+absolute rate for all three, 600 steps move a synaptic strength by four times its own median while a
+resting potential moves by six percent. Each group is therefore trained at a rate scaled to its own size,
+and the rate itself is chosen per arm on the validation split.
+
+**The engine's activity penalty keeps its published rate and gets a measured baseline.** The penalty pushes
+the resting potentials back when the central cells' mean activity strays from a baseline of 5.0, which is
+where the published ensemble sits under its own stimuli; this product's transferred network on this
+product's renderings averages 0.67. Left at 5.0 it moved every resting potential by 11.3 in six steps.
+Tied, as the engine ties it, to a network rate a hundred times the published one, its plain SGD overshoots
+its own quadratic: 0.007, 0.108, 0.386, 2.514 over four steps. It is a slow guard, so it keeps the
+published 5e-5 and a baseline measured on each arm's starting network.
+
+Every run records where it started, measured before any update, and that starting point is eligible to be
+kept. If no step of a regime improves on the frozen network's own readout, that is the finding; a
+checkpoint quietly worse than its own starting point is not.
+
 ## What this is, and what it is not
 
 - It is the network the rest of the product trains readouts and regimes on, checked against the published

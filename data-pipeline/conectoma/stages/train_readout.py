@@ -27,7 +27,7 @@ import torch
 
 from conectoma.core.jsonio import write_json
 from conectoma.methods import head as head_module
-from conectoma.stages.cache_activity import cache_path
+from conectoma.stages.cache_activity import cache_path, clip_key
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DERIVED = REPO_ROOT / "data" / "derived" / "readout"
@@ -161,7 +161,7 @@ def train(root: Path, arm: str = "connectome", seed: int = 0, window: int = 2,
     from conectoma.stages.cache_activity import split_clips
 
     device = device or ("cuda" if torch.cuda.is_available() else "cpu")
-    keys = splits or {name: [p.stem for p in split_clips(root, name)]
+    keys = splits or {name: [clip_key(p) for p in split_clips(root, name)]
                       for name in ("train", "validation")}
     fitting = loaded(root, arm, keys["train"])
     checking = loaded(root, arm, keys["validation"])

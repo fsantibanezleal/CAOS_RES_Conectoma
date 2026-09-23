@@ -7,6 +7,12 @@ import { CASE_NAMES, CATEGORIES, levelLabel, MEASURED, QUANTITIES } from '../eye
 import { useReports, type SpacingRange } from '../lib/reports';
 
 const MOTION = ['T4a', 'T4b', 'T4c', 'T4d', 'T5a', 'T5b', 'T5c', 'T5d'];
+// The three shares of the lattice a paired comparison between two trained rows is read at. Two rows that
+// refuse different amounts (measured on the cases: 0.40 to 0.72 of the columns) cannot be compared on the
+// error of what each chose to keep, so every row is read over the same fraction, ranked by what it says
+// its own uncertainty is. The ranking between two rows can differ between these columns, which is a fact
+// about them and the reason all three are shown.
+const COVERAGE_KEYS = ['abs_rel_at_25', 'abs_rel_at_50', 'abs_rel_at_75'];
 
 export default function Experiments() {
   const t = useT();
@@ -629,8 +635,8 @@ export default function Experiments() {
           <h3>{t('A connectome row against its own nulls', 'Una fila del conectoma contra sus propios nulos')}</h3>
           <p>
             {t(
-              'The same head, the same seeds and the same clips, on a network whose wiring was degree-preservingly rewired, replaced by a size-matched random sparse graph, or had its signs shuffled. A positive difference means the measured wiring did better than the control; an interval that crosses zero means the measurement does not separate them.',
-              'La misma cabeza, las mismas semillas y los mismos clips, sobre una red cuyo cableado fue recableado preservando grados, reemplazado por un grafo disperso aleatorio del mismo tamaño, o con sus signos barajados. Una diferencia positiva significa que el cableado medido superó al control; un intervalo que cruza el cero significa que la medición no los separa.',
+              'The same head, the same seeds and the same clips, on a network whose wiring was degree-preservingly rewired, replaced by a size-matched random sparse graph, or had its signs shuffled. A positive difference means the measured wiring did better than the control; an interval that crosses zero means the measurement does not separate them. Every column is read at a FIXED share of the lattice, ranked by what each row says its own uncertainty is, because the rows refuse different amounts and the error of what a row chose to keep is not a comparable number.',
+              'La misma cabeza, las mismas semillas y los mismos clips, sobre una red cuyo cableado fue recableado preservando grados, reemplazado por un grafo disperso aleatorio del mismo tamaño, o con sus signos barajados. Una diferencia positiva significa que el cableado medido superó al control; un intervalo que cruza el cero significa que la medición no los separa. Cada columna se lee sobre una fracción FIJA de la retina, ordenada por la incertidumbre que cada fila declara, porque las filas rechazan cantidades distintas y el error de lo que una fila decidió conservar no es un número comparable.',
             )}
           </p>
           <div className="cx-table-wrap">
@@ -638,7 +644,9 @@ export default function Experiments() {
               <thead>
                 <tr>
                   <th>{t('Comparison', 'Comparación')}</th>
-                  <th className="num">{t('AbsRel difference, paired', 'Diferencia de AbsRel, pareada')}</th>
+                  <th className="num">{t('Most confident 25%', 'El 25% más confiable')}</th>
+                  <th className="num">{t('Better half', 'La mejor mitad')}</th>
+                  <th className="num">{t('Best 75%', 'El mejor 75%')}</th>
                   <th className="num">{t('Clips paired', 'Clips pareados')}</th>
                 </tr>
               </thead>
@@ -646,7 +654,14 @@ export default function Experiments() {
                 {Object.entries(evaluation.against_nulls ?? {}).map(([name, paired]) => (
                   <tr key={name}>
                     <td>{name}</td>
-                    <td className="num">{num(-paired.median, 3)} [{num(-paired.high, 3)}, {num(-paired.low, 3)}]</td>
+                    {COVERAGE_KEYS.map((key) => {
+                      const at = evaluation.by_coverage?.[name]?.[key] ?? (key === 'abs_rel_at_50' ? paired : undefined);
+                      return (
+                        <td key={key} className="num">
+                          {at ? `${num(-at.median, 3)} [${num(-at.high, 3)}, ${num(-at.low, 3)}]` : '-'}
+                        </td>
+                      );
+                    })}
                     <td className="num">{num(paired.pairs)}</td>
                   </tr>
                 ))}
@@ -657,6 +672,52 @@ export default function Experiments() {
             {t(
               'Reported as the null minus the connectome, so a positive number is the connectome being better.',
               'Reportado como el nulo menos el conectoma, así que un número positivo es el conectoma siendo mejor.',
+            )}
+          </p>
+        </>
+      ) : null}
+      {Object.keys(evaluation.against_regimes ?? {}).length > 0 ? (
+        <>
+          <h3>{t('What the regime bought', 'Qué compró el régimen')}</h3>
+          <p>
+            {t(
+              'The same wiring, the same head and the same seeds as the row before it, with one more thing allowed to train inside the network. Each arm is compared with its own predecessor, so the difference is what training that quantity bought on that wiring, and a null arm that gains as much as the measured one is saying that the gain is not about the connectome.',
+              'El mismo cableado, la misma cabeza y las mismas semillas que la fila anterior, con una cosa más que puede entrenarse dentro de la red. Cada brazo se compara con su propio predecesor, de modo que la diferencia es lo que compró entrenar esa cantidad sobre ese cableado, y un brazo nulo que gana tanto como el medido está diciendo que la ganancia no es del conectoma.',
+            )}
+          </p>
+          <div className="cx-table-wrap">
+            <table className="cx-table">
+              <thead>
+                <tr>
+                  <th>{t('Comparison', 'Comparación')}</th>
+                  <th className="num">{t('Most confident 25%', 'El 25% más confiable')}</th>
+                  <th className="num">{t('Better half', 'La mejor mitad')}</th>
+                  <th className="num">{t('Best 75%', 'El mejor 75%')}</th>
+                  <th className="num">{t('Clips paired', 'Clips pareados')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(evaluation.against_regimes ?? {}).map(([name, paired]) => (
+                  <tr key={name}>
+                    <td>{name}</td>
+                    {COVERAGE_KEYS.map((key) => {
+                      const at = evaluation.by_coverage?.[name]?.[key] ?? (key === 'abs_rel_at_50' ? paired : undefined);
+                      return (
+                        <td key={key} className="num">
+                          {at ? `${num(-at.median, 3)} [${num(-at.high, 3)}, ${num(-at.low, 3)}]` : '-'}
+                        </td>
+                      );
+                    })}
+                    <td className="num">{num(paired.pairs)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="cx-muted">
+            {t(
+              'Reported as the earlier row minus the later one, so a positive number is the later regime being better.',
+              'Reportado como la fila anterior menos la posterior, así que un número positivo es el régimen posterior siendo mejor.',
             )}
           </p>
         </>
