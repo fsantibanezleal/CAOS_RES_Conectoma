@@ -26,6 +26,7 @@ const ARTIFACTS = [
   'vision/cases.json',
   'evaluation/summary.json',
   'brainclips',
+  'chain',
 ];
 
 const derived = join(ROOT, 'data', 'derived');

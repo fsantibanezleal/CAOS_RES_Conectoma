@@ -24,6 +24,9 @@
   measured size budget behind what the artifact carries, and the gate check that an animation moves
 - [08, the data contracts](architecture/08_data-contracts.md): connectome and vision ingestion, the
   connectome specification, and the artifact contract the web consumes
+- [10, the chain](architecture/10_the-chain.md): the network's answer beside what the eye receives and
+  what is really there, the measured circuit carrying the signal, why no motion arrows are drawn, the
+  clock and where it opens, and a defect this view exposed in every chart of the App
 
 Pages for determinism, the live gate, training, evaluation and deploy are written by the units that build
 those parts, so a page here always describes something that exists.
