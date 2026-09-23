@@ -82,3 +82,5 @@ jobs:
         run: python scripts/check_content_standards.py
       - name: CI budget, no training, trunk-only triggers (ADR-0074)
         run: python scripts/check_ci_budget.py
+      - name: The design comes first, and every requirement names a gate that exists (ADR-0075)
+        run: python scripts/check_sdd.py .
