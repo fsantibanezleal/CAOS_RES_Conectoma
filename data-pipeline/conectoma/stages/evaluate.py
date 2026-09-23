@@ -93,6 +93,20 @@ METHODS = {
 # more thing allowed to train) and not a string operation.
 REGIME_PREDECESSOR = {"M06": "M05", "M06-N1": "M05-N1", "M06-N2": "M05-N2", "M06-N3": "M05-N3"}
 
+# What a comparison between two trained rows is read on. Not `abs_rel`, which is the error over whatever
+# each row chose to claim: measured on the cases, the arms' median coverage runs from 0.40 to 0.72 and
+# their AbsRel ranking follows that spread, so the difference between two rows is mostly the difference
+# between their calibrated thresholds. `abs_rel_at_50` is the error over the better half of what each row
+# could answer, ranked by its own predicted uncertainty, which is the same question for every row. Both
+# are written into every report, and the comparison against the FLOOR stays on `abs_rel`, because a
+# geometric row refuses for structural reasons rather than by a threshold.
+COMPARISON_KEY = "abs_rel_at_50"
+# And the whole curve beside it, because the ranking can depend on where it is read: on the cases the
+# measured wiring is ahead of a random sparse graph over its most confident quarter of columns and behind
+# it over its better half, which is a fact about the two rows' error-versus-coverage profiles and not a
+# detail to choose between.
+COMPARISON_KEYS = tuple(f"abs_rel_at_{int(c * 100)}" for c in metrics.MATCHED_COVERAGES)
+
 
 def code_digest() -> str:
     digest = hashlib.sha256()
@@ -118,6 +132,10 @@ def score_clip(clip: dict, result: dict, case: dict, metric_units: bool = True) 
     out: dict = {"steps": int(steps)}
     if observable(case):
         out |= metrics.depth_metrics(truth, result["distance_m"], claimed, metric_units)
+        # and the same error at a fixed share of columns, for rows that predict their own uncertainty:
+        # two rows that refuse different amounts cannot be compared on the error of what each kept
+        if "distance_all_m" in result and "uncertainty" in result:
+            out |= metrics.matched_coverage(truth, result["distance_all_m"], result["uncertainty"])
     out |= {f"refusal_{k}": v for k, v in
             metrics.refusal(result["unknown"], observable(case)).items()}
 
@@ -371,7 +389,7 @@ def write_summary() -> dict:
         controls = [null for null in methods if null.startswith(f"{name}-N")]
         for null in sorted(controls):
             try:
-                against_nulls[f"{name} vs {null}"] = compare(name, null, "abs_rel")
+                against_nulls[f"{name} vs {null}"] = compare(name, null, COMPARISON_KEY)
             except FileNotFoundError:
                 continue
     # A regime's claim is also a paired difference: M06 is the same wiring and the same head as M05, with
@@ -380,12 +398,23 @@ def write_summary() -> dict:
     for name, before in REGIME_PREDECESSOR.items():
         if name in methods and before in methods:
             try:
-                against_regimes[f"{name} vs {before}"] = compare(name, before, "abs_rel")
+                against_regimes[f"{name} vs {before}"] = compare(name, before, COMPARISON_KEY)
             except FileNotFoundError:
                 continue
+    by_coverage: dict[str, dict] = {}
+    for label, comparison in list(against_nulls.items()) + list(against_regimes.items()):
+        first, second = comparison["first"], comparison["second"]
+        row = {}
+        for key in COMPARISON_KEYS:
+            try:
+                row[key] = compare(first, second, key)
+            except FileNotFoundError:
+                continue
+        if row:
+            by_coverage[label] = row
     summary = {"artifact": "evaluation-summary", "version": 1, "methods": methods,
                "against_floor": paired, "against_nulls": against_nulls,
-               "against_regimes": against_regimes, "kind": KINDS}
+               "against_regimes": against_regimes, "by_coverage": by_coverage, "kind": KINDS}
     write_json(DERIVED / "summary.json", summary)
     return summary
 

@@ -124,6 +124,9 @@ def run(clip: dict, column_spacing_deg: float, *, root: Path, arm: str = "connec
     refused = np.stack([one["unknown"] for one in per_seed]).mean(axis=0) > 0.5
     return {
         "distance_m": np.where(refused, np.nan, median).astype(np.float32),
+        # what this row would have answered everywhere, for a comparison at matched coverage: the
+        # refusal threshold is the thing such a comparison neutralises, so it cannot be applied first
+        "distance_all_m": median.astype(np.float32),
         "unknown": refused | ~np.isfinite(median),
         "moving": np.zeros_like(refused),
         "uncertainty": np.median(spread, axis=0).astype(np.float32),

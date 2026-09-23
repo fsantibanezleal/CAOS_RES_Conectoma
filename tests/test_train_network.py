@@ -247,3 +247,41 @@ def test_every_trained_row_declares_the_row_it_is_the_next_regime_of():
         # the pair must be the SAME arm: comparing the connectome's R1 with a null's R0 measures nothing
         assert name.split("-")[1:] == before.split("-")[1:]
         assert evaluate.METHODS[name].get("trained") == evaluate.METHODS[before].get("reservoir")
+
+# ---------------------------------------------------------------- comparing at the same coverage
+
+
+def test_a_matched_coverage_error_keeps_the_same_share_for_every_row():
+    """Two rows that refuse different amounts cannot be compared on the error of what each kept."""
+    from conectoma.methods import metrics
+
+    truth = np.full(100, 10.0)
+    estimate = np.full(100, 10.0)
+    estimate[:50] = 20.0                       # the half this row is unsure about is also the wrong half
+    uncertainty = np.concatenate([np.full(50, 1.0), np.full(50, 0.01)])
+    out = metrics.matched_coverage(truth, estimate, uncertainty)
+    assert out["columns_rankable"] == 100
+    assert out["abs_rel_at_50"] == pytest.approx(0.0)        # the surer half is exactly right
+    assert out["abs_rel_at_75"] == pytest.approx(0.5 / 1.5, abs=1e-6)
+    assert out["abs_rel_at_25"] == pytest.approx(0.0)
+
+
+def test_a_matched_coverage_error_ignores_what_a_row_refused():
+    """The refusal threshold is what the comparison neutralises, so it cannot be applied first."""
+    from conectoma.methods import metrics
+
+    truth = np.full(10, 4.0)
+    estimate = np.full(10, 4.0)
+    uncertainty = np.arange(10, dtype=float)
+    full = metrics.matched_coverage(truth, estimate, uncertainty)
+    # a column with no truth or no estimate is not rankable, and does not count towards the share
+    truth_gap = truth.copy()
+    truth_gap[:5] = np.nan
+    fewer = metrics.matched_coverage(truth_gap, estimate, uncertainty)
+    assert full["columns_rankable"] == 10
+    assert fewer["columns_rankable"] == 5
+    assert fewer["abs_rel_at_50"] == pytest.approx(0.0)
+
+
+def test_a_comparison_between_trained_rows_is_read_at_matched_coverage():
+    assert evaluate.COMPARISON_KEY == "abs_rel_at_50"

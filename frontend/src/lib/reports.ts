@@ -247,6 +247,7 @@ export interface EvaluationSummary {
   against_floor: Record<string, PairedDifference>;
   against_nulls?: Record<string, PairedDifference>;
   against_regimes?: Record<string, PairedDifference>;
+  by_coverage?: Record<string, Record<string, PairedDifference>>;
 }
 
 export const REPORTS = {
