@@ -43,9 +43,10 @@ its hyperparameters are a primary source (flyvis `config/optim`, `config/schedul
   a steady state from 0.5 s of grey, computed once per batch shape and detached, as `t_pre_train` does
 
 What is NOT taken from it is the learning rate itself. The published run is 250,000 iterations; this one
-is hundreds, so the published 5e-5 would leave the network where it started and M06 would be M05 with
-noise. The rate is therefore chosen on the VALIDATION split from a small grid, per arm, and frozen for
-that arm's remaining seeds. The cases are never involved in that choice.
+is hundreds. The rate is therefore chosen on the VALIDATION split from a small grid, per arm, and frozen
+for that arm's remaining seeds; it is also RELATIVE to each parameter group's own size rather than
+absolute, because Adam's step does not care how large the quantity it moves is and R1's three groups
+differ by eighty times (see NETWORK_GRID). The cases are never involved in that choice.
 
 Batch size is 2 where the engine's is 4, and that number is measured, not preferred: on this machine a
 32-frame clip at batch 4 peaks at 8.41 GB and spills, falling to 65.9 supervised frames per second, while
@@ -71,10 +72,38 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 DERIVED = REPO_ROOT / "data" / "derived" / "network"
 CHECKPOINT_VERSION = 1
 
-DEFAULT_STEPS = 600
+DEFAULT_STEPS = 300
 DEFAULT_BATCH = 2            # clips per step, each simulated whole; measured, see the module docstring
-HEAD_LEARNING_RATE = 3e-3    # U6's value, unchanged
-NETWORK_GRID = (5e-5, 5e-4, 5e-3)   # 5e-5 is the published rate; the grid is resolved on validation
+HEAD_LEARNING_RATE = 3e-3    # U6's value, for a head that starts cold
+# A head that starts from M05's is already converged, and U6's rate does not fine-tune it, it destroys
+# it. Measured with the network FROZEN, so that whatever moves is the head's own rate alone, over 100
+# steps of validation scale-invariant error (M05's own value is 2.724):
+#   3e-3   2.862  3.673  4.090  2.979     it wanders off and does not come back
+#   3e-4   2.840  2.899  3.000  2.873     still worse than where it started
+#   3e-5   2.728  2.728  2.733  2.730     stable
+# The reason is the batch, not the head: U6 fitted on 16 independent frames per step, and a step here is
+# 2 whole clips, whose 64 frames are highly correlated. The warm rate is therefore a hundredth of U6's.
+HEAD_FINETUNE_RATE = 3e-5
+# The network's rate is RELATIVE to each parameter group's own size, not absolute, and that is measured
+# rather than preferred. Adam's step is the rate regardless of the gradient, and the three trainable
+# groups of R1 differ by eighty times in magnitude:
+#
+#   nodes_bias          253 values, median 0.502     one 5e-5 step is 0.01% of it
+#   nodes_time_const    253 values, median 0.050     one 5e-5 step is 0.10% of it
+#   edges_syn_strength  7,903 values, median 0.0063  one 5e-5 step is 0.79% of it
+#
+# At the published absolute rate, 600 steps can move a synaptic strength by four times its own median
+# while a resting potential moves by six percent, and the readout the head was fitted to is gone. Measured
+# that way on the connectome arm, validation scale-invariant error went from 2.72 at the start to 4.2 and
+# never came back within 600 steps. Each group therefore gets `relative_rate * rms(group)`, so one step is
+# the same fraction of every quantity. 1e-4 is the published 5e-5 as the resting potentials see it.
+# Measured on the connectome arm over 200 steps, validation scale-invariant error from a start of 2.729:
+#   1e-2   9.18 at step 25, still 4.64 at 200         the readout is gone
+#   1e-3   4.11, 2.71, 3.89, 2.89 ...                 unstable, best 2.711
+#   1e-4   2.94, 2.97, 2.87, 2.667, 2.673, drifting   best 2.667, and the only one that improves
+# The grid keeps three points and moves them to where the answer is, rather than keeping a point that is
+# known to destroy every arm it is given to.
+NETWORK_GRID = (3e-5, 1e-4, 1e-3)
 # The engine ties the penalty's rate to the network's (`lr_pen` mirrors `lr_net`), which is safe at the
 # published 5e-5 and is not safe here, because this run may train the network a hundred times faster. Tied
 # to a network rate of 5e-3 the penalty's plain SGD overshoots its own quadratic and runs away: measured
@@ -85,8 +114,11 @@ PENALTY_LEARNING_RATE = 5e-5
 DECAY_STAGES = 10            # the engine's stepwise schedule, start to start/10
 T_PRE_S = 0.5                # the engine's `t_pre_train`
 INTERVAL_S = 0.1             # the corpus's frame interval, as U4 rendered it
-EVALUATE_EVERY = 50
-VALIDATION_CLIPS = 40        # clips of the validation split read at each evaluation
+EVALUATE_EVERY = 25
+# Clips of the validation split read at each evaluation. 40 was too few to select on: the curve moved by
+# more between neighbouring evaluations of the same run than between the runs being compared. 80 clips
+# cost about 10 s per evaluation and 2 minutes over a run, which is the right trade at 300 steps.
+VALIDATION_CLIPS = 80
 
 # The engine's own activity penalty, with its published weights and asymmetry. Its BASELINE is the one
 # number here that cannot be imported: 5.0 is the activity level the published ensemble was trained to
@@ -330,6 +362,22 @@ def schedule(start: float, steps: int, stages: int = DECAY_STAGES, floor: float 
     return np.pad(values, (0, max(steps - len(values) + 1, 0)), constant_values=start * floor)
 
 
+def parameter_groups(network, relative_rate: float) -> list[dict]:
+    """One optimiser group per trainable quantity, at a rate scaled to that quantity's own size.
+
+    See NETWORK_GRID: Adam takes a step of the size of the rate whatever the gradient is, so a single
+    absolute rate across groups that differ by eighty times trains one of them and destroys another.
+    """
+    groups = []
+    for name, parameter in network.named_parameters():
+        if not parameter.requires_grad:
+            continue
+        rms = float(parameter.detach().pow(2).mean().sqrt())
+        groups.append({"params": [parameter], "lr": relative_rate * max(rms, 1e-8), "name": name,
+                       "rms": rms})
+    return groups
+
+
 # ----------------------------------------------------------------- evaluation on a split
 
 
@@ -385,7 +433,7 @@ def evaluate(network, model, clips: ClipSplit, types: list[str], window: int, dt
 def train(root: Path, arm: str = "connectome", seed: int = 0, regime: str = "R1", window: int = 2,
           steps: int = DEFAULT_STEPS, batch: int = DEFAULT_BATCH,
           network_learning_rate: float = NETWORK_GRID[0],
-          head_learning_rate: float = HEAD_LEARNING_RATE, dt_s: float = DT_S,
+          head_learning_rate: float | None = None, dt_s: float = DT_S,
           interval_s: float = INTERVAL_S, train_clips: int | None = None,
           validation_clips: int = VALIDATION_CLIPS, evaluate_every: int = EVALUATE_EVERY,
           out_dir: Path | None = None, save: bool = True, progress_every: int = 50,
@@ -421,10 +469,12 @@ def train(root: Path, arm: str = "connectome", seed: int = 0, regime: str = "R1"
 
     fitting = loaded_split(root, "train", train_clips)
     checking = loaded_split(root, "validation")
-    network_parameters = [p for p in network.parameters() if p.requires_grad]
+    if head_learning_rate is None:
+        head_learning_rate = HEAD_FINETUNE_RATE if started_from else HEAD_LEARNING_RATE
+    groups = parameter_groups(network, network_learning_rate)
     optimiser = torch.optim.Adam(
-        [{"params": network_parameters, "lr": network_learning_rate},
-         {"params": model.parameters(), "lr": head_learning_rate}])
+        [*groups, {"params": list(model.parameters()), "lr": head_learning_rate, "name": "head"}])
+    base_rates = [group["lr"] for group in optimiser.param_groups]
     penalizer = {k: dict(v) if isinstance(v, dict) else v for k, v in PENALIZER.items()}
     penalizer["activity_penalty"]["activity_baseline"] = measured_baseline(
         network, fitting, types, dt_s, repeats, device)
@@ -446,10 +496,22 @@ def train(root: Path, arm: str = "connectome", seed: int = 0, regime: str = "R1"
     state = steady(network, batch, dt_s)
     history, best, best_state = [], None, None
     started = time.time()
+    # where this run STARTS, measured before any update. It is recorded and it is eligible to be kept: if
+    # no step of this regime improves on the frozen network's own readout, that is the finding, and a
+    # checkpoint that is quietly worse than its starting point is not.
+    zero = evaluate(network, model, checking, types, window, dt_s, repeats, device, validation_clips)
+    history.append({"step": 0, "loss": None, "mean_activity": None, "network_lr": None,
+                    "validation": zero})
+    best = history[0]
+    best_state = {"network": {k: v.detach().cpu().clone() for k, v in network.state_dict().items()},
+                  "head": {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}}
     for step in range(1, steps + 1):
         if step > 1 and evaluate_every and (step - 1) % evaluate_every == 0:
             state = steady(network, batch, dt_s)
-        optimiser.param_groups[0]["lr"] = float(rates[min(step - 1, len(rates) - 1)])
+        decay = float(rates[min(step - 1, len(rates) - 1)]) / max(network_learning_rate, 1e-12)
+        for index, group in enumerate(optimiser.param_groups):
+            if group.get("name") != "head":
+                group["lr"] = base_rates[index] * decay
         if penalty is not None:
             for optim in penalty.optimizers.values():
                 for group in optim.param_groups:
@@ -479,11 +541,12 @@ def train(root: Path, arm: str = "connectome", seed: int = 0, regime: str = "R1"
                                validation_clips)
             row = {"step": step, "loss": float(loss.detach()),
                    "mean_activity": float(activity.detach().mean()),
-                   "network_lr": optimiser.param_groups[0]["lr"],
+                   "network_lr": {g["name"]: g["lr"] for g in optimiser.param_groups
+                                  if g.get("name") != "head"},
                    **depth_stats, **boundary_stats, "validation": checked}
             history.append(row)
             score = checked.get("silog", float("inf"))
-            if best is None or score < best["validation"]["silog"]:
+            if best is None or score < best["validation"].get("silog", float("inf")):
                 best = row
                 best_state = {
                     "network": {k: v.detach().cpu().clone() for k, v in network.state_dict().items()},
@@ -501,6 +564,7 @@ def train(root: Path, arm: str = "connectome", seed: int = 0, regime: str = "R1"
         "checkpoint_version": CHECKPOINT_VERSION, "regime": regime, "arm": arm, "seed": seed,
         "window": window, "steps": steps, "batch": batch,
         "network_learning_rate": network_learning_rate, "head_learning_rate": head_learning_rate,
+        "validation_at_start": history[0]["validation"] if history else None,
         "penalty_learning_rate": PENALTY_LEARNING_RATE,
         "decay_stages": DECAY_STAGES, "t_pre_s": T_PRE_S, "dt_s": dt_s, "interval_s": interval_s,
         "types": types, "description": description, "device": str(device),
@@ -508,6 +572,7 @@ def train(root: Path, arm: str = "connectome", seed: int = 0, regime: str = "R1"
         "statistics": statistics, "head_parameters": model.parameter_count,
         "head_started_from": started_from,
         "network_parameters": trainable_report(network)["trainable"],
+        "network_group_rates": {g["name"]: {"rms": g["rms"], "rate": g["lr"]} for g in groups},
         "penalty": penalizer if penalty is not None else {"refused": penalty_refused, **penalizer},
         "train_clips": len(fitting), "validation_clips": len(checking),
         "seconds": round(time.time() - started, 1),
