@@ -100,3 +100,67 @@ def test_a_turning_camera_declares_a_rotation_and_no_translation():
 
 def test_a_case_with_no_declared_motion_says_so():
     assert cases.step_motion(a_case(transform="speed"), level=0) is None
+
+
+# ---------------------------------------------------------------- relative depth, and who needs a motion
+
+
+def test_relative_depth_is_observable_and_scored_after_its_alignment():
+    """Sintel's depth is known up to a scale and shift; it was graded by refusal until this was fixed."""
+    case = a_case(grades=("depth_relative", "flow"))
+    assert evaluate.observable(case) and evaluate.relative(case)
+    truth = np.full((4, COLUMNS), 5.0)
+    truth[:, : COLUMNS // 2] = 20.0
+    # the right structure at the wrong scale and offset in inverse depth: alignment must recover it exactly
+    estimate = 1.0 / (3.0 / truth + 0.1)
+    result = {"distance_m": estimate, "distance_all_m": estimate, "unknown": np.zeros_like(truth, bool),
+              "moving": np.zeros_like(truth, bool), "uncertainty": np.ones_like(truth)}
+    scored = evaluate.score_clip({"depth": truth}, result, case, metric_units=False)
+    assert scored["aligned"] == 1
+    assert scored["abs_rel"] == pytest.approx(0.0, abs=1e-9)
+    assert scored["abs_rel_at_50"] == pytest.approx(0.0, abs=1e-9)
+
+
+def test_a_metric_case_is_not_aligned():
+    case = a_case(grades=("depth", "flow"))
+    assert not evaluate.relative(case)
+    truth = np.full((2, COLUMNS), 10.0)
+    estimate = np.full((2, COLUMNS), 20.0)
+    result = {"distance_m": estimate, "unknown": np.zeros_like(truth, bool),
+              "moving": np.zeros_like(truth, bool)}
+    scored = evaluate.score_clip({"depth": truth}, result, case)
+    assert "aligned" not in scored
+    assert scored["abs_rel"] == pytest.approx(1.0)
+
+
+def test_a_network_row_is_not_refused_for_a_motion_it_does_not_use(tmp_path, monkeypatch):
+    """The network rows read the eye's input only; the geometric rows invert a camera motion.
+
+    Before the fix, the motion check ran before the network branch, so M05 and M06 were refused on six
+    cases (276 clips) that carry no poses: the transfer and ethological cases were never scored.
+    """
+    import json
+
+    from conectoma.methods import m05
+
+    case = a_case(grades=("depth", "figure"), transform="gap") | {"source": "flygym"}
+    registry = {"cases": {"C99": case}, "clips": 1}
+    monkeypatch.setattr(evaluate.cases, "load_cases", lambda: (registry, "digest"))
+    monkeypatch.setattr(evaluate.cases, "step_motion", lambda case, level: None)
+    path = evaluate.clip_path(tmp_path, "C99", 0, 0)
+    path.parent.mkdir(parents=True)
+    truth = np.full((4, COLUMNS), 8.0)
+    stamp = {"item": "synthetic", "measured": {"column_spacing_deg": 4.6}, "interval_s": 0.1}
+    np.savez(path, stamp=json.dumps(stamp), lum=np.zeros((4, COLUMNS), np.float32), depth=truth)
+
+    answer = {"distance_m": truth[:3].copy(), "distance_all_m": truth[:3].copy(),
+              "unknown": np.zeros((3, COLUMNS), bool), "moving": np.zeros((3, COLUMNS), bool),
+              "uncertainty": np.ones((3, COLUMNS))}
+    monkeypatch.setattr(m05, "run", lambda *a, **k: answer)
+
+    network = evaluate._run_one("M05", "C99", 0, 0, str(tmp_path), {})
+    assert "skipped" not in network
+    assert network["abs_rel"] == pytest.approx(0.0)
+
+    geometric = evaluate._run_one("M01", "C99", 0, 0, str(tmp_path), {})
+    assert geometric["skipped"] == "the clip carries no poses and its case declares no motion"

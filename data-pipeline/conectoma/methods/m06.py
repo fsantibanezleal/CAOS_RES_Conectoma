@@ -116,15 +116,18 @@ def run(clip: dict, column_spacing_deg: float, *, root: Path, arm: str = "connec
 
     distance = np.stack([one["distance_m"] for one in per_seed])
     spread = np.stack([one["uncertainty"] for one in per_seed])
+    answered = np.stack([one["distance_all_m"] for one in per_seed])
     with np.errstate(invalid="ignore"):
         median = np.nanmedian(distance, axis=0)
         disagreement = np.nanstd(distance, axis=0) / np.maximum(np.abs(median), 1e-6)
+        # before any seed refused, as in M05: the matched-coverage comparison ranks the whole lattice
+        everywhere = np.nanmedian(answered, axis=0)
     refused = np.stack([one["unknown"] for one in per_seed]).mean(axis=0) > 0.5
     return {
         "distance_m": np.where(refused, np.nan, median).astype(np.float32),
         # what this row would have answered everywhere, for a comparison at matched coverage: the
         # refusal threshold is the thing such a comparison neutralises, so it cannot be applied first
-        "distance_all_m": median.astype(np.float32),
+        "distance_all_m": everywhere.astype(np.float32),
         "unknown": refused | ~np.isfinite(median),
         "moving": np.zeros_like(refused),
         "uncertainty": np.median(spread, axis=0).astype(np.float32),

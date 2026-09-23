@@ -285,3 +285,23 @@ def test_a_matched_coverage_error_ignores_what_a_row_refused():
 
 def test_a_comparison_between_trained_rows_is_read_at_matched_coverage():
     assert evaluate.COMPARISON_KEY == "abs_rel_at_50"
+
+
+def test_the_answer_everywhere_is_the_answer_before_any_seed_refused(tmp_path):
+    """The matched-coverage comparison ranks the whole lattice, so the row must supply it unrefused.
+
+    The first version took the median of each seed's answer AFTER its refusal: where every seed refused,
+    the 'answer everywhere' was missing, and a row that refused more had fewer columns to be ranked on,
+    which is the bias the matched-coverage comparison exists to remove.
+    """
+    rng = np.random.default_rng(13)
+    keys = ["case_C01_L0_00"]
+    for seed in (0, 1):
+        write_cache(tmp_path, train_network.cache_arm("R1", "connectome", seed), keys, rng)
+        write_checkpoint(tmp_path / "ckpt", "connectome", seed)
+    clip = {"lum": np.zeros((FRAMES, COLUMNS), dtype=np.float32)}
+    result = m06.run(clip, 4.6, root=tmp_path, arm="connectome", key=keys[0],
+                     checkpoints=sorted((tmp_path / "ckpt").glob("R1-*.pt")), tolerance=1e-6)
+    assert result["unknown"].all()                        # a tolerance this tight refuses every column
+    assert np.isfinite(result["distance_all_m"]).all()    # and the answer everywhere is still there
+    assert np.isnan(result["distance_m"]).all()
