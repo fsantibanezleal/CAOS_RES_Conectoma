@@ -212,7 +212,22 @@ R-033 Every null control SHALL hold its invariants on the measured connectome.
 R-034 THE product SHALL rebuild the published model through its own compiler and match the engine voltage
       for voltage, before any claim rests on that compiler.
       Gate: tests/test_network_engine.py::test_the_published_model_rebuilt_here_matches_the_engine_voltage_for_voltage
+
+R-035 A scale-dependent comparison between trained rows SHALL be read inside one domain and never pooled
+      across domains whose absolute scale the rows cannot recover.
+      Gate: tests/test_train_network.py::test_a_comparison_is_kept_inside_one_domain
+
+R-036 WHERE a comparison is read at matched coverage, THE evaluation SHALL also report the scale-invariant
+      error over the same columns, so that structure is compared when scale cannot be.
+      Gate: tests/test_train_network.py::test_the_scale_invariant_error_at_matched_coverage_ignores_a_global_scale
 ```
+
+**Why a comparison is read inside a domain.** A network row reads motion and is never told its own speed,
+so it cannot recover absolute scale. On the fly-scale cases (FlyGym, millimetres to centimetres) both
+connectome rows answer in metres, off by two orders of magnitude; a paired relative error there measures
+that failure, with differences of hundreds, and pooled with the other cases it moved the medians and in
+places changed their sign. The headline is read on the TartanAir cases, the corpus the heads were trained
+on, and every other domain is reported beside it with the scale-invariant error over the same columns.
 
 ## 7. The deploy driver
 
