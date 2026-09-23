@@ -107,6 +107,30 @@ COMPARISON_KEY = "abs_rel_at_50"
 # detail to choose between.
 COMPARISON_KEYS = tuple(f"abs_rel_at_{int(c * 100)}" for c in metrics.MATCHED_COVERAGES)
 
+# Where a comparison between trained rows may be POOLED. A network row reads motion and is never told its
+# own speed, so it cannot recover absolute scale: on the fly-scale cases (FlyGym, millimetres to
+# centimetres) both connectome rows answer in metres, off by two orders of magnitude, and a paired AbsRel
+# there measures that scale failure, with differences of hundreds that pulled the pooled medians and in
+# places changed their sign. A scale-dependent comparison is therefore read inside one domain at a time,
+# the headline in the domain the heads were trained on, and every other domain is reported beside it, in
+# full, with the scale-invariant error read over the same columns so that structure is still compared.
+DOMAINS = {
+    "in_domain": ("tartanair",),
+    "transfer": ("hypersim", "sintel", "spring"),
+    "fly_scale": ("flygym",),
+    "synthetic": ("synthetic", "panorama"),
+}
+HEADLINE_DOMAIN = "in_domain"
+DOMAIN_KEYS = ("abs_rel_at_50", "silog_at_50")
+
+
+def domain_cases(domain: str) -> set[str]:
+    """The case identifiers whose source belongs to one domain, read from the registry."""
+    registry, _ = cases.load_cases()
+    sources = DOMAINS[domain]
+    return {case_id for case_id, case in registry["cases"].items()
+            if cases.contract_source(case) in sources or case.get("source") in sources}
+
 
 def code_digest() -> str:
     digest = hashlib.sha256()
@@ -430,12 +454,13 @@ def write_summary() -> dict:
             continue
     # A connectome row's claim is never its own number: it is the paired difference against the nulls
     # built from the same wiring, with the same head, the same seeds and the same clips.
+    headline = domain_cases(HEADLINE_DOMAIN)
     against_nulls = {}
     for name in methods:
         controls = [null for null in methods if null.startswith(f"{name}-N")]
         for null in sorted(controls):
             try:
-                against_nulls[f"{name} vs {null}"] = compare(name, null, COMPARISON_KEY)
+                against_nulls[f"{name} vs {null}"] = compare(name, null, COMPARISON_KEY, headline)
             except FileNotFoundError:
                 continue
     # A regime's claim is also a paired difference: M06 is the same wiring and the same head as M05, with
@@ -444,7 +469,7 @@ def write_summary() -> dict:
     for name, before in REGIME_PREDECESSOR.items():
         if name in methods and before in methods:
             try:
-                against_regimes[f"{name} vs {before}"] = compare(name, before, COMPARISON_KEY)
+                against_regimes[f"{name} vs {before}"] = compare(name, before, COMPARISON_KEY, headline)
             except FileNotFoundError:
                 continue
     by_coverage: dict[str, dict] = {}
@@ -453,14 +478,29 @@ def write_summary() -> dict:
         row = {}
         for key in COMPARISON_KEYS:
             try:
-                row[key] = compare(first, second, key)
+                row[key] = compare(first, second, key, headline)
             except FileNotFoundError:
                 continue
         if row:
             by_coverage[label] = row
+    by_domain: dict[str, dict] = {}
+    for label, comparison in list(against_nulls.items()) + list(against_regimes.items()):
+        first, second = comparison["first"], comparison["second"]
+        for domain in DOMAINS:
+            members = domain_cases(domain)
+            for key in DOMAIN_KEYS:
+                try:
+                    found = compare(first, second, key, members)
+                except FileNotFoundError:
+                    continue
+                if found.get("pairs"):
+                    by_domain.setdefault(label, {}).setdefault(domain, {})[key] = found
     summary = {"artifact": "evaluation-summary", "version": 1, "methods": methods,
                "against_floor": paired, "against_nulls": against_nulls,
-               "against_regimes": against_regimes, "by_coverage": by_coverage, "kind": KINDS}
+               "against_regimes": against_regimes, "by_coverage": by_coverage, "by_domain": by_domain,
+               "headline_domain": {"name": HEADLINE_DOMAIN, "sources": list(DOMAINS[HEADLINE_DOMAIN]),
+                                   "cases": sorted(headline)},
+               "domains": {name: list(sources) for name, sources in DOMAINS.items()}, "kind": KINDS}
     write_json(DERIVED / "summary.json", summary)
     return summary
 
@@ -483,8 +523,12 @@ def _update_manifest(method: str, report: dict) -> None:
     write_json(path, manifest)
 
 
-def compare(first: str, second: str, key: str = "abs_rel") -> dict:
-    """The paired difference between two reports, clip by clip: `first` minus `second`."""
+def compare(first: str, second: str, key: str = "abs_rel", only: set[str] | None = None) -> dict:
+    """The paired difference between two reports, clip by clip: `first` minus `second`.
+
+    `only` restricts the pairs to those cases, which is how a scale-dependent comparison is kept inside
+    one domain.
+    """
     reports = {}
     for name in (first, second):
         path = DERIVED / f"{name}.json"
@@ -493,8 +537,8 @@ def compare(first: str, second: str, key: str = "abs_rel") -> dict:
         reports[name] = json.loads(path.read_text(encoding="utf-8"))
     index = {name: {(r["case"], r["level"], r["clip"]): r for r in report["clips"]}
              for name, report in reports.items()}
-    shared = sorted(set(index[first]) & set(index[second]))
+    shared = sorted(k for k in set(index[first]) & set(index[second]) if only is None or k[0] in only)
     a = np.array([index[first][k].get(key, np.nan) for k in shared], dtype=np.float64)
     b = np.array([index[second][k].get(key, np.nan) for k in shared], dtype=np.float64)
     return {"first": first, "second": second, "key": key, "clips": len(shared),
-            **metrics.paired_difference(a, b)}
+            **({"cases": sorted(only)} if only is not None else {}), **metrics.paired_difference(a, b)}

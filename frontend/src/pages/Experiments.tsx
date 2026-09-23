@@ -13,6 +13,14 @@ const MOTION = ['T4a', 'T4b', 'T4c', 'T4d', 'T5a', 'T5b', 'T5c', 'T5d'];
 // its own uncertainty is. The ranking between two rows can differ between these columns, which is a fact
 // about them and the reason all three are shown.
 const COVERAGE_KEYS = ['abs_rel_at_25', 'abs_rel_at_50', 'abs_rel_at_75'];
+// The domains a scale-dependent comparison is read inside, never across (data-pipeline evaluate.DOMAINS).
+const DOMAIN_ORDER = ['in_domain', 'transfer', 'fly_scale', 'synthetic'];
+const DOMAIN_NAMES: Record<string, { en: string; es: string }> = {
+  in_domain: { en: 'TartanAir, trained on', es: 'TartanAir, de entrenamiento' },
+  transfer: { en: 'transfer', es: 'transferencia' },
+  fly_scale: { en: 'fly scale', es: 'escala de mosca' },
+  synthetic: { en: 'synthetic controls', es: 'controles sintéticos' },
+};
 
 export default function Experiments() {
   const t = useT();
@@ -632,7 +640,11 @@ export default function Experiments() {
       </p>
       {Object.keys(evaluation.against_nulls ?? {}).length > 0 ? (
         <>
-          <h3>{t('A connectome row against its own nulls', 'Una fila del conectoma contra sus propios nulos')}</h3>
+          <h3>{t('A connectome row against its own nulls, in the domain it was trained on', 'Una fila del conectoma contra sus propios nulos, en el dominio en que se entrenó')}</h3>
+          <p className="cx-muted">
+            {t(`Read on the TartanAir cases (${(evaluation.headline_domain?.cases ?? []).join(', ')}), the corpus the heads were trained on. A network row reads motion and is never told its own speed, so it cannot recover absolute scale: on the fly-scale cases both rows answer in metres where the truth is centimetres. A scale-dependent comparison is therefore never pooled across domains; every domain is in the next table.`,
+               `Leído en los casos TartanAir (${(evaluation.headline_domain?.cases ?? []).join(', ')}), el corpus con que se entrenaron las cabezas. Una fila de red lee movimiento y nunca se le dice su propia velocidad, así que no puede recuperar la escala absoluta: en los casos a escala de mosca ambas filas responden en metros donde la verdad está en centímetros. Por eso una comparación dependiente de la escala nunca se agrupa entre dominios; cada dominio está en la tabla siguiente.`)}
+          </p>
           <p>
             {t(
               'The same head, the same seeds and the same clips, on a network whose wiring was degree-preservingly rewired, replaced by a size-matched random sparse graph, or had its signs shuffled. A positive difference means the measured wiring did better than the control; an interval that crosses zero means the measurement does not separate them. Every column is read at a FIXED share of the lattice, ranked by what each row says its own uncertainty is, because the rows refuse different amounts and the error of what a row chose to keep is not a comparable number.',
@@ -719,6 +731,49 @@ export default function Experiments() {
               'Reported as the earlier row minus the later one, so a positive number is the later regime being better.',
               'Reportado como la fila anterior menos la posterior, así que un número positivo es el régimen posterior siendo mejor.',
             )}
+          </p>
+        </>
+      ) : null}
+      {evaluation.by_domain && Object.keys(evaluation.by_domain).length > 0 ? (
+        <>
+          <h3>{t('Every domain, with its scale removed as well', 'Cada dominio, también sin su escala')}</h3>
+          <p>
+            {t('The same comparisons in each domain, over the better half of the lattice. The first number is the relative error, which a network that cannot recover scale fails in full on the fly-scale cases; the second is the scale-invariant error of Eigen, Puhrsch and Fergus over the same columns, which still says whether the depth STRUCTURE was recovered. A positive difference means the first row is better.',
+               'Las mismas comparaciones en cada dominio, sobre la mejor mitad de la retícula. El primer número es el error relativo, que una red que no puede recuperar la escala falla por completo en los casos a escala de mosca; el segundo es el error invariante a la escala de Eigen, Puhrsch y Fergus sobre las mismas columnas, que aún dice si se recuperó la ESTRUCTURA de profundidad. Una diferencia positiva significa que la primera fila es mejor.')}
+          </p>
+          <div className="cx-table-wrap">
+            <table className="cx-table">
+              <thead>
+                <tr>
+                  <th>{t('Comparison', 'Comparación')}</th>
+                  {DOMAIN_ORDER.map((domain) => (
+                    <th key={domain} className="num">{t(DOMAIN_NAMES[domain].en, DOMAIN_NAMES[domain].es)}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(evaluation.by_domain).map(([name, domains]) => (
+                  <tr key={name}>
+                    <td>{name}</td>
+                    {DOMAIN_ORDER.map((domain) => {
+                      const rel = domains[domain]?.abs_rel_at_50;
+                      const log = domains[domain]?.silog_at_50;
+                      return (
+                        <td key={domain} className="num">
+                          {rel ? `${num(-rel.median, 3)}` : '-'}
+                          {log ? <span className="cx-muted">{` / ${num(-log.median, 3)}`}</span> : null}
+                          {rel ? <span className="cx-muted">{` (${num(rel.pairs)})`}</span> : null}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="cx-muted">
+            {t('Each cell: relative error / scale-invariant error, paired, over the better half of each row\'s columns, and the number of clips paired.',
+               'Cada celda: error relativo / error invariante a la escala, pareados, sobre la mejor mitad de las columnas de cada fila, y el número de clips pareados.')}
           </p>
         </>
       ) : null}
