@@ -3,6 +3,30 @@
 All notable changes to this project are documented here. Format: Keep a Changelog, newest on top.
 Versions use the `X.XX.XXX` display form; the semver form (zeros dropped) appears in manifests.
 
+## [0.10.001] - 2026-09-23
+
+### Fixed
+
+- **A relative error was pooled across domains whose scale the networks cannot recover.** A network row
+  reads motion and is never told its own speed, so it cannot recover absolute scale: on the fly-scale
+  cases (FlyGym, millimetres to centimetres) both connectome rows answer in metres, and a paired relative
+  error there differs by hundreds, which moved 0.10.000's pooled medians and in places changed their sign.
+  Found by looking at the live chain on C10, where the readout is dark everywhere and the error map
+  saturated. Comparisons are now read inside one domain at a time, the headline on the TartanAir cases the
+  heads were trained on, every other domain reported beside it.
+- **A scale-invariant error at matched coverage**, the error of Eigen, Puhrsch and Fergus over the same
+  ranked columns, so that structure is compared where scale cannot be.
+
+### Changed
+
+- **What the connectome comparisons say, read right.** In domain, what training the biophysics buys is
+  scale: M06's relative error is 0.151 better than M05's and its scale-invariant error identical. The
+  trained wiring's lead over its controls there is also mostly scale; on structure it is level with its
+  degree-preserving rewiring and the random sparse graph and ahead of the sign shuffle. Out of domain, the
+  measured wiring recovers structure slightly but consistently better than all three controls. This
+  replaces 0.10.000's pooled reading.
+- The Experiments page shows every comparison domain by domain, both errors side by side.
+
 ## [0.10.000] - 2026-09-23
 
 ### Added

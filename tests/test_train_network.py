@@ -305,3 +305,26 @@ def test_the_answer_everywhere_is_the_answer_before_any_seed_refused(tmp_path):
     assert result["unknown"].all()                        # a tolerance this tight refuses every column
     assert np.isfinite(result["distance_all_m"]).all()    # and the answer everywhere is still there
     assert np.isnan(result["distance_m"]).all()
+
+
+def test_the_scale_invariant_error_at_matched_coverage_ignores_a_global_scale():
+    """A row that answers in metres where the truth is centimetres has the structure right or wrong
+    whatever its scale, and this is the number that says which."""
+    from conectoma.methods import metrics
+
+    truth = np.linspace(0.05, 0.20, 100)
+    uncertainty = np.linspace(0.1, 1.0, 100)
+    right_structure = metrics.matched_coverage(truth, truth * 150.0, uncertainty)
+    exact = metrics.matched_coverage(truth, truth, uncertainty)
+    assert right_structure["abs_rel_at_50"] == pytest.approx(149.0)          # the scale failure, in full
+    assert right_structure["silog_at_50"] == pytest.approx(0.0, abs=1e-12)   # and nothing else wrong
+    assert exact["silog_at_50"] == pytest.approx(0.0, abs=1e-12)
+
+
+def test_a_comparison_is_kept_inside_one_domain():
+    """A scale-dependent comparison is never pooled across domains a network cannot recover the scale of."""
+    assert evaluate.HEADLINE_DOMAIN == "in_domain"
+    assert evaluate.DOMAINS["in_domain"] == ("tartanair",)
+    assert "flygym" in evaluate.DOMAINS["fly_scale"]
+    every = [source for sources in evaluate.DOMAINS.values() for source in sources]
+    assert len(every) == len(set(every))                                    # a source is in one domain

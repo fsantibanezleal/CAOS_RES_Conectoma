@@ -94,14 +94,21 @@ def matched_coverage(truth: np.ndarray, estimate: np.ndarray, uncertainty: np.nd
               & np.isfinite(uncertainty))
     out: dict[str, float] = {"columns_rankable": int(usable.sum())}
     if not usable.any():
-        return out | {f"abs_rel_at_{int(c * 100)}": float("nan") for c in coverages}
+        return (out | {f"abs_rel_at_{int(c * 100)}": float("nan") for c in coverages}
+                | {f"silog_at_{int(c * 100)}": float("nan") for c in coverages})
     d, z, s = truth[usable], estimate[usable], uncertainty[usable]
     order = np.argsort(s, kind="stable")
-    error = np.abs(d - z) / d
-    ranked = error[order]
+    relative = (np.abs(d - z) / d)[order]
+    logs = (np.log(z) - np.log(d))[order]
     for coverage in coverages:
-        keep = max(int(round(coverage * ranked.size)), 1)
-        out[f"abs_rel_at_{int(coverage * 100)}"] = float(np.mean(ranked[:keep]))
+        keep = max(int(round(coverage * relative.size)), 1)
+        out[f"abs_rel_at_{int(coverage * 100)}"] = float(np.mean(relative[:keep]))
+        # The same kept columns, read without their scale: the scale-invariant error of Eigen, Puhrsch and
+        # Fergus over them. A network that reads motion without knowing its own speed cannot recover
+        # absolute scale (on the fly-scale cases both connectome rows answer in metres where the truth is
+        # centimetres), and this is the number that still says whether it recovered the STRUCTURE.
+        kept = logs[:keep]
+        out[f"silog_at_{int(coverage * 100)}"] = float(np.mean(kept**2) - np.mean(kept) ** 2)
     return out
 
 

@@ -248,6 +248,9 @@ export interface EvaluationSummary {
   against_nulls?: Record<string, PairedDifference>;
   against_regimes?: Record<string, PairedDifference>;
   by_coverage?: Record<string, Record<string, PairedDifference>>;
+  by_domain?: Record<string, Record<string, Record<string, PairedDifference>>>;
+  headline_domain?: { name: string; sources: string[]; cases: string[] };
+  domains?: Record<string, string[]>;
 }
 
 export const REPORTS = {
