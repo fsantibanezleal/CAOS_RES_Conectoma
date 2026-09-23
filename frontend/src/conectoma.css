@@ -327,8 +327,8 @@
   gap: 0.5rem;
   overflow-y: auto;
 }
-.cx-brain-eye { flex: 0 0 auto; height: 9rem; display: flex; justify-content: center; }
-.cx-brain-eye .cx-eye { width: 9rem; }
+.cx-brain-eye { flex: 0 0 auto; height: 13rem; display: flex; justify-content: center; }
+.cx-brain-eye .cx-eye { width: 13rem; }
 .cx-brain-stage { flex: 0 0 auto; }
 .cx-brain-stage-title {
   font-size: 0.72rem;
@@ -342,8 +342,8 @@
    background. Cards are therefore square-ish and the row fits as many as the width allows. */
 .cx-brain-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
-  gap: 0.4rem;
+  grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+  gap: 0.5rem;
 }
 .cx-activity {
   display: flex;
@@ -378,3 +378,54 @@
   .cx-brain-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cx-brain-stage-wrap { overflow: visible; }
 }
+
+/* ---------------------------------------------------------------- the chain: input, answer, truth, error */
+/* Four maps read left to right in the order the answer is produced, on one lattice, so a column sits in the
+   same place in all four and a reader's eye can travel between them. The time course takes the band below. */
+.cx-chain { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 0.6rem; }
+.cx-chain-grid {
+  flex: 0 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+.cx-chain-map {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface-2);
+  padding: 0.45rem 0.5rem 0.4rem;
+}
+.cx-chain-head { display: flex; flex-direction: column; gap: 0.05rem; font-size: 0.8rem; min-height: 2.4rem; }
+.cx-chain-head strong { font-size: 0.86rem; }
+.cx-chain-head .cx-muted { font-size: 0.72rem; }
+/* the canvas's containing block: `.cx-eye-canvas` is absolutely positioned */
+.cx-chain-canvas { position: relative; width: 100%; aspect-ratio: 1 / 1.02; min-height: 0; }
+.cx-chain-foot { display: flex; flex-direction: column; gap: 0.2rem; min-height: 2.6rem; font-size: 0.72rem; }
+.cx-chain-legend { display: flex; align-items: center; gap: 0.35rem; color: var(--color-fg-subtle); white-space: nowrap; }
+.cx-legend-inline { flex: 1 1 auto; min-width: 3rem; }
+.cx-chain-reading { color: var(--color-fg); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cx-chain-time { flex: 1 1 auto; min-height: 10rem; display: grid; grid-template-rows: minmax(0, 1fr); }
+.cx-chain-missing { padding: 1rem; }
+
+/* ---------------------------------------------------------------- the circuit, carrying the signal */
+.cx-circuit { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.cx-circuit-legend { display: flex; flex-wrap: wrap; gap: 0.35rem 1.1rem; font-size: 0.75rem; color: var(--color-fg-subtle); }
+.cx-swatch { display: inline-block; width: 0.9rem; height: 0.35rem; border-radius: 2px; vertical-align: middle; margin-right: 0.2rem; }
+.cx-circuit-canvas { position: relative; flex: 1 1 auto; min-height: 28rem; border: 1px solid var(--color-border); border-radius: 10px; background: var(--color-surface-2); }
+.cx-circuit-drawing { position: absolute; inset: 0; display: block; touch-action: none; }
+.cx-circuit-detail { margin: 0; min-height: 1.3rem; font-size: 0.8rem; color: var(--color-fg-subtle); }
+
+@media (max-width: 1180px) {
+  .cx-chain-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .cx-chain-grid { grid-template-columns: minmax(0, 1fr); }
+  .cx-chain-time { height: 50vh; flex: 0 0 auto; }
+  .cx-circuit-canvas { height: 80vh; flex: 0 0 auto; }
+}
+

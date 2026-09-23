@@ -1,0 +1,47 @@
+{
+ "about": "Cross-language decoder fixture for the chain artifact. tests/test_export_chain.py checks these values against the pipeline's own decoder, src/test/chain.test.ts against the browser's.",
+ "encoding": {
+  "lo_m": 0.1,
+  "hi_m": 5000.0,
+  "spread_hi": 4.0
+ },
+ "depth": {
+  "bytes": "AAECQIDI/v8=",
+  "metres": [
+   null,
+   0.10000000000000002,
+   0.1043517848975669,
+   1.463836460452368,
+   22.3606797749979,
+   480.26009170591306,
+   4791.484884430172,
+   5000.000000000004
+  ]
+ },
+ "mask": {
+  "bytes": "gYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQA=",
+  "rows": 2,
+  "set": [
+   [
+    0,
+    7,
+    8,
+    360,
+    720
+   ],
+   [
+    1,
+    719
+   ]
+  ]
+ },
+ "spread": {
+  "bytes": "ADOA/w==",
+  "values": [
+   0.0,
+   0.8,
+   2.007843137254902,
+   4.0
+  ]
+ }
+}

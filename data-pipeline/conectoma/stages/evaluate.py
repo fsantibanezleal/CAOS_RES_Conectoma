@@ -120,8 +120,19 @@ def clip_path(root: Path, case_id: str, level: int, index: int) -> Path:
 
 
 def observable(case: dict) -> bool:
-    """Whether depth can be measured in this case at all: a case that grades no depth cannot be scored."""
-    return "depth" in case.get("grades", [])
+    """Whether depth can be measured in this case at all: a case that grades no depth cannot be scored.
+
+    Relative depth (Sintel) IS observable: its scale is arbitrary, not its structure. It was treated as
+    unobservable until U-chain, because only the word `depth` was looked for, so Sintel was graded by what
+    a row refused while `metrics.align_inverse_depth`, documented as its treatment, was never called.
+    """
+    grades = case.get("grades", [])
+    return "depth" in grades or "depth_relative" in grades
+
+
+def relative(case: dict) -> bool:
+    """A case whose depth is known up to a scale and shift, and is scored after aligning to it."""
+    return "depth_relative" in case.get("grades", []) and "depth" not in case.get("grades", [])
 
 
 def score_clip(clip: dict, result: dict, case: dict, metric_units: bool = True) -> dict:
@@ -131,11 +142,21 @@ def score_clip(clip: dict, result: dict, case: dict, metric_units: bool = True) 
     claimed = ~result["unknown"] & np.isfinite(result["distance_m"])
     out: dict = {"steps": int(steps)}
     if observable(case):
-        out |= metrics.depth_metrics(truth, result["distance_m"], claimed, metric_units)
+        estimate = result["distance_m"]
+        everywhere = result.get("distance_all_m")
+        if relative(case):
+            # one scale and shift in inverse depth for the whole clip, fitted on what the row claimed: a
+            # row that is consistent over time is rewarded for it, and the fit is named in the report
+            aligned = metrics.align_inverse_depth(truth, estimate, claimed)
+            if everywhere is not None:
+                everywhere = _apply_alignment(truth, estimate, claimed, everywhere)
+            estimate = aligned
+            out["aligned"] = 1
+        out |= metrics.depth_metrics(truth, estimate, claimed & np.isfinite(estimate), metric_units)
         # and the same error at a fixed share of columns, for rows that predict their own uncertainty:
         # two rows that refuse different amounts cannot be compared on the error of what each kept
-        if "distance_all_m" in result and "uncertainty" in result:
-            out |= metrics.matched_coverage(truth, result["distance_all_m"], result["uncertainty"])
+        if everywhere is not None and "uncertainty" in result:
+            out |= metrics.matched_coverage(truth, everywhere, result["uncertainty"])
     out |= {f"refusal_{k}": v for k, v in
             metrics.refusal(result["unknown"], observable(case)).items()}
 
@@ -152,6 +173,26 @@ def score_clip(clip: dict, result: dict, case: dict, metric_units: bool = True) 
         if boundary.shape == predicted.shape:
             out |= metrics.boundary_f(boundary, predicted)
     return out
+
+
+def _apply_alignment(truth: np.ndarray, estimate: np.ndarray, claimed: np.ndarray,
+                     everywhere: np.ndarray) -> np.ndarray:
+    """The scale and shift fitted on the claimed columns, applied to the row's answer everywhere.
+
+    The matched-coverage error reads columns a row refused, so the alignment has to reach them; it is
+    fitted on the claimed ones only, so what a row refused never shapes the fit.
+    """
+    truth = np.asarray(truth, dtype=np.float64)
+    estimate = np.asarray(estimate, dtype=np.float64)
+    use = (np.asarray(claimed, dtype=bool) & np.isfinite(truth) & (truth > 0)
+           & np.isfinite(estimate) & (estimate > 0))
+    if use.sum() < 2:
+        return np.full(np.shape(everywhere), np.nan)
+    design = np.stack([1.0 / estimate[use], np.ones(int(use.sum()))], axis=1)
+    scale, shift = np.linalg.lstsq(design, 1.0 / truth[use], rcond=None)[0]
+    with np.errstate(divide="ignore", invalid="ignore"):
+        out = 1.0 / (scale / np.asarray(everywhere, dtype=np.float64) + shift)
+    return np.where(np.isfinite(out) & (out > 0), out, np.nan)
 
 
 def _depth_edges(distance: np.ndarray, ratio: float = 1.25) -> np.ndarray:
@@ -192,7 +233,12 @@ def _run_one(method: str, case_id: str, level: int, index: int, root: str,
     motion = None if "poses" in clip else cases.step_motion(case, level)
     if "interval_s" not in clip and stamp.get("interval_s") is not None:
         clip["interval_s"] = float(stamp["interval_s"])
-    if motion is None and "poses" not in clip:
+    # Only a row that inverts a camera motion needs one. A network row reads the eye's input and nothing
+    # else, and was refused here on six cases it could be scored on (C04, C08 to C12, 276 clips) because
+    # this check ran before the network branch; the transfer and ethological cases were never scored.
+    network_row = bool(METHODS[method].get("reservoir") or METHODS[method].get("trained"))
+    needs_motion = not network_row and not METHODS[method].get("stereo")
+    if needs_motion and motion is None and "poses" not in clip:
         return row | {"skipped": "the clip carries no poses and its case declares no motion"}
     started = time.time()
     if METHODS[method].get("reservoir") or METHODS[method].get("trained"):

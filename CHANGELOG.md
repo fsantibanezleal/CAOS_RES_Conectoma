@@ -3,6 +3,48 @@
 All notable changes to this project are documented here. Format: Keep a Changelog, newest on top.
 Versions use the `X.XX.XXX` display form; the semver form (zeros dropped) appears in manifests.
 
+## [0.10.000] - 2026-09-23
+
+### Added
+
+- **The chain.** The Response mode opens on the network working: what the eye receives, what the network
+  concludes, what is really there and where it is wrong, four maps on one clock, opening paused on the
+  step where the pathway moves most instead of the first step, where the network is still at rest. A
+  pointed column is read out in all four; the readout switches between the frozen and the trained network
+  without losing the step; below them, each network's error per frame on a logarithmic axis beside the
+  pathway's activity.
+- **The circuit.** The 90 connections the committed specification has among the pathway's 19 cell types,
+  each node a live miniature of its map, each connection as wide as its synapse count and pulsing with its
+  drive while the clock plays, and the trained head, which is not wiring, drawn apart and showing the
+  network's depth map live.
+- `run.py export-chain` and contract 2 for the chain: the scoring stage's own readout at the committed
+  tolerance, per frame, with the head's spread, the refusal and the truth, 4.8 MB for sixteen cases,
+  gated for its digests, its budget and its tolerance; a decoder fixture checked from both languages.
+- **The design document** (ADR-0075) and the SDD gate in CI, extended so a front-end requirement can name
+  a single labelled check; the gate is itself tested against imaginary gates.
+
+### Fixed
+
+- **The connectome rows were never scored on six cases.** M05, M06 and their nulls were skipped on C04 and
+  C08 to C12 (276 clips, every transfer and ethological case) for want of camera poses they never use.
+- **Sintel's relative depth was graded by refusal**, while `align_inverse_depth`, documented as its
+  treatment, was never called. It is now scored after one scale and shift per clip, and says so.
+- **The matched-coverage comparison ranked a biased answer.** Its "answer everywhere" was the median of each
+  seed's answer after that seed's refusal, so a row that refused more was ranked on fewer columns.
+- **Every chart in the App was rebuilt on every render**, because `useT` and `useNumber` returned a new
+  function each time and the charts depended on them; while playing, charts were destroyed and rebuilt
+  many times a second, and the chain's time course drew nothing. Both helpers now keep their identity.
+
+### Changed
+
+- **The connectome comparisons, re-read on all sixteen cases (660 paired clips) at matched coverage.**
+  Trained (M06), the measured wiring beats all three controls at every share of the lattice, intervals
+  excluding zero: +0.136 over its degree-preserving rewiring and +0.038 over a size-matched random sparse
+  graph over the better half. Frozen (M05), it is level with its rewiring over the better half. The regime
+  buys the measured wiring more than any control. This replaces 0.09.000's reading that the random sparse
+  graph beat it, which came from the biased comparison fixed above.
+- The pathway's maps are larger (cards of 10.5 rem, the eye at 13 rem).
+
 ## [0.09.000] - 2026-09-23
 
 ### Added

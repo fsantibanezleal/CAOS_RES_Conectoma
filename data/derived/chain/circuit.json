@@ -1,0 +1,640 @@
+{
+ "artifact": "circuit",
+ "version": 1,
+ "nodes": [
+  {
+   "type": "R1-R6",
+   "layer": "retina"
+  },
+  {
+   "type": "L1",
+   "layer": "lamina"
+  },
+  {
+   "type": "L2",
+   "layer": "lamina"
+  },
+  {
+   "type": "L3",
+   "layer": "lamina"
+  },
+  {
+   "type": "Mi1",
+   "layer": "medulla"
+  },
+  {
+   "type": "Tm3",
+   "layer": "medulla"
+  },
+  {
+   "type": "Tm1",
+   "layer": "medulla"
+  },
+  {
+   "type": "Tm2",
+   "layer": "medulla"
+  },
+  {
+   "type": "Mi9",
+   "layer": "medulla"
+  },
+  {
+   "type": "Mi4",
+   "layer": "medulla"
+  },
+  {
+   "type": "CT1",
+   "layer": "medulla"
+  },
+  {
+   "type": "T4a",
+   "layer": "output"
+  },
+  {
+   "type": "T4b",
+   "layer": "output"
+  },
+  {
+   "type": "T4c",
+   "layer": "output"
+  },
+  {
+   "type": "T4d",
+   "layer": "output"
+  },
+  {
+   "type": "T5a",
+   "layer": "output"
+  },
+  {
+   "type": "T5b",
+   "layer": "output"
+  },
+  {
+   "type": "T5c",
+   "layer": "output"
+  },
+  {
+   "type": "T5d",
+   "layer": "output"
+  }
+ ],
+ "edges": [
+  {
+   "source": "R1-R6",
+   "target": "L1",
+   "synapses": 74.247,
+   "sign": -1
+  },
+  {
+   "source": "R1-R6",
+   "target": "L2",
+   "synapses": 76.456,
+   "sign": -1
+  },
+  {
+   "source": "R1-R6",
+   "target": "L3",
+   "synapses": 15.093,
+   "sign": -1
+  },
+  {
+   "source": "L1",
+   "target": "L2",
+   "synapses": 1.28,
+   "sign": -1
+  },
+  {
+   "source": "L1",
+   "target": "Mi1",
+   "synapses": 83.147,
+   "sign": -1
+  },
+  {
+   "source": "L1",
+   "target": "Tm3",
+   "synapses": 79.837,
+   "sign": -1
+  },
+  {
+   "source": "L2",
+   "target": "R1-R6",
+   "synapses": 1.956,
+   "sign": 1
+  },
+  {
+   "source": "L2",
+   "target": "L1",
+   "synapses": 2.101,
+   "sign": 1
+  },
+  {
+   "source": "L2",
+   "target": "L3",
+   "synapses": 0.751,
+   "sign": 1
+  },
+  {
+   "source": "L2",
+   "target": "Mi1",
+   "synapses": 1.088,
+   "sign": 1
+  },
+  {
+   "source": "L2",
+   "target": "Tm1",
+   "synapses": 123.297,
+   "sign": 1
+  },
+  {
+   "source": "L2",
+   "target": "Tm2",
+   "synapses": 130.067,
+   "sign": 1
+  },
+  {
+   "source": "L2",
+   "target": "Mi9",
+   "synapses": 0.629,
+   "sign": 1
+  },
+  {
+   "source": "L2",
+   "target": "Mi4",
+   "synapses": 2.16,
+   "sign": 1
+  },
+  {
+   "source": "L3",
+   "target": "Mi1",
+   "synapses": 19.425,
+   "sign": 1
+  },
+  {
+   "source": "L3",
+   "target": "Mi9",
+   "synapses": 57.119,
+   "sign": 1
+  },
+  {
+   "source": "L3",
+   "target": "Mi4",
+   "synapses": 0.564,
+   "sign": 1
+  },
+  {
+   "source": "Mi1",
+   "target": "L1",
+   "synapses": 18.666,
+   "sign": 1
+  },
+  {
+   "source": "Mi1",
+   "target": "Mi1",
+   "synapses": 3.472,
+   "sign": 1
+  },
+  {
+   "source": "Mi1",
+   "target": "Tm3",
+   "synapses": 62.414,
+   "sign": 1
+  },
+  {
+   "source": "Mi1",
+   "target": "Tm1",
+   "synapses": 1.964,
+   "sign": 1
+  },
+  {
+   "source": "Mi1",
+   "target": "Mi9",
+   "synapses": 10.038,
+   "sign": 1
+  },
+  {
+   "source": "Mi1",
+   "target": "Mi4",
+   "synapses": 15.454,
+   "sign": 1
+  },
+  {
+   "source": "Mi1",
+   "target": "T4a",
+   "synapses": 69.653,
+   "sign": 1
+  },
+  {
+   "source": "Mi1",
+   "target": "T4b",
+   "synapses": 62.136,
+   "sign": 1
+  },
+  {
+   "source": "Mi1",
+   "target": "T4c",
+   "synapses": 66.122,
+   "sign": 1
+  },
+  {
+   "source": "Mi1",
+   "target": "T4d",
+   "synapses": 60.939,
+   "sign": 1
+  },
+  {
+   "source": "Tm3",
+   "target": "L1",
+   "synapses": 15.947,
+   "sign": 1
+  },
+  {
+   "source": "Tm3",
+   "target": "Mi1",
+   "synapses": 6.622,
+   "sign": 1
+  },
+  {
+   "source": "Tm3",
+   "target": "Tm3",
+   "synapses": 27.793,
+   "sign": 1
+  },
+  {
+   "source": "Tm3",
+   "target": "T4a",
+   "synapses": 28.382,
+   "sign": 1
+  },
+  {
+   "source": "Tm3",
+   "target": "T4b",
+   "synapses": 30.402,
+   "sign": 1
+  },
+  {
+   "source": "Tm3",
+   "target": "T4c",
+   "synapses": 27.995,
+   "sign": 1
+  },
+  {
+   "source": "Tm3",
+   "target": "T4d",
+   "synapses": 26.324,
+   "sign": 1
+  },
+  {
+   "source": "Tm1",
+   "target": "L2",
+   "synapses": 1.576,
+   "sign": 1
+  },
+  {
+   "source": "Tm1",
+   "target": "Mi1",
+   "synapses": 0.99,
+   "sign": 1
+  },
+  {
+   "source": "Tm1",
+   "target": "Tm2",
+   "synapses": 3.446,
+   "sign": 1
+  },
+  {
+   "source": "Tm1",
+   "target": "Mi9",
+   "synapses": 5.288,
+   "sign": 1
+  },
+  {
+   "source": "Tm1",
+   "target": "Mi4",
+   "synapses": 3.486,
+   "sign": 1
+  },
+  {
+   "source": "Tm1",
+   "target": "T5a",
+   "synapses": 25.554,
+   "sign": 1
+  },
+  {
+   "source": "Tm1",
+   "target": "T5b",
+   "synapses": 23.936,
+   "sign": 1
+  },
+  {
+   "source": "Tm1",
+   "target": "T5c",
+   "synapses": 27.092,
+   "sign": 1
+  },
+  {
+   "source": "Tm1",
+   "target": "T5d",
+   "synapses": 26.963,
+   "sign": 1
+  },
+  {
+   "source": "Tm2",
+   "target": "L2",
+   "synapses": 1.536,
+   "sign": 1
+  },
+  {
+   "source": "Tm2",
+   "target": "Tm1",
+   "synapses": 3.306,
+   "sign": 1
+  },
+  {
+   "source": "Tm2",
+   "target": "Mi9",
+   "synapses": 19.027,
+   "sign": 1
+  },
+  {
+   "source": "Tm2",
+   "target": "Mi4",
+   "synapses": 2.029,
+   "sign": 1
+  },
+  {
+   "source": "Tm2",
+   "target": "T5a",
+   "synapses": 37.169,
+   "sign": 1
+  },
+  {
+   "source": "Tm2",
+   "target": "T5b",
+   "synapses": 38.249,
+   "sign": 1
+  },
+  {
+   "source": "Tm2",
+   "target": "T5c",
+   "synapses": 38.338,
+   "sign": 1
+  },
+  {
+   "source": "Tm2",
+   "target": "T5d",
+   "synapses": 34.498,
+   "sign": 1
+  },
+  {
+   "source": "Mi9",
+   "target": "Mi1",
+   "synapses": 1.186,
+   "sign": -1
+  },
+  {
+   "source": "Mi9",
+   "target": "Tm3",
+   "synapses": 5.351,
+   "sign": -1
+  },
+  {
+   "source": "Mi9",
+   "target": "Tm1",
+   "synapses": 13.373,
+   "sign": -1
+  },
+  {
+   "source": "Mi9",
+   "target": "Tm2",
+   "synapses": 11.057,
+   "sign": -1
+  },
+  {
+   "source": "Mi9",
+   "target": "Mi4",
+   "synapses": 18.783,
+   "sign": -1
+  },
+  {
+   "source": "Mi9",
+   "target": "T4a",
+   "synapses": 24.815,
+   "sign": -1
+  },
+  {
+   "source": "Mi9",
+   "target": "T4b",
+   "synapses": 28.792,
+   "sign": -1
+  },
+  {
+   "source": "Mi9",
+   "target": "T4c",
+   "synapses": 28.308,
+   "sign": -1
+  },
+  {
+   "source": "Mi9",
+   "target": "T4d",
+   "synapses": 25.118,
+   "sign": -1
+  },
+  {
+   "source": "Mi4",
+   "target": "L2",
+   "synapses": 1.251,
+   "sign": -1
+  },
+  {
+   "source": "Mi4",
+   "target": "Mi1",
+   "synapses": 0.974,
+   "sign": -1
+  },
+  {
+   "source": "Mi4",
+   "target": "Tm3",
+   "synapses": 3.251,
+   "sign": -1
+  },
+  {
+   "source": "Mi4",
+   "target": "Tm1",
+   "synapses": 2.606,
+   "sign": -1
+  },
+  {
+   "source": "Mi4",
+   "target": "Tm2",
+   "synapses": 1.937,
+   "sign": -1
+  },
+  {
+   "source": "Mi4",
+   "target": "Mi9",
+   "synapses": 47.404,
+   "sign": -1
+  },
+  {
+   "source": "Mi4",
+   "target": "T4a",
+   "synapses": 12.338,
+   "sign": -1
+  },
+  {
+   "source": "Mi4",
+   "target": "T4b",
+   "synapses": 13.801,
+   "sign": -1
+  },
+  {
+   "source": "Mi4",
+   "target": "T4c",
+   "synapses": 12.582,
+   "sign": -1
+  },
+  {
+   "source": "Mi4",
+   "target": "T4d",
+   "synapses": 11.579,
+   "sign": -1
+  },
+  {
+   "source": "T4a",
+   "target": "Mi9",
+   "synapses": 4.549,
+   "sign": 1
+  },
+  {
+   "source": "T4a",
+   "target": "T4a",
+   "synapses": 18.954,
+   "sign": 1
+  },
+  {
+   "source": "T4a",
+   "target": "T5a",
+   "synapses": 1.377,
+   "sign": 1
+  },
+  {
+   "source": "T4b",
+   "target": "Mi9",
+   "synapses": 4.018,
+   "sign": 1
+  },
+  {
+   "source": "T4b",
+   "target": "Mi4",
+   "synapses": 0.574,
+   "sign": 1
+  },
+  {
+   "source": "T4b",
+   "target": "T4b",
+   "synapses": 22.717,
+   "sign": 1
+  },
+  {
+   "source": "T4b",
+   "target": "T5b",
+   "synapses": 4.23,
+   "sign": 1
+  },
+  {
+   "source": "T4c",
+   "target": "Mi9",
+   "synapses": 2.0,
+   "sign": 1
+  },
+  {
+   "source": "T4c",
+   "target": "T4c",
+   "synapses": 15.821,
+   "sign": 1
+  },
+  {
+   "source": "T4c",
+   "target": "T5c",
+   "synapses": 1.873,
+   "sign": 1
+  },
+  {
+   "source": "T4d",
+   "target": "T4d",
+   "synapses": 15.956,
+   "sign": 1
+  },
+  {
+   "source": "T4d",
+   "target": "T5d",
+   "synapses": 1.36,
+   "sign": 1
+  },
+  {
+   "source": "T5a",
+   "target": "T4a",
+   "synapses": 0.741,
+   "sign": 1
+  },
+  {
+   "source": "T5a",
+   "target": "T5a",
+   "synapses": 16.265,
+   "sign": 1
+  },
+  {
+   "source": "T5b",
+   "target": "T4b",
+   "synapses": 3.521,
+   "sign": 1
+  },
+  {
+   "source": "T5b",
+   "target": "T5b",
+   "synapses": 21.692,
+   "sign": 1
+  },
+  {
+   "source": "T5c",
+   "target": "T4c",
+   "synapses": 1.204,
+   "sign": 1
+  },
+  {
+   "source": "T5c",
+   "target": "T5c",
+   "synapses": 15.831,
+   "sign": 1
+  },
+  {
+   "source": "T5d",
+   "target": "T4d",
+   "synapses": 0.601,
+   "sign": 1
+  },
+  {
+   "source": "T5d",
+   "target": "T5d",
+   "synapses": 16.047,
+   "sign": 1
+  }
+ ],
+ "source": "data/derived/connectome/malecns-optic-lobe-r.json",
+ "direction_selectivity": {
+  "per_type": {
+   "T4a": 0.0,
+   "T4b": 0.0,
+   "T4c": 0.0,
+   "T4d": 0.0,
+   "T5a": 0.0054,
+   "T5b": 0.0022,
+   "T5c": 0.0121,
+   "T5d": 0.0081
+  },
+  "largest": 0.0121,
+  "protocol": "moving edges, 12 directions, 6 speeds, both polarities (network/tuning.py)",
+  "network": "the frozen MaleCNS network with the published biophysics transferred (M05)"
+ }
+}

@@ -548,6 +548,19 @@ def cmd_cache_trained(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_export_chain(args: argparse.Namespace) -> int:
+    """What the network concludes from each case, frame by frame, and the circuit it concludes it with."""
+    from conectoma.stages import export_chain
+
+    manifest = export_chain.run(data_root(args.data_root), cases_wanted=args.cases)
+    total = sum(entry["bytes"] for entry in manifest["cases"].values()) + manifest["circuit"]["bytes"]
+    print(f"chain: {len(manifest['cases'])} cases, {len(manifest['missing'])} named as missing, "
+          f"{total / 1e6:.2f} MB")
+    for name, reason in manifest["missing"].items():
+        print(f"  missing {name}: {reason}")
+    return 0
+
+
 def cmd_export_brainclips(args: argparse.Namespace) -> int:
     """What the connectome does with each case's clip, for the web (contract 2)."""
     from conectoma.stages import export_brainclips
@@ -722,6 +735,12 @@ def main(argv: list[str] | None = None) -> int:
     trained.add_argument("--limit", type=int, default=None, help="only the first N clips of each split")
     trained.add_argument("--out-dir", default=None, help="where the checkpoints are")
     trained.set_defaults(func=cmd_cache_trained)
+
+    chain = sub.add_parser("export-chain",
+                           help="what the network concludes from each case, and its circuit, for the web")
+    chain.add_argument("--data-root", default=None, help="directory of the local data cache")
+    chain.add_argument("--cases", nargs="*", default=None, help="only these cases")
+    chain.set_defaults(func=cmd_export_chain)
 
     brains = sub.add_parser("export-brainclips", help="what the connectome does with each case, for the web")
     brains.add_argument("--data-root", default=None, help="directory of the local data cache")
