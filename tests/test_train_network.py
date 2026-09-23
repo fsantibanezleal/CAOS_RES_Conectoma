@@ -239,3 +239,11 @@ def test_a_clips_cache_key_is_its_place_in_the_corpus_not_its_file_name():
 
 def test_a_path_outside_the_rendered_tree_keeps_its_name():
     assert cache_activity.clip_key(Path("somewhere/else/clip_000001.npz")) == "clip_000001"
+
+def test_every_trained_row_declares_the_row_it_is_the_next_regime_of():
+    """A regime's claim is a paired difference against the row it started from, arm for arm."""
+    for name, before in evaluate.REGIME_PREDECESSOR.items():
+        assert name in evaluate.METHODS and before in evaluate.METHODS
+        # the pair must be the SAME arm: comparing the connectome's R1 with a null's R0 measures nothing
+        assert name.split("-")[1:] == before.split("-")[1:]
+        assert evaluate.METHODS[name].get("trained") == evaluate.METHODS[before].get("reservoir")
