@@ -246,7 +246,18 @@ def test_every_trained_row_declares_the_row_it_is_the_next_regime_of():
         assert name in evaluate.METHODS and before in evaluate.METHODS
         # the pair must be the SAME arm: comparing the connectome's R1 with a null's R0 measures nothing
         assert name.split("-")[1:] == before.split("-")[1:]
-        assert evaluate.METHODS[name].get("trained") == evaluate.METHODS[before].get("reservoir")
+        arm = lambda entry: entry.get("trained") or entry.get("reservoir")  # noqa: E731
+        assert arm(evaluate.METHODS[name]) == arm(evaluate.METHODS[before])
+
+
+def test_each_trained_row_reads_the_networks_of_its_own_regime():
+    """M06 reads regime R1's networks and M07 regime R2's; a row that read another regime's caches would
+    report one regime's numbers under another's name."""
+    for name, entry in evaluate.METHODS.items():
+        if entry.get("trained"):
+            expected = "R2" if name.startswith("M07") else "R1"
+            assert entry.get("regime", "R1") == expected, name
+            assert entry["calibrate"].keywords.get("regime", "R1") == expected, name
 
 # ---------------------------------------------------------------- comparing at the same coverage
 

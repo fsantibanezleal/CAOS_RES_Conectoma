@@ -437,7 +437,7 @@ def train(root: Path, arm: str = "connectome", seed: int = 0, regime: str = "R1"
           interval_s: float = INTERVAL_S, train_clips: int | None = None,
           validation_clips: int = VALIDATION_CLIPS, evaluate_every: int = EVALUATE_EVERY,
           out_dir: Path | None = None, save: bool = True, progress_every: int = 50,
-          head_from: Path | None = None, head_dir: Path | None = None) -> dict:
+          head_from: Path | None = None, head_dir: Path | None = None, keep_state: bool = False) -> dict:
     """Fit one network and its head, on one arm with one seed, keeping the best validation checkpoint."""
     from flyvis.solver import Penalty
 
@@ -579,18 +579,28 @@ def train(root: Path, arm: str = "connectome", seed: int = 0, regime: str = "R1"
         "seconds_per_step": round((time.time() - started) / max(steps, 1), 3),
         "best": best, "history": history,
     }
+    last = {"network": {k: v.detach().cpu() for k, v in network.state_dict().items()},
+            "head": {k: v.detach().cpu() for k, v in model.state_dict().items()}}
+    state = best_state or last
     if save:
-        out = Path(out_dir) if out_dir is not None else DERIVED
-        out.mkdir(parents=True, exist_ok=True)
-        path = checkpoint_path(regime, arm, seed, window, out)
-        torch.save({"network": (best_state or {}).get("network", network.state_dict()),
-                    "head": (best_state or {}).get("head", model.state_dict()),
-                    "record": record}, path)
-        write_json(path.with_suffix(".json"), record)
-        record["path"] = str(path)
+        record["path"] = str(write_checkpoint(record, state, out_dir))
+    if keep_state:
+        # held on the CPU so a grid can keep its winner without training it a second time
+        record["_state"] = state
     del network, model
     torch.cuda.empty_cache()
     return record
+
+
+def write_checkpoint(record: dict, state: dict, out_dir: Path | None = None) -> Path:
+    """The checkpoint and its record, beside each other, under the regime, arm, seed and window."""
+    out = Path(out_dir) if out_dir is not None else DERIVED
+    out.mkdir(parents=True, exist_ok=True)
+    clean = {k: v for k, v in record.items() if not k.startswith("_")}
+    path = checkpoint_path(clean["regime"], clean["arm"], clean["seed"], clean["window"], out)
+    torch.save({"network": state["network"], "head": state["head"], "record": clean}, path)
+    write_json(path.with_suffix(".json"), clean)
+    return path
 
 
 def choose_rate(root: Path, arm: str = "connectome", regime: str = "R1", seed: int = 0,
@@ -605,22 +615,26 @@ def choose_rate(root: Path, arm: str = "connectome", regime: str = "R1", seed: i
     best = None
     for rate in grid:
         record = train(root, arm=arm, seed=seed, regime=regime, network_learning_rate=rate,
-                       out_dir=out_dir, save=False, **kwargs)
+                       out_dir=out_dir, save=False, keep_state=True, **kwargs)
         score = (record["best"] or {}).get("validation", {}).get("silog", float("inf"))
         rows.append({"network_learning_rate": rate, "validation_silog": score,
                      "seconds": record["seconds"], "steps": record["steps"],
                      "mean_activity": (record["best"] or {}).get("mean_activity")})
         if best is None or score < best[0]:
             best = (score, rate, record)
+        else:
+            record.pop("_state", None)                      # a loser's weights are not kept
     if best is None:
         raise RuntimeError(f"the learning-rate grid produced no run for arm {arm}")
     score, rate, record = best
-    # rerun the winner with saving on, rather than keeping a state in memory across three runs
-    kept = train(root, arm=arm, seed=seed, regime=regime, network_learning_rate=rate,
-                 out_dir=out_dir, save=True, **kwargs)
+    # The winner is written as it was trained. The first version trained it a second time just to save it,
+    # one run in eight per arm, about 25 minutes over four arms, and a second run of the same seed is not
+    # guaranteed to land on the same validation score on a GPU.
+    state = record.pop("_state")
+    record["rate_grid"] = rows
+    path = write_checkpoint(record, state, out_dir)
     return {"arm": arm, "regime": regime, "seed": seed, "chosen": rate, "grid": rows,
-            "validation_silog": (kept["best"] or {}).get("validation", {}).get("silog"),
-            "path": kept.get("path")}
+            "validation_silog": score, "path": str(path)}
 
 
 def load(path: Path, device: str | None = None, transfer: bool = True):

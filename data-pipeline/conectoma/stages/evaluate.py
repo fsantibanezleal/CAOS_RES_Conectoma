@@ -60,6 +60,10 @@ KINDS = {
     "M06-N1": "control for M06: the same wiring degree-preservingly rewired, trained the same way",
     "M06-N2": "control for M06: a size-matched random sparse graph, trained the same way",
     "M06-N3": "control for M06: the same wiring with its signs shuffled, trained the same way",
+    "M07": "native, trained: the measured connectome with a gain per connection fitted (regime R2)",
+    "M07-N1": "control for M07: the same wiring degree-preservingly rewired, trained the same way",
+    "M07-N2": "control for M07: a size-matched random sparse graph, trained the same way",
+    "M07-N3": "control for M07: the same wiring with its signs shuffled, trained the same way",
     "floor": "the committed flow through the same readout",
 }
 
@@ -84,6 +88,14 @@ METHODS = {
                "calibrate": partial(m06.calibrate_tolerance, arm="N2")},
     "M06-N3": {"call": None, "requires": ("lum",), "trained": "N3",
                "calibrate": partial(m06.calibrate_tolerance, arm="N3")},
+    "M07": {"call": None, "requires": ("lum",), "trained": "connectome", "regime": "R2",
+            "calibrate": partial(m06.calibrate_tolerance, arm="connectome", regime="R2")},
+    "M07-N1": {"call": None, "requires": ("lum",), "trained": "N1", "regime": "R2",
+               "calibrate": partial(m06.calibrate_tolerance, arm="N1", regime="R2")},
+    "M07-N2": {"call": None, "requires": ("lum",), "trained": "N2", "regime": "R2",
+               "calibrate": partial(m06.calibrate_tolerance, arm="N2", regime="R2")},
+    "M07-N3": {"call": None, "requires": ("lum",), "trained": "N3", "regime": "R2",
+               "calibrate": partial(m06.calibrate_tolerance, arm="N3", regime="R2")},
     "floor": {"call": m01.floor, "requires": ("flow",)},
 }
 
@@ -91,7 +103,8 @@ METHODS = {
 # Which row each trained row is the next regime of. The pair is stated rather than derived from the
 # names, because "the row before" is a claim about the protocol (same wiring, same head, same seeds, one
 # more thing allowed to train) and not a string operation.
-REGIME_PREDECESSOR = {"M06": "M05", "M06-N1": "M05-N1", "M06-N2": "M05-N2", "M06-N3": "M05-N3"}
+REGIME_PREDECESSOR = {"M06": "M05", "M06-N1": "M05-N1", "M06-N2": "M05-N2", "M06-N3": "M05-N3",
+                      "M07": "M06", "M07-N1": "M06-N1", "M07-N2": "M06-N2", "M07-N3": "M06-N3"}
 
 # What a comparison between two trained rows is read on. Not `abs_rel`, which is the error over whatever
 # each row chose to claim: measured on the cases, the arms' median coverage runs from 0.40 to 0.72 and
@@ -270,8 +283,10 @@ def _run_one(method: str, case_id: str, level: int, index: int, root: str,
         arm = trained or METHODS[method]["reservoir"]
         key = f"case_{case_id}_L{level}_{index:02d}"
         module = m06 if trained else m05
+        # a trained row reads the networks of its own regime: R1 for M06, R2 for M07
+        regime = {"regime": METHODS[method].get("regime", "R1")} if trained else {}
         try:
-            result = module.run(clip, spacing, root=Path(root), arm=arm, key=key, **thresholds)
+            result = module.run(clip, spacing, root=Path(root), arm=arm, key=key, **regime, **thresholds)
         except FileNotFoundError as missing:
             return row | {"skipped": str(missing)}
     elif METHODS[method].get("stereo"):
